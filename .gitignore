@@ -5,9 +5,10 @@
 *.swp
 *.swo
 
-externals/
-libs/
-Scripts/
+/bin/
+/externals/
+/libs/
+/Scripts/
 
 .project
 .pydevproject
@@ -46,12 +47,12 @@ Scripts/
 *~
 __pycache__/
 
-bin/pypy-c
+bin/pypy-llvm
 include/*.h
 include/numpy/
 lib_pypy/ctypes_config_cache/_[^_]*_*.py
-libpypy-c.*
-pypy-c
+libpypy-llvm.*
+pypy-llvm
 pypy/_cache
 pypy/doc/*.html
 pypy/doc/config/*.html
