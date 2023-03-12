@@ -11,7 +11,7 @@ from pypy.interpreter.executioncontext import (AsyncAction, AbstractActionFlag,
     PeriodicAsyncAction)
 from pypy.interpreter.gateway import unwrap_spec
 
-from rpython.rlib import jit, rposix, rgc
+from rpython.rlib import rposix, rgc
 from rpython.rlib.objectmodel import we_are_translated
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib.rsignal import *
@@ -43,11 +43,8 @@ class SignalActionFlag(AbstractActionFlag):
         p = pypysig_getaddr_occurred()
         value = p.c_value
         if self.has_bytecode_counter:    # this 'if' is constant-folded
-            if jit.isconstant(by) and by == 0:
-                pass     # normally constant-folded too
-            else:
-                value -= by
-                p.c_value = value
+            value -= by
+            p.c_value = value
         return value
 
 
@@ -97,7 +94,6 @@ class CheckSignalAction(PeriodicAsyncAction):
             raise oefmt(w_exc, "asynchronous exception triggered from another thread")
         self._poll_for_signals()
 
-    @jit.dont_look_inside
     def _poll_for_signals(self):
         # Poll for the next signal, if any
         n = self.pending_signal
@@ -187,7 +183,6 @@ def default_int_handler(space, args_w):
     raise OperationError(space.w_KeyboardInterrupt, space.w_None)
 
 
-@jit.dont_look_inside
 @unwrap_spec(timeout=int)
 def alarm(space, timeout):
     """alarm(seconds)
@@ -197,7 +192,6 @@ def alarm(space, timeout):
     return space.newint(c_alarm(timeout))
 
 
-@jit.dont_look_inside
 def pause(space):
     """pause()
 
@@ -213,7 +207,6 @@ def check_signum_in_range(space, signum):
     raise oefmt(space.w_ValueError, "signal number out of range")
 
 
-@jit.dont_look_inside
 @unwrap_spec(signum=int)
 def signal(space, signum, w_handler):
     """
@@ -251,7 +244,6 @@ def signal(space, signum, w_handler):
     return old_handler
 
 
-@jit.dont_look_inside
 @unwrap_spec(fd=int)
 def set_wakeup_fd(space, fd):
     """Sets the fd to be written to (with '\0') when a signal
@@ -274,7 +266,6 @@ def set_wakeup_fd(space, fd):
     return space.newint(intmask(old_fd))
 
 
-@jit.dont_look_inside
 @unwrap_spec(signum=int, flag=int)
 def siginterrupt(space, signum, flag):
     """siginterrupt(sig, flag) -> None
@@ -322,7 +313,6 @@ def get_itimer_error(space):
     return space.fromcache(Cache).w_itimererror
 
 
-@jit.dont_look_inside
 @unwrap_spec(which=int, first=float, interval=float)
 def setitimer(space, which, first, interval=0):
     """setitimer(which, seconds[, interval])
@@ -348,7 +338,6 @@ def setitimer(space, which, first, interval=0):
             return itimer_retval(space, old[0])
 
 
-@jit.dont_look_inside
 @unwrap_spec(which=int)
 def getitimer(space, which):
     """getitimer(which)

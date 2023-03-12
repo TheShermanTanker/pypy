@@ -113,16 +113,13 @@ Other steps
 
   * go to pypy/tool/release and run
     ``force-builds.py <release branch>``
-    The following JIT binaries should be built, however, we need more buildbots
+    The following binaries should be built, however, we need more buildbots
     windows-64, linux-32, linux-64, macos_x86_64, macos_arm64, aarch64, s390x
 
   * wait for builds to complete, make sure there are no failures
 
   * send out a mailing list message asking for people to test before uploading
     to prevent having to upload more than once
-
-  * add a tag on the pypy/jitviewer repo that corresponds to pypy release, so
-    that the source tarball can be produced in the next steps
 
   * download the builds, repackage binaries. Tag the release-candidate version
     (it is important to mark this as a candidate since usually at least two

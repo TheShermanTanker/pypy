@@ -2095,43 +2095,6 @@ def _run_in_multiple_threads(test1):
         if errors:
             raise errors[0][1]
 
-def test_errno_working_even_with_pypys_jit():
-    # NOTE: on some platforms, to work correctly, this test needs to be
-    # compiled with -pthread.  Otherwise, the accesses to errno done from f()
-    # are compiled by assuming this small library won't be used from multiple
-    # threads, which is wrong.  If you see failures _and_ if you pass your
-    # own CFLAGS environment variable, please make sure "-pthread" is in it.
-    ffi = FFI()
-    ffi.cdef("int f(int);")
-    lib = ffi.verify("""
-        #include <errno.h>
-        int f(int x) { return (errno = errno + x); }
-    """)
-    @_run_in_multiple_threads
-    def test1():
-        ffi.errno = 0
-        for i in range(10000):
-            e = lib.f(1)
-            assert e == i + 1
-            assert ffi.errno == e
-        for i in range(10000):
-            ffi.errno = i
-            e = lib.f(42)
-            assert e == i + 42
-
-def test_getlasterror_working_even_with_pypys_jit():
-    if sys.platform != 'win32':
-        pytest.skip("win32-only test")
-    ffi = FFI()
-    ffi.cdef("void SetLastError(DWORD);")
-    lib = ffi.dlopen("Kernel32.dll")
-    @_run_in_multiple_threads
-    def test1():
-        for i in range(10000):
-            n = (1 << 29) + i
-            lib.SetLastError(n)
-            assert ffi.getwinerror()[0] == n
-
 def test_verify_dlopen_flags():
     # Careful with RTLD_GLOBAL.  If by chance the FFI is not deleted
     # promptly, like on PyPy, then other tests may see the same

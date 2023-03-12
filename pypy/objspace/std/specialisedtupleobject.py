@@ -1,7 +1,6 @@
 from pypy.interpreter.error import oefmt
 from pypy.objspace.std.tupleobject import W_AbstractTupleObject
 from pypy.objspace.std.util import negate
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib.unroll import unrolling_iterable
@@ -134,10 +133,6 @@ def make_specialised_class(typetuple):
                     return value
             raise oefmt(space.w_IndexError, "tuple index out of range")
 
-        def _unroll_condition(self):
-            return jit.loop_unrolling_heuristic(
-                    self, typelen, UNROLL_CUTOFF)
-
 
     cls.__name__ = ('W_SpecialisedTupleObject_' +
                     ''.join([t.__name__[0] for t in typetuple]))
@@ -176,9 +171,6 @@ def makespecialisedtuple2(space, w_arg1, w_arg2):
 # if the source lists contain sometimes ints/floats and
 # sometimes not, here we will use uniformly 'Cls_oo' instead
 # of using 'Cls_ii' or 'Cls_ff' for the elements that match.
-# This is a trade-off, but it looks like a good idea to keep
-# the list uniform for the JIT---not to mention, it is much
-# faster to move the decision out of the loop.
 
 @specialize.arg(1)
 def _build_zipped_spec(space, Cls, lst1, lst2):

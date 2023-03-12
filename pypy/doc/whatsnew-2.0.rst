@@ -9,14 +9,6 @@ What's new in PyPy 2.0
 
 Split rpython and pypy into seperate directories
 
-.. branch: callback-jit
-
-Callbacks from C are now better JITted
-
-.. branch: fix-jit-logs
-
-.. branch: remove-globals-in-jit
-
 .. branch: length-hint
 
 Implement __lenght_hint__ according to PEP 424
@@ -56,11 +48,6 @@ Rudimentary support for bytearray in RPython
 
 Fix a bug which caused cffi to return the wrong result when calling a C
 function which calls a Python callback which forces the frames
-
-.. branch: virtual-raw-mallocs
-
-JIT optimizations which make cffi calls even faster, by removing the need to
-allocate a temporary buffer where to store the arguments.
 
 .. branch: improve-docs-2
 
@@ -105,17 +92,6 @@ to provide reflection information
 
 .. branch: remove-PYPY_NOT_MAIN_FILE
 
-.. branch: missing-jit-operations
-
-.. branch: fix-lookinside-iff-oopspec
-
-Fixed the interaction between two internal tools for controlling the JIT.
-
-.. branch: inline-virtualref-2
-
-Better optimized certain types of frame accesses in the JIT, particularly
-around exceptions that escape the function they were raised in.
-
 .. branch: missing-ndarray-attributes
 
 Some missing attributes from ndarrays
@@ -151,12 +127,6 @@ Cleanup _numpypy and numpypy namespaces to more closely resemble numpy.
 Random cleanups to hide FlowObjSpace from public view.
 
 .. branch: vendor-rename
-
-.. branch: jitframe-on-heap
-
-Moves optimized JIT frames from stack to heap. As a side effect it enables
-stackless to work well with the JIT on PyPy. Also removes a bunch of code from
-the GC which fixes cannot find gc roots.
 
 .. branch: pycon2013-doc-fixes
 

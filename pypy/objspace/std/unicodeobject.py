@@ -11,7 +11,7 @@ from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rstring import (
     StringBuilder, split, rsplit, UnicodeBuilder, replace_count, startswith,
     endswith)
-from rpython.rlib import rutf8, jit
+from rpython.rlib import rutf8
 
 from pypy.interpreter import unicodehelper
 from pypy.interpreter.baseobjspace import W_Root
@@ -33,15 +33,12 @@ __all__ = ['W_UnicodeObject', 'wrapunicode', 'plain_str2unicode',
 
 MAX_UNROLL_NEXT_CODEPOINT_POS = 4
 
-@jit.elidable
 def next_codepoint_pos_dont_look_inside(utf8, p):
     return rutf8.next_codepoint_pos(utf8, p)
 
-@jit.elidable
 def prev_codepoint_pos_dont_look_inside(utf8, p):
     return rutf8.prev_codepoint_pos(utf8, p)
 
-@jit.elidable
 def codepoint_at_pos_dont_look_inside(utf8, p):
     return rutf8.codepoint_at_pos(utf8, p)
 
@@ -106,7 +103,6 @@ class W_UnicodeObject(W_Root):
         return space.text_w(encode_object(space, self, 'ascii', 'strict'))
 
     def utf8_w(self, space):
-        jit.record_known_result(self._length, rutf8._check_utf8, self._utf8, True, 0, -1)
         return self._utf8
 
     def readbuf_w(self, space):
@@ -363,7 +359,6 @@ class W_UnicodeObject(W_Root):
             return self
         return self.title_unicode(self._utf8)
 
-    @jit.elidable
     def title_unicode(self, value):
         input = self._utf8
         builder = rutf8.Utf8StringBuilder(len(input))
@@ -509,7 +504,6 @@ class W_UnicodeObject(W_Root):
         return self._lower_unicode(self._utf8)
 
     @staticmethod
-    @jit.elidable
     def _lower_unicode(utf8):
         builder = rutf8.Utf8StringBuilder(len(utf8))
         for ch in rutf8.Utf8StringIterator(utf8):
@@ -598,8 +592,6 @@ class W_UnicodeObject(W_Root):
         return W_UnicodeObject(self._utf8 + w_other._utf8,
                                self._len() + w_other._len())
 
-    @jit.look_inside_iff(lambda self, space, list_w, size:
-                         jit.loop_unrolling_heuristic(list_w, size))
     def _str_join_many_items(self, space, list_w, size):
         value = self._utf8
         lgt = self._len() * (size - 1)
@@ -663,7 +655,6 @@ class W_UnicodeObject(W_Root):
         return self._upper_unicode(self._utf8)
 
     @staticmethod
-    @jit.elidable
     def _upper_unicode(utf8):
         builder = rutf8.Utf8StringBuilder(len(utf8))
         for ch in rutf8.Utf8StringIterator(utf8):
@@ -733,9 +724,6 @@ class W_UnicodeObject(W_Root):
             if sl == 0:
                 return self._empty()
             elif step == 1:
-                if jit.we_are_jitted() and \
-                        self._unroll_slice_heuristic(start, stop, w_index.w_stop):
-                    return self._unicode_sliced_constant_index_jit(space, start, stop)
                 assert start >= 0 and stop >= 0
                 return self._unicode_sliced(space, start, stop)
             else:
@@ -764,9 +752,6 @@ class W_UnicodeObject(W_Root):
         if start == stop:
             return self._empty()
         else:
-            if (jit.we_are_jitted() and
-                    self._unroll_slice_heuristic(start, stop, w_stop)):
-                return self._unicode_sliced_constant_index_jit(space, start, stop)
             return self._unicode_sliced(space, start, stop)
 
     def _unicode_sliced(self, space, start, stop):
@@ -777,31 +762,6 @@ class W_UnicodeObject(W_Root):
         byte_start = self._index_to_byte(start)
         byte_stop = self._index_to_byte(stop)
         return W_UnicodeObject(self._utf8[byte_start:byte_stop], stop - start)
-
-    @jit.unroll_safe
-    def _unicode_sliced_constant_index_jit(self, space, start, stop):
-        assert start >= 0
-        assert stop >= 0
-        byte_start = 0
-        for i in range(start):
-            byte_start = next_codepoint_pos_dont_look_inside(self._utf8, byte_start)
-        byte_stop = len(self._utf8)
-        for i in range(self._len() - stop):
-            byte_stop = prev_codepoint_pos_dont_look_inside(self._utf8, byte_stop)
-        return W_UnicodeObject(self._utf8[byte_start:byte_stop], stop - start)
-
-    def _unroll_slice_heuristic(self, start, stop, w_stop):
-        from pypy.objspace.std.intobject import W_IntObject
-        # the reason we use the *wrapped* stop is that for
-        # w_stop ==  wrapped -1, or w_None the stop that is computed will *not*
-        # be constant, because the length is often not constant.
-        return (not self.is_ascii() and
-            jit.isconstant(start) and
-            (jit.isconstant(w_stop) or
-                (isinstance(w_stop, W_IntObject) and
-                    jit.isconstant(w_stop.intval))) and
-            start <= MAX_UNROLL_NEXT_CODEPOINT_POS and
-            self._len() - stop <= MAX_UNROLL_NEXT_CODEPOINT_POS)
 
     def descr_capitalize(self, space):
         value = self._utf8
@@ -923,8 +883,15 @@ class W_UnicodeObject(W_Root):
     descr_rmul = descr_mul
 
     def _get_index_storage(self):
-        return jit.conditional_call_elidable(self._index_storage,
-                    W_UnicodeObject._compute_index_storage, self)
+        if isinstance(self._index_storage, int):
+            if self._index_storage == 0:
+                self._index_storage = W_UnicodeObject._compute_index_storage(self)
+                assert isinstance(self._index_storage, int)
+        else:
+            if not isinstance(self._index_storage, list) and not self._index_storage:
+                self._index_storage = W_UnicodeObject._compute_index_storage(self)
+                assert not isinstance(self._index_storage, int)
+        return self._index_storage
 
     def _compute_index_storage(self):
         storage = rutf8.create_utf8_index_storage(self._utf8, self._length)
@@ -932,11 +899,6 @@ class W_UnicodeObject(W_Root):
         return storage
 
     def _getitem_result(self, space, index):
-        if (jit.we_are_jitted() and
-                not self.is_ascii() and
-                jit.isconstant(index) and
-                -MAX_UNROLL_NEXT_CODEPOINT_POS <= index <= MAX_UNROLL_NEXT_CODEPOINT_POS):
-            return self._getitem_result_constant_index_jit(space, index)
         if index < 0:
             index += self._length
         if index < 0 or index >= self._length:
@@ -944,31 +906,6 @@ class W_UnicodeObject(W_Root):
         start = self._index_to_byte(index)
         # we must not inline next_codepoint_pos, otherwise we produce a guard!
         end = self.next_codepoint_pos_dont_look_inside(start)
-        return W_UnicodeObject(self._utf8[start:end], 1)
-
-    @jit.unroll_safe
-    def _getitem_result_constant_index_jit(self, space, index):
-        # for small known indices, call next/prev_codepoint_pos a few times
-        # instead of possibly creating an index structure
-        if index < 0:
-            posindex = index + self._length
-            if posindex < 0:
-                raise oefmt(space.w_IndexError, "string index out of range")
-            end = len(self._utf8)
-            start = self.prev_codepoint_pos_dont_look_inside(end)
-            for i in range(-index-1):
-                end = start
-                start = self.prev_codepoint_pos_dont_look_inside(start)
-        else:
-            if index >= self._length:
-                raise oefmt(space.w_IndexError, "string index out of range")
-            start = 0
-            end = self.next_codepoint_pos_dont_look_inside(start)
-            for i in range(index):
-                start = end
-                end = self.next_codepoint_pos_dont_look_inside(end)
-        assert start >= 0
-        assert end >= 0
         return W_UnicodeObject(self._utf8[start:end], 1)
 
     def is_ascii(self):
@@ -1838,8 +1775,6 @@ W_UnicodeObject.typedef = TypeDef(
 W_UnicodeObject.typedef.flag_sequence_bug_compat = True
 
 def _create_list_from_unicode(value):
-    # need this helper function to allow the jit to look inside and inline
-    # listview_ascii
     return [s for s in value]
 
 W_UnicodeObject.EMPTY = W_UnicodeObject('', 0)

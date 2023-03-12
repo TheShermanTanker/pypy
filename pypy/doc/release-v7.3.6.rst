@@ -33,9 +33,6 @@ include:
     maintainers for pushing this forward over the past 18 months.
   - Speed improvements were made to ``io``, ``sum``, ``_ssl`` and more. These
     were done in response to user feedback.
-  - The 3.8 version of the release contains a beta-quality improvement to the
-    JIT to better support `compiling huge Python functions`_ by breaking them
-    up into smaller pieces.
   - The release of Python3.8 required a concerted effort. We were greatly
     helped by @isidentical (Batuhan Taskaya) and other new contributors.
   - The 3.8 package now uses the same layout as CPython, and many of the
@@ -46,8 +43,6 @@ include:
     on ``posix`` they are in ``<base>/include/pypy3.8``. Note we still use the
     ``pypy`` prefix to prevent mixing the files with CPython (which uses
     ``python``.
-
-.. _`compiling huge Python functions`: https://www.pypy.org/posts/2021/09/jit-auto-generated-code.html
 
 
 We recommend updating. You can find links to download the v7.3.6 releases here:
@@ -62,13 +57,12 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on PyPy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 7 new contributors,
-thanks for pitching in, and welcome to the project!
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on PyPy. Since the previous release, we have accepted contributions from 7 new
+contributors, thanks for pitching in, and welcome to the project!
 
 If you are a python library maintainer and use C-extensions, please consider
-making a CFFI_ / cppyy_ version of your library that would be performant on PyPy.
+making a CFFI_ version of your library that would be performant on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
 
@@ -76,7 +70,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _CFFI: https://cffi.readthedocs.io
-.. _cppyy: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _blog: https://pypy.org/blog
@@ -89,7 +82,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.7, and
 soon 3.8. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -122,9 +115,6 @@ Bugfixes shared across versions
   record support).
 - Fix error reporting when the error position is the last character of a JSON
   bytestring (issue 3514_)
-- Set non-volatile xmm registers in the JIT for windows 64-bit calling
-  conventions. Fixes a bug where the JIT was not restoring registers when
-  returning from a call
 - Support multiple tags in ``hg_archive``, fixes ``platform._sys_version()``
   which was reporting the first tag (i.e. rc1) when it should have reported
   the last tag (i.e. final)
@@ -133,7 +123,6 @@ Bugfixes shared across versions
 - Fix an obscure corner of ``%``-formatting when a tuple is passed in that
   triggered infinite recursion in the ``__repr__`` of a ``named_tuple`` with an
   ``__iter__`` (issue 3555_)
-- Fixed a PowerPC JIT bug that caused a stack overflow (issue 3463_)
 
 Speedups and enhancements shared across versions
 ------------------------------------------------

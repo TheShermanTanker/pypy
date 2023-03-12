@@ -49,13 +49,6 @@ def pytest_addoption(parser):
     group.addoption('-P', '--platform', action="store", dest="platform",
                     type="string", default="host",
            help="set up tests to use specified platform as compile/run target")
-    group = parser.getgroup("JIT options")
-    group.addoption('--viewloops', action="store_true",
-           default=False, dest="viewloops",
-           help="show only the compiled loops")
-    group.addoption('--viewdeps', action="store_true",
-           default=False, dest="viewdeps",
-           help="show the dependencies that have been constructed from a trace")
 
 
 def pytest_addhooks(pluginmanager):

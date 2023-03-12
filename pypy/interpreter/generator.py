@@ -4,7 +4,7 @@ from pypy.interpreter.pyopcode import LoopBlock
 from pypy.interpreter.pycode import CO_YIELD_INSIDE_TRY
 from pypy.interpreter.typedef import TypeDef, make_weakref_descr, interp_attrproperty, GetSetProperty
 from pypy.interpreter.gateway import interp2app
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 
 
 class GeneratorIterator(W_Root):
@@ -71,10 +71,6 @@ return next yielded value or raise StopIteration."""
 
     def send_ex(self, w_arg, operr=None):
         pycode = self.pycode
-        if pycode is not None:
-            if jit.we_are_jitted() and should_not_inline(pycode):
-                generatorentry_driver.jit_merge_point(gen=self, w_arg=w_arg,
-                                                    operr=operr, pycode=pycode)
         return self._send_ex(w_arg, operr)
 
     def _send_ex(self, w_arg, operr):
@@ -89,7 +85,7 @@ return next yielded value or raise StopIteration."""
                 operr = OperationError(space.w_StopIteration, space.w_None)
             raise operr
 
-        last_instr = jit.promote(frame.last_instr)
+        last_instr = frame.last_instr
         if last_instr == -1:
             if w_arg and not space.is_w(w_arg, space.w_None):
                 raise oefmt(space.w_TypeError,
@@ -113,7 +109,7 @@ return next yielded value or raise StopIteration."""
             else:
                 return w_result     # YIELDed
         finally:
-            frame.f_backref = jit.vref_None
+            frame.f_backref = None
             self.running = False
 
     def descr_throw(self, w_type, w_val=None, w_tb=None):
@@ -175,11 +171,8 @@ return next yielded value or raise StopIteration."""
 
     # Results can be either an RPython list of W_Root, or it can be an
     # app-level W_ListObject, which also has an append() method, that's why we
-    # generate 2 versions of the function and 2 jit drivers.
+    # generate 2 versions of the function.
     def _create_unpack_into():
-        jitdriver = jit.JitDriver(greens=['pycode'],
-                                  reds=['self', 'frame', 'results'],
-                                  name='unpack_into')
 
         def unpack_into(self, results):
             """This is a hack for performance: runs the generator and collects
@@ -195,8 +188,6 @@ return next yielded value or raise StopIteration."""
             try:
                 pycode = self.pycode
                 while True:
-                    jitdriver.jit_merge_point(self=self, frame=frame,
-                                              results=results, pycode=pycode)
                     try:
                         w_result = frame.execute_frame(space.w_None)
                     except OperationError as e:
@@ -208,7 +199,7 @@ return next yielded value or raise StopIteration."""
                         break
                     results.append(w_result)     # YIELDed
             finally:
-                frame.f_backref = jit.vref_None
+                frame.f_backref = None
                 self.running = False
                 self.frame_is_finished()
         return unpack_into
@@ -260,18 +251,10 @@ assert not GeneratorIterator.typedef.acceptable_as_base_class  # no __new__
 
 
 
-def get_printable_location_genentry(bytecode):
-    return '%s <generator>' % (bytecode.get_repr(),)
-generatorentry_driver = jit.JitDriver(greens=['pycode'],
-                                      reds=['gen', 'w_arg', 'operr'],
-                                      get_printable_location =
-                                          get_printable_location_genentry,
-                                      name='generatorentry')
 
 from pypy.tool.stdlib_opcode import HAVE_ARGUMENT, opmap
 YIELD_VALUE = opmap['YIELD_VALUE']
 
-@jit.elidable_promote()
 def should_not_inline(pycode):
     # Should not inline generators with more than one "yield",
     # as an approximative fix (see issue #1782).  There are cases

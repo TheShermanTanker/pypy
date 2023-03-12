@@ -12,7 +12,7 @@ from rpython.rlib.objectmodel import r_dict
 from rpython.rlib.objectmodel import iterkeys_with_hash, contains_with_hash
 from rpython.rlib.objectmodel import setitem_with_hash, delitem_with_hash
 from rpython.rlib.rarithmetic import intmask, r_uint
-from rpython.rlib import rerased, jit, rutf8
+from rpython.rlib import rerased, rutf8
 
 
 UNROLL_CUTOFF = 5
@@ -522,8 +522,6 @@ class W_SetObject(W_BaseSetObject):
         """Update a set with the union of itself and another."""
         self._descr_update(space, others_w)
 
-    @jit.look_inside_iff(lambda self, space, others_w:
-            jit.loop_unrolling_heuristic(others_w, len(others_w), UNROLL_CUTOFF))
     def _descr_update(self, space, others_w):
         for w_other in others_w:
             if isinstance(w_other, W_BaseSetObject):
@@ -912,16 +910,12 @@ class AbstractUnwrappedSetStrategy(object):
         """ Returns a wrapped version of the given unwrapped item. """
         raise NotImplementedError
 
-    @jit.look_inside_iff(lambda self, list_w:
-            jit.loop_unrolling_heuristic(list_w, len(list_w), UNROLL_CUTOFF))
     def get_storage_from_list(self, list_w):
         setdata = self.get_empty_dict()
         for w_item in list_w:
             setdata[self.unwrap(w_item)] = None
         return self.erase(setdata)
 
-    @jit.look_inside_iff(lambda self, items:
-            jit.loop_unrolling_heuristic(items, len(items), UNROLL_CUTOFF))
     def get_storage_from_unwrapped_list(self, items):
         setdata = self.get_empty_dict()
         for item in items:
@@ -1148,7 +1142,6 @@ class AbstractUnwrappedSetStrategy(object):
     def _intersect_wrapped(self, w_set, w_other):
         result = newset(self.space)
         for key in self.unerase(w_set.sstorage):
-            self.intersect_jmp.jit_merge_point()
             w_key = self.wrap(key)
             if w_other.has_key(w_key):
                 result[w_key] = None
@@ -1260,9 +1253,6 @@ class BytesSetStrategy(AbstractUnwrappedSetStrategy, SetStrategy):
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
 
-    intersect_jmp = jit.JitDriver(greens = [], reds = 'auto',
-                                  name='set(bytes).intersect')
-
     def get_empty_storage(self):
         return self.erase({})
 
@@ -1299,9 +1289,6 @@ class AsciiSetStrategy(AbstractUnwrappedSetStrategy, SetStrategy):
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
 
-    intersect_jmp = jit.JitDriver(greens = [], reds = 'auto',
-                                  name='set(unicode).intersect')
-
     def get_empty_storage(self):
         return self.erase({})
 
@@ -1337,9 +1324,6 @@ class IntegerSetStrategy(AbstractUnwrappedSetStrategy, SetStrategy):
     erase, unerase = rerased.new_erasing_pair("integer")
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
-
-    intersect_jmp = jit.JitDriver(greens = [], reds = 'auto',
-                                  name='set(int).intersect')
 
     def get_empty_storage(self):
         return self.erase({})
@@ -1378,9 +1362,6 @@ class ObjectSetStrategy(AbstractUnwrappedSetStrategy, SetStrategy):
     erase, unerase = rerased.new_erasing_pair("object")
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
-
-    intersect_jmp = jit.JitDriver(greens = [], reds = 'auto',
-                                  name='set(object).intersect')
 
     def get_empty_storage(self):
         return self.erase(self.get_empty_dict())
@@ -1425,9 +1406,6 @@ class IdentitySetStrategy(AbstractUnwrappedSetStrategy, SetStrategy):
     erase, unerase = rerased.new_erasing_pair("identityset")
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
-
-    intersect_jmp = jit.JitDriver(greens = [], reds = 'auto',
-                                  name='set(identity).intersect')
 
     def get_empty_storage(self):
         return self.erase({})
@@ -1643,65 +1621,10 @@ def set_strategy_and_setdata(space, w_set, w_iterable):
 
     length_hint = space.length_hint(w_iterable, 0)
 
-    if jit.isconstant(length_hint) and length_hint:
-        return _pick_correct_strategy_unroll(space, w_set, w_iterable)
-
     w_set.strategy = strategy = space.fromcache(EmptySetStrategy)
     w_set.sstorage = strategy.get_empty_storage()
     _update_from_iterable(space, w_set, w_iterable)
 
-
-@jit.unroll_safe
-def _pick_correct_strategy_unroll(space, w_set, w_iterable):
-
-    iterable_w = space.listview(w_iterable)
-    # check for integers
-    for w_item in iterable_w:
-        if type(w_item) is not W_IntObject:
-            break
-    else:
-        w_set.strategy = space.fromcache(IntegerSetStrategy)
-        w_set.sstorage = w_set.strategy.get_storage_from_list(iterable_w)
-        return
-
-    # check for strings
-    for w_item in iterable_w:
-        if type(w_item) is not W_BytesObject:
-            break
-    else:
-        w_set.strategy = space.fromcache(BytesSetStrategy)
-        w_set.sstorage = w_set.strategy.get_storage_from_list(iterable_w)
-        return
-
-    # check for unicode
-    for w_item in iterable_w:
-        if type(w_item) is not W_UnicodeObject or not w_item.is_ascii():
-            break
-    else:
-        w_set.strategy = space.fromcache(AsciiSetStrategy)
-        w_set.sstorage = w_set.strategy.get_storage_from_list(iterable_w)
-        return
-
-    # check for compares by identity
-    for w_item in iterable_w:
-        if not space.type(w_item).compares_by_identity():
-            break
-    else:
-        w_set.strategy = space.fromcache(IdentitySetStrategy)
-        w_set.sstorage = w_set.strategy.get_storage_from_list(iterable_w)
-        return
-
-    w_set.strategy = space.fromcache(ObjectSetStrategy)
-    w_set.sstorage = w_set.strategy.get_storage_from_list(iterable_w)
-
-
-def get_printable_location(tp, strategy):
-    return "update_set: %s %s" % (tp.iterator_greenkey_printable(), strategy)
-
-update_set_driver = jit.JitDriver(name='update_set',
-                                  greens=['tp', 'strategy'],
-                                  reds='auto',
-                                  get_printable_location=get_printable_location)
 
 def _update_from_iterable(space, w_set, w_iterable):
     tp = space.iterator_greenkey(w_iterable)
@@ -1714,7 +1637,6 @@ def _update_from_iterable(space, w_set, w_iterable):
             if not e.match(space, space.w_StopIteration):
                 raise
             return
-        update_set_driver.jit_merge_point(tp=tp, strategy=w_set.strategy)
         w_set.add(w_item)
 
 

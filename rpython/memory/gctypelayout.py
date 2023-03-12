@@ -300,7 +300,7 @@ def encode_type_shape(builder, info, TYPE, index):
 
 class TypeLayoutBuilder(object):
     can_add_new_types = True
-    can_encode_type_shape = True    # set to False initially by the JIT
+    can_encode_type_shape = True
 
     size_of_fixed_type_info = llmemory.sizeof(GCData.TYPE_INFO)
 
@@ -396,11 +396,6 @@ class TypeLayoutBuilder(object):
             for info, TYPE, index in self._pending_type_shapes:
                 encode_type_shape(self, info, TYPE, index)
             del self._pending_type_shapes
-
-    def delay_encoding(self):
-        # used by the JIT
-        self._pending_type_shapes = []
-        self.can_encode_type_shape = False
 
     def offsets2table(self, offsets, TYPE):
         if len(offsets) == 0:

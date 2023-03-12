@@ -7,9 +7,6 @@ over `2.0`_ and `2.0.1`_.  You can download it here:
 
     https://pypy.org/download.html
 
-It fixes a crash in the JIT when calling external C functions (with
-ctypes/cffi) in a multithreaded context.
-
 .. _2.0: release-2.0.0.html
 .. _2.0.1: release-2.0.1.html
 
@@ -17,8 +14,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or
 Windows 32.  Support for ARM is progressing but not bug-free yet.

@@ -57,13 +57,12 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: bug fixes,
-`PyPy`_ and `RPython`_ documentation improvements, or general `help`_ with making
-RPython's JIT even better. Since the previous release, we have accepted
-contributions from five new contributors, thanks for pitching in, and welcome
-to the project!
+`PyPy`_ and `RPython`_ documentation improvements. Since the previous release,
+we have accepted contributions from five new contributors, thanks for pitching
+in, and welcome to the project!
 
 If you are a python library maintainer and use C-extensions, please consider
-making a HPy_ / CFFI_ / cppyy_ version of your library that would be performant
+making a HPy_ / CFFI_ version of your library that would be performant
 on PyPy.
 In any case, both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
@@ -72,7 +71,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _CFFI: https://cffi.readthedocs.io
-.. _cppyy: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _blog: https://pypy.org/blog
@@ -86,7 +84,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.8 and
 3.9. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -147,41 +145,25 @@ Speedups and enhancements shared across versions
 - Speed up ``dict.copy`` and ``emptydict.update(dict)``
 - Optimize list sorting to allocate memory a bit less aggressively. Seems
   to give ~10% on sorting non-tiny lists of ``ints``
-- Speed up the Python interpreter (jitted code is unchanged) by auto-generating
-  rpython-level shortcut methods for many special methods. This speeds up the
-  interpreter greatly because we don't need to lookup the special method and
-  don't need to go through the general call machinery at all. The effect is
-  comparable to CPython's type slots, but all auto-generated from ``TypeDefs``.
+- Speed up the Python interpreter by auto-generating rpython-level shortcut
+  functionss for many special functionss. This speeds up the interpreter
+  greatly because we don't need to lookup the special method and don't need
+  to go through the general call machinery at all. The effect is comparable
+  to CPython's type slots, but all auto-generated from ``TypeDefs``.
   It only works for built-in types at this point.
 - Use structs to unpack ``longlong`` instead of casting to lltype Arrays
 - Speed up the interpreter by caching global and builtin lookups on the code
   object
-- Fix caching of reference constants in JitCodes
 - Make the exception transformer not introduce calls to ``ll_issubclass``,
   instead emit the correct ``int_between`` for the type check directly
-- Instead of encoding the liveness of local registers in each jitcode as a dict
-  mapping pc to a (shared) instance of a class with three strings, do the
-  following: add a live instruction in the jitcode that that has as its argument
-  an offset into a string that compactly encodes liveness.
 - Fast path for ``string[0]`` to convert a ``str`` to a ``char`` for when
   ``string`` is already a char
 - Clean up a few single-use specialized dictionaries in RPython, this reduces
   the binary size somewhat.
 - Make ``list.count`` use the same fast paths as ``list.index`` (issue 3744_)
-- Improve ``int.bit_length`` for the jit: expose unwrapping and rewrapping to
-  tracing
 - Add a fast path for ``getrandbits(n)`` where ``n <= 31`` (issue 3733_)
 - Remove useless ``cvt = converters.get(type(param))`` from sqlite3: it was
   wrong and slowed things down
-- Add two new hints to ``rlib.jit``:
-
-  - ``record_exact_value(var, const)`` tells the JIT that the box ``var`` must
-    contain the value ``const``.
-
-  - ``record_known_result(result, func, *args)`` is a way to encode knowledge
-    about the result of elidable functions. The hint means that the JIT can
-    assume that if ``func(*args)`` will be called later, the outcome is
-    ``result``
 
   Typical usecases of this are: you can express this way that functions are
   inverses of each other, or that a function is idempotent. Both hints need to
@@ -191,7 +173,6 @@ Speedups and enhancements shared across versions
   ``structseq``
 - Make PyPy available for Apple M1 (arm64)
 
-  - Support JIT backend code generation
   - Handle the different FFI calling conventions
   - Widen support for packaging the build
   - Distinguish between the two macos builds
@@ -202,16 +183,10 @@ Speedups and enhancements shared across versions
 - Make it possible to ``@specialize.memo`` on ``rgc`` custom trace hooks
 - Use a more subtle condition to check whether aliasing is present when doing
   malloc removal in the static RPython optimizers.
-- Micro-optimize ``TraceIterator.next()`` to not allocate quite so many
-  intermediate lists in the JIT code that walks over an encoded trace.
-- Only put ``OptimizationResults`` into the list for callbacks if the callback
-  would actually *do* anything in the JIT optimizer.
 - Small optimizations to improve tracing speed:
 
   - Have special versions of various record functions that take a fixed number of
     arguments. This makes it possible to not allocate arguments lists.
-  - Don't lookup constant pointers that come from the jitcode in a dictionary
-    again and again in opencoder.
 
 - Make sure that ``W_Root.getclass`` does not exist in two versions, one for
   ``access_directly=True``, one regular
@@ -225,38 +200,24 @@ Speedups and enhancements shared across versions
 - Clean up the number of ``w_obj.getclass`` variants in mapdict
 - Use ``append_char`` where appropriate in unicode string builder
 - Use a fast-path for ``str.encode("utf-8")`` (issue 3756_)
-- Optimize ``float_abs(float_abs(x))`` to ``float_abs(x)`` in the JIT
 - Fix NFA generation in metaparser for grammar rules of form ``foo: [a* b]`` in
   the parser generator that is used for PyPy2.7 and PyPy3.8.
 - Introduce ``space.newtuple2`` to save the list allocation when a specialized
   two-tuple is used anyway and use it in ``.next`` of ``enumerate`` and ``zip``.
-- Speed up using ``warnings.warn`` by making it more JIT friendly
 - Add an option to the collect analyzer when defining a custom gc trace function
-- Add a runtime JIT hook to disable tracing
-- Add ``PYPY_DISABLE_JIT`` as an environment variable to disable the JIT (issue 3148_)
 - Fast-path finding whitespace in an ascii string inside ``unicode.split()``
 - Resync ``_vmprof`` with ``vmprof-python``
 - Replace the trie of names in unicodedata with a directed acyclic word graph
   to make it more compact. Also various other improvements to make unicodedata
   more compact. This change shrinks the PyPy2.7 binary by 2.1MiB, PyPy3.x by
   2.6MiB.
-- Review all the use cases of ``jit.loop_unrolling_heuristic``, to unroll less
-  aggressively (issue 3781_)
-- Inline ``_fill_original_boxes`` in the JIT to avoid creating variants in C
-- Optimize ``inline_call_*`` in the JIT by filling in the new frame directly
-  instead of creating an intermediate list of boxes
-- Make sure the ``LivenessIterator`` gets inlined and optimized away in the JIT
 - Speed up ``append_slice`` on unicode builders
-- Make ``list.__repr__`` use a jit driver, and have implementations for a few
-  of the strategies
 - Expose a new function ``__pypy__._raise_in_thread`` that will raise an
   asynchronous exception in another thread the next time that thread runs. This
   also makes it possible to implement ``PyThreadState_SetAsyncExc`` (issue 3757_)
 - Make locals use an instance dict to speed them up
-- Tiny warmup improvement: don't create the ``recentops`` in the JIT optimizer
   when looking for an existing operation, only when adding one
 - Avoid using the pureop cache for ``int_invert`` and ``float_neg``
-- Speed up global dict reads by using the heapcache in the JIT frontend
 - Constant-fold ``ovf`` operations in rpython
 - Consider equal lltype ptrs to be equal constants in rpython constant-folding
 
@@ -304,9 +265,7 @@ Python 3.8+ speedups and enhancements
 - Speed up ``fstrings`` by making the parentstack a resizable list of chars
 - Better error message when the ``__iter__`` of a class is set to ``None`` (issue 3716_)
 - Refactor the ``package.py`` script for better compatibility with conda-forge
-- Add a jit driver for ``filter`` (issue 3745_)
 - Improve opcode handling: ``jump_absolute``, ``int_xor``, and others
-- Don't make a JIT loop for one-arg ``print()``
 - Make float hashing elidable and avoid creating bridges
 - Mimic CPython's ``max_int_threshold`` to limit the length of a string that
   that can be parsed into an int

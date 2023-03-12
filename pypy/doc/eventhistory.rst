@@ -126,9 +126,6 @@ PyPy Sprint in Palma De Mallorca 23rd - 29th January 2006
 ---------------------------------------------------------
 
 The Mallorca sprint that took place in Palma de Mallorca is over.
-Topics included progressing with the JIT work started in Göteborg
-and Paris, GC and optimization work, stackless, and
-improving our way to write glue code for C libraries.
 
 Read more in `the announcement`_, there is a `sprint report`_
 for the first three days and `one for the rest of the sprint`_.
@@ -151,12 +148,11 @@ preliminary. *(01/06/2006)*
 PyPy Sprint in Göteborg 7th - 11th December 2005
 ------------------------------------------------
 
-The Gothenburg sprint is over. It was a very productive sprint: work has
-been started on a JIT prototype, we added support for __del__ in PyPy,
-the socket module had some progress, PyPy got faster and work was started to
-expose the internals of our parser and bytecode compiler to the user.
-Michael and Carl have written a `report about the first half`_ and `one about
-the second half`_ of the sprint.  *(12/18/2005)*
+The Gothenburg sprint is over. It was a very productive sprint: we added
+support for __del__ in PyPy, the socket module had some progress, PyPy got
+faster and work was started to expose the internals of our parser and bytecode
+compiler to the user. Michael and Carl have written a `report about the first half`_
+and `one about the second half`_ of the sprint.  *(12/18/2005)*
 
 .. _report about the first half: https://mail.python.org/pipermail/pypy-dev/2005-December/002656.html
 .. _one about the second half: https://mail.python.org/pipermail/pypy-dev/2005-December/002660.html
@@ -183,15 +179,13 @@ The sprint attracted 18 participants and took place in
 `Logilab offices in Paris`_. We were happy to have five new
 developers to the PyPy Community! The focus was on implementing
 `continuation-passing`_ style (stackless), making the translation process
-work for target languages with more powerful object systems and some tiny
-steps into the JIT_ direction. Michael and Carl have written
-a `report about day one`_ and `one about day two and three`_.
-Together with Armin they wrote one about `the rest of the sprint`_ on the
-way back.
+work for target languages with more powerful object systems. Michael and
+Carl have written a `report about day one`_ and `one about day two and
+three`_. Together with Armin they wrote one about `the rest of the sprint`_
+on the way back.
 *(10/18/2005)*
 
 .. _Logilab offices in Paris: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/sprintinfo/paris-2005-sprint.txt 
-.. _JIT: https://en.wikipedia.org/wiki/Just-in-time_compilation
 .. _continuation-passing: https://en.wikipedia.org/wiki/Continuation_passing_style
 .. _report about day one: https://mail.python.org/pipermail/pypy-dev/2005-October/002510.html
 .. _one about day two and three: https://mail.python.org/pipermail/pypy-dev/2005-October/002512.html

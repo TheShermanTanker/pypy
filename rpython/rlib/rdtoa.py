@@ -3,7 +3,7 @@ from rpython.rlib import rfloat
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 from rpython.translator import cdir
 from rpython.rtyper.lltypesystem import lltype, rffi
-from rpython.rlib import jit, objectmodel
+from rpython.rlib import objectmodel
 from rpython.rlib.rstring import StringBuilder
 import py, sys
 
@@ -94,7 +94,6 @@ def format_nonfinite(digits, sign, flags, special_strings):
         # shouldn't get here
         raise ValueError
 
-@jit.dont_look_inside
 def format_number(digits, buflen, sign, decpt, code, precision, flags, upper):
     # We got digits back, format them.  We may need to pad 'digits'
     # either on the left or right (or both) with extra zeros, so in
@@ -236,7 +235,6 @@ def format_number(digits, buflen, sign, decpt, code, precision, flags, upper):
 
     return s
 
-@jit.elidable
 def dtoa(value, code='r', mode=0, precision=0, flags=0,
          special_strings=lower_special_strings, upper=False):
     if precision > _INT_LIMIT:

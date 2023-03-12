@@ -5,7 +5,6 @@ import sys
 import traceback
 from errno import EINTR
 
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import we_are_translated, specialize
 from rpython.rlib.objectmodel import not_rpython
 from rpython.rlib import rstack, rstackovf
@@ -165,7 +164,6 @@ class OperationError(Exception):
         if AUTO_DEBUG:
             debug.fire(self)
 
-    @jit.unroll_safe
     def normalize_exception(self, space):
         """Normalize the OperationError.  In other words, fix w_type and/or
         w_value to make sure that the __class__ of w_value is exactly w_type.
@@ -291,7 +289,7 @@ class OperationError(Exception):
 
     def get_traceback(self):
         """Calling this marks the PyTraceback as escaped, i.e. it becomes
-        accessible and inspectable by app-level Python code.  For the JIT.
+        accessible and inspectable by app-level Python code.
         Note that this has no effect if there are already several traceback
         frames recorded, because in this case they are already marked as
         escaping by executioncontext.leave() being called with
@@ -540,15 +538,12 @@ def new_exception_class(space, name, w_bases=None, w_dict=None):
         space.setattr(w_exc, space.newtext("__module__"), space.newtext(module))
     return w_exc
 
-@jit.dont_look_inside
 def get_converted_unexpected_exception(space, e):
     """This is used in two places when we get an non-OperationError
     RPython exception: from gateway.py when calling an interp-level
     function raises; and from pyopcode.py when we're exiting the
     interpretation of the frame with an exception.  Note that it
-    *cannot* be used in pyopcode.py: that place gets a
-    ContinueRunningNormally exception from the JIT, which must not end
-    up here!
+    *cannot* be used in pyopcode.py
     """
     try:
         if not we_are_translated():

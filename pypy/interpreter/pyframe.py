@@ -2,10 +2,8 @@
 """
 
 import sys
-from rpython.rlib import jit
 from rpython.rlib.debug import make_sure_not_resized, check_nonneg
 from rpython.rlib.debug import ll_assert_not_none
-from rpython.rlib.jit import hint
 from rpython.rlib.objectmodel import instantiate, specialize, we_are_translated
 from rpython.rlib.objectmodel import not_rpython
 from rpython.rlib.rarithmetic import intmask, r_uint
@@ -68,7 +66,7 @@ class PyFrame(W_Root):
     frame_finished_execution = False
     last_instr               = -1
     last_exception           = None
-    f_backref                = jit.vref_None
+    f_backref                = None
     
     escaped                  = False  # see mark_as_escaped()
     debugdata                = None
@@ -85,14 +83,10 @@ class PyFrame(W_Root):
 
     # there is also self.space which is removed by the annotator
 
-    # additionally JIT uses vable_token field that is representing
-    # frame current virtualizable state as seen by the JIT
-
     def __init__(self, space, code, w_globals, outer_func):
         if not we_are_translated():
             assert type(self) == space.FrameClass, (
                 "use space.FrameClass(), not directly PyFrame()")
-        self = hint(self, access_directly=True, fresh_virtualizable=True)
         assert isinstance(code, pycode.PyCode)
         self.space = space
         self.pycode = code
@@ -126,7 +120,7 @@ class PyFrame(W_Root):
         debugdata = self.getdebug()
         if debugdata is not None:
             return debugdata.w_globals
-        return jit.promote(self.pycode).w_globals
+        return self.pycode.w_globals
 
     def get_w_f_trace(self):
         d = self.getdebug()
@@ -203,7 +197,6 @@ class PyFrame(W_Root):
         else:
             return self.space.builtin
 
-    @jit.unroll_safe
     def initialize_frame_scopes(self, outer_func, code):
         # regular functions always have CO_OPTIMIZED and CO_NEWLOCALS.
         # class bodies only have CO_NEWLOCALS.
@@ -290,10 +283,7 @@ class PyFrame(W_Root):
                 raise self._convert_unexpected_exception(e)
             finally:
                 executioncontext.return_trace(self, w_exitvalue)
-            # it used to say self.last_exception = None
-            # this is now done by the code in pypyjit module
-            # since we don't want to invalidate the virtualizable
-            # for no good reason
+            self.last_exception = None
             got_exception = False
         finally:
             executioncontext.leave(self, w_exitvalue, got_exception)
@@ -340,7 +330,6 @@ class PyFrame(W_Root):
     # we need two popvalues that return different data types:
     # one in case we want list another in case of tuple
     def _new_popvalues():
-        @jit.unroll_safe
         def popvalues(self, n):
             values_w = [None] * n
             while True:
@@ -354,7 +343,6 @@ class PyFrame(W_Root):
     popvalues_mutable = _new_popvalues()
     del _new_popvalues
 
-    @jit.unroll_safe
     def peekvalues(self, n):
         values_w = [None] * n
         base = self.valuestackdepth - n
@@ -367,9 +355,7 @@ class PyFrame(W_Root):
             values_w[n] = self.locals_cells_stack_w[base+n]
         return values_w
 
-    @jit.unroll_safe
     def dropvalues(self, n):
-        n = hint(n, promote=True)
         finaldepth = self.valuestackdepth - n
         self.assert_stack_index(finaldepth)
         assert finaldepth >= 0
@@ -380,7 +366,6 @@ class PyFrame(W_Root):
             self.locals_cells_stack_w[finaldepth+n] = None
         self.valuestackdepth = finaldepth
 
-    @jit.unroll_safe
     def pushrevvalues(self, n, values_w): # n should be len(values_w)
         make_sure_not_resized(values_w)
         while True:
@@ -389,7 +374,6 @@ class PyFrame(W_Root):
                 break
             self.pushvalue(values_w[n])
 
-    @jit.unroll_safe
     def dupvalues(self, n):
         delta = n-1
         while True:
@@ -405,23 +389,19 @@ class PyFrame(W_Root):
         return ll_assert_not_none(self.peekvalue_maybe_none(index_from_top))
 
     def peekvalue_maybe_none(self, index_from_top=0):
-        index_from_top = hint(index_from_top, promote=True)
         index = self.valuestackdepth + ~index_from_top
         self.assert_stack_index(index)
         assert index >= 0
         return self.locals_cells_stack_w[index]
 
     def settopvalue(self, w_object, index_from_top=0):
-        index_from_top = hint(index_from_top, promote=True)
         index = self.valuestackdepth + ~index_from_top
         self.assert_stack_index(index)
         assert index >= 0
         self.locals_cells_stack_w[index] = ll_assert_not_none(w_object)
 
-    @jit.unroll_safe
     def dropvaluesuntil(self, finaldepth):
         depth = self.valuestackdepth - 1
-        finaldepth = hint(finaldepth, promote=True)
         assert finaldepth >= 0
         while depth >= finaldepth:
             self.locals_cells_stack_w[depth] = None
@@ -437,7 +417,6 @@ class PyFrame(W_Root):
                 self.space, arguments, keywords, keywords_w, w_star,
                 w_starstar, methodcall=methodcall)
 
-    @jit.dont_look_inside
     def descr__reduce__(self, space):
         from pypy.interpreter.mixedmodule import MixedModule
         w_mod    = space.getbuiltinmodule('_pickle_support')
@@ -447,7 +426,6 @@ class PyFrame(W_Root):
         nt = space.newtuple
         return nt([new_inst, nt([]), w_tup_state])
 
-    @jit.dont_look_inside
     def _reduce_state(self, space):
         from pypy.module._pickle_support import maker # helper fns
         nt = space.newtuple
@@ -470,7 +448,7 @@ class PyFrame(W_Root):
             w_tb = self.last_exception.get_w_traceback(space)
 
         d = self.getorcreatedebug()
-        w_backref = self.f_backref()
+        w_backref = self.f_backref
         if w_backref is None:
             w_backref = space.w_None
         tup_state = [
@@ -497,7 +475,6 @@ class PyFrame(W_Root):
             ]
         return nt(tup_state)
 
-    @jit.dont_look_inside
     def descr__setstate__(self, space, w_args):
         from pypy.module._pickle_support import maker # helper fns
         from pypy.interpreter.pycode import PyCode
@@ -525,7 +502,7 @@ class PyFrame(W_Root):
                              forcename="fake")
         PyFrame.__init__(self, space, pycode, w_globals, outer_func)
         f_back = space.interp_w(PyFrame, w_f_back, can_be_None=True)
-        new_frame.f_backref = jit.non_virtual_ref(f_back)
+        new_frame.f_backref = f_back
 
         if space.config.objspace.honor__builtins__:
             new_frame.builtin = space.interp_w(Module, w_builtin)
@@ -565,9 +542,8 @@ class PyFrame(W_Root):
         return self.pycode.hidden_applevel
 
     def getcode(self):
-        return hint(self.pycode, promote=True)
+        return self.pycode
 
-    @jit.look_inside_iff(lambda self, scope_w: jit.isvirtual(scope_w))
     def setfastscope(self, scope_w):
         """Initialize the fast locals from a list of values,
         where the order is according to self.pycode.signature()."""
@@ -594,7 +570,6 @@ class PyFrame(W_Root):
         self.getorcreatedebug().w_locals = w_locals
         self.locals2fast()
 
-    @jit.unroll_safe
     def fast2locals(self):
         # Copy values from the fastlocals to self.w_locals
         d = self.getorcreatedebug()
@@ -636,7 +611,6 @@ class PyFrame(W_Root):
             d.w_locals = w_locals
 
 
-    @jit.unroll_safe
     def locals2fast(self):
         # Copy values from self.w_locals to the fastlocals
         w_locals = self.getorcreatedebug().w_locals
@@ -671,7 +645,6 @@ class PyFrame(W_Root):
             if w_value is not None:
                 cell.set(w_value)
 
-    @jit.unroll_safe
     def init_cells(self):
         """
         Initialize cellvars from self.locals_cells_stack_w.
@@ -890,27 +863,27 @@ class PyFrame(W_Root):
 
     def fget_f_exc_type(self, space):
         if self.last_exception is not None:
-            f = self.f_backref()
+            f = self.f_backref
             while f is not None and f.last_exception is None:
-                f = f.f_backref()
+                f = f.f_backref
             if f is not None:
                 return f.last_exception.w_type
         return space.w_None
 
     def fget_f_exc_value(self, space):
         if self.last_exception is not None:
-            f = self.f_backref()
+            f = self.f_backref
             while f is not None and f.last_exception is None:
-                f = f.f_backref()
+                f = f.f_backref
             if f is not None:
                 return f.last_exception.get_w_value(space)
         return space.w_None
 
     def fget_f_exc_traceback(self, space):
         if self.last_exception is not None:
-            f = self.f_backref()
+            f = self.f_backref
             while f is not None and f.last_exception is None:
-                f = f.f_backref()
+                f = f.f_backref
             if f is not None:
                 return f.last_exception.get_w_traceback(space)
         return space.w_None
@@ -920,7 +893,6 @@ class PyFrame(W_Root):
             return space.newbool(self.builtin is not space.builtin)
         return space.w_False
 
-    @jit.unroll_safe
     @specialize.arg(2)
     def _exc_info_unroll(self, space, for_hidden=False):
         """Return the most recent OperationError being handled in the
@@ -934,7 +906,7 @@ class PyFrame(W_Root):
                     break
                 if for_hidden or not frame.hide():
                     return last
-            frame = frame.f_backref()
+            frame = frame.f_backref
         return None
 
     def _convert_unexpected_exception(self, e):

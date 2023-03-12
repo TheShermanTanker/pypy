@@ -46,8 +46,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7. It's fast (`pypy 2.3 and cpython 2.7.x`_ performance comparison;
-note that cpython's speed has not changed since 2.7.2)
-due to its integrated tracing JIT compiler.
+note that cpython's speed has not changed since 2.7.2).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64, Windows,
 and OpenBSD,
@@ -70,13 +69,9 @@ Many issues were cleaned up after being reported by users to https://bugs.pypy.o
 performance slowdowns as bugs. Here is a summary of the user-facing changes;
 for more information see `whats-new`_:
 
-* The ARM port no longer crashes on unaligned memory access to floats and doubles,
-  and singlefloats are supported in the JIT.
+* The ARM port no longer crashes on unaligned memory access to floats and doubles.
 
 * Generators are faster since they now skip unnecessary cleanup
-
-* A first time contributor simplified JIT traces by adding integer bound
-  propagation in indexing and logical operations.
 
 * Optimize consecutive dictionary lookups of the same key in a chain
 
@@ -137,11 +132,6 @@ or directly:
 
 * A cffi-based ``numpy.random`` module is available as a branch;
   it will be merged soon after this release.
-
-* Enhancements to the PyPy JIT were made to support virtualizing the raw_store/raw_load 
-  memory operations used in NumPy arrays. Further work remains here in virtualizing the 
-  alloc_raw_storage when possible. This will allow scalars to have storages but still be 
-  virtualized when possible in loops.
 
 Cheers
 

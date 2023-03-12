@@ -51,10 +51,7 @@ class W_DlOpenLibObject(W_LibObject):
         self.may_unregister_rpython_finalizer(self.ffi.space)
 
         # Clear the dict to force further accesses to do cdlopen_fetch()
-        # again, and fail because the library was closed.  Note that the
-        # JIT may have elided some accesses, and so has addresses as
-        # constants.  We could work around it with a quasi-immutable flag
-        # but unsure it's worth it.
+        # again, and fail because the library was closed.  
         self.dict_w.clear()
 
         if dlclose(libhandle) < 0:

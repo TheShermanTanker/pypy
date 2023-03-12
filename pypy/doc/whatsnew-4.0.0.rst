@@ -17,11 +17,6 @@ A major refactoring of the ``ResOperations`` that kills Box. Also rewrote
 unrolling to enable future enhancements.  Should improve warmup time
 by 20% or so.
 
-.. branch: optimize-cond-call
-
-Optimize common sequences of operations like
-``int_lt/cond_call`` in the JIT backends
-
 .. branch: missing_openssl_include
 
 Fix for missing headers in OpenBSD, already applied in downstream ports
@@ -35,10 +30,6 @@ before returning. This number of steps depends on the size of the
 allocated object. It is controlled by tracking the general progress
 of these major collection steps and the size of old objects that
 keep adding up between them.
-
-.. branch: remember-tracing-counts
-
-Reenable jithooks
 
 .. branch: detect_egd2
 
@@ -93,10 +84,6 @@ failures in linalg CFFI functions
 .. branch: vecopt-merge
 
 A new optimization pass to use emit vectorized loops
-
-.. branch: ppc-updated-backend
-
-The PowerPC JIT backend is merged.
 
 .. branch: osx-libffi
 

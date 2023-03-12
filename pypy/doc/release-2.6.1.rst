@@ -18,8 +18,7 @@ project, and our volunteers and contributors.
 
 We would also like to encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_ with making
-RPython's JIT even better. 
+improvements, or tweaking popular `modules`_ to run on pypy. 
 
 .. _`PyPy`: https://doc.pypy.org 
 .. _`RPython`: https://rpython.readthedocs.org
@@ -30,8 +29,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison).
 
 This release supports **x86** machines on most common operating systems
 (Linux 32/64, Mac OS X 64, Windows 32, OpenBSD_, freebsd_),

@@ -1,6 +1,6 @@
 import math
 
-from rpython.rlib import jit, rcomplex
+from rpython.rlib import rcomplex
 from rpython.rlib.rarithmetic import intmask, r_ulonglong
 from rpython.rlib.rbigint import rbigint
 from rpython.rlib.rfloat import (
@@ -241,8 +241,6 @@ class W_ComplexObject(W_Root):
 
     def pow_small_int(self, n):
         if n >= 0:
-            if jit.isconstant(n) and n == 2:
-                return self.mul(self)
             return self.pow_positive_int(n)
         else:
             return w_one.div(self.pow_positive_int(-n))

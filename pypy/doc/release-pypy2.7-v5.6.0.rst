@@ -38,8 +38,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _CFFI: https://cffi.readthedocs.io/en/latest/whatsnew.html
 .. _grant: https://morepypy.blogspot.com/2016/08/pypy-gets-funding-from-mozilla-for.html
@@ -53,8 +52,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -135,11 +133,6 @@ Other Highlights (since 5.4 released Aug 31, 2016)
   * Improve method calls on oldstyle classes
   * Clean and refactor code for testing cpyext to allow sharing with py3.5
   * Refactor a building the map of reflected ops in ``_numpypy``
-  * Improve merging of virtual states in the JIT in order to avoid jumping to the
-    preamble
-  * In JIT residual calls, if the called function starts with a fast-path like
-    ``if x.foo != 0: return x.foo``, then inline the check before doing the
-    ``CALL``.
   * Ensure ``make_inputargs`` fails properly when given arguments with type 
     information
   * Makes ``optimiseopt`` iterative instead of recursive so it can be reasoned

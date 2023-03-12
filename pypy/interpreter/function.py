@@ -11,19 +11,12 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.eval import Code
 from pypy.interpreter.argument import Arguments
-from rpython.rlib import jit
 
 from rpython.rlib.rarithmetic import LONG_BIT
 from rpython.rlib.rbigint import rbigint
 
 
 funccallunrolling = unrolling_iterable(range(4))
-
-
-@jit.elidable_promote()
-def _get_immutable_code(func):
-    assert not func.can_change_code
-    return func.code
 
 class Function(W_Root):
     """A function is a code object captured with some environment:
@@ -70,17 +63,13 @@ class Function(W_Root):
         return w_res
 
     def getcode(self):
-        if jit.we_are_jitted():
-            if not self.can_change_code:
-                return _get_immutable_code(self)
-            return jit.promote(self.code)
         return self.code
 
     def funccall(self, *args_w): # speed hack
         from pypy.interpreter import gateway
         from pypy.interpreter.pycode import PyCode
 
-        code = self.getcode() # hook for the jit
+        code = self.getcode()
         nargs = len(args_w)
         fast_natural_arity = code.fast_natural_arity
         if nargs == fast_natural_arity:
@@ -122,12 +111,7 @@ class Function(W_Root):
         from pypy.interpreter import gateway
         from pypy.interpreter.pycode import PyCode
 
-        code = self.getcode() # hook for the jit
-        #
-        if (jit.we_are_jitted() and code is self.space._code_of_sys_exc_info
-                                and nargs == 0):
-            from pypy.module.sys.vm import exc_info_direct
-            return exc_info_direct(self.space, frame)
+        code = self.getcode()
         #
         fast_natural_arity = code.fast_natural_arity
         if nargs == fast_natural_arity:
@@ -168,7 +152,6 @@ class Function(W_Root):
         args = frame.make_arguments(nargs, methodcall=methodcall)
         return self.call_args(args)
 
-    @jit.unroll_safe
     def _flat_pycall(self, code, nargs, frame):
         # code is a PyCode
         new_frame = self.space.createframe(code, self.w_func_globals,
@@ -179,7 +162,6 @@ class Function(W_Root):
 
         return new_frame.run()
 
-    @jit.unroll_safe
     def _flat_pycall_defaults(self, code, nargs, frame, defs_to_load):
         # code is a PyCode
         new_frame = self.space.createframe(code, self.w_func_globals,

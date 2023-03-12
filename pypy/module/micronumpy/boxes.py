@@ -10,7 +10,6 @@ from pypy.objspace.std.unicodeobject import W_UnicodeObject
 from rpython.rlib.rarithmetic import LONG_BIT
 from rpython.rlib.rstring import StringBuilder
 from rpython.rlib.objectmodel import specialize
-from rpython.rlib import jit
 from rpython.rlib.rutf8 import codepoints_in_utf8
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.tool.sourcetools import func_with_new_name
@@ -539,7 +538,6 @@ class W_FlexibleBox(W_GenericBox):
     def get_dtype(self, space):
         return self.dtype
 
-    @jit.unroll_safe
     def raw_str(self):
         builder = StringBuilder()
         i = self.ofs

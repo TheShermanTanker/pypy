@@ -1,4 +1,4 @@
-from rpython.rlib import jit, rgc, rutf8
+from rpython.rlib import rgc, rutf8
 from rpython.rlib.buffer import RawBuffer
 from rpython.rlib.objectmodel import keepalive_until_here
 from rpython.rlib.rarithmetic import ovfcheck, widen, r_uint
@@ -60,8 +60,6 @@ def descr_itemsize(space, self):
 def descr_typecode(space, self):
     return space.newtext(self.typecode)
 
-arr_eq_driver = jit.JitDriver(name='array_eq_driver', greens=['comp_func'],
-                              reds='auto')
 EQ, NE, LT, LE, GT, GE = range(6)
 
 def compare_arrays(space, arr1, arr2, comp_op):
@@ -74,7 +72,6 @@ def compare_arrays(space, arr1, arr2, comp_op):
     lgt = min(arr1.len, arr2.len)
     i = 0
     while i < lgt:
-        arr_eq_driver.jit_merge_point(comp_func=comp_op)
         w_elem1 = arr1.w_getitem(space, i, integer_instead_of_char=True)
         w_elem2 = arr2.w_getitem(space, i, integer_instead_of_char=True)
         if comp_op == EQ:
@@ -121,10 +118,6 @@ def compare_arrays(space, arr1, arr2, comp_op):
         return space.w_True
     return space.w_False
 
-index_count_jd = jit.JitDriver(
-    greens = ['count', 'arrclass', 'tp_item'],
-    reds = 'auto', name = 'array.index_or_count')
-
 def index_count_array(arr, w_val, count=False):
     space = arr.space
     tp_item = space.type(w_val)
@@ -132,9 +125,6 @@ def index_count_array(arr, w_val, count=False):
     cnt = 0
     i = 0
     while i < arr.len:
-        index_count_jd.jit_merge_point(
-            tp_item=tp_item, count=count,
-            arrclass=arrclass)
         w_item = arr.w_getitem(space, i)
         if space.is_true(space.eq(w_item, w_val)):
             if count:
@@ -217,9 +207,6 @@ class W_ArrayBase(W_Root):
         w_iterator = self.space.iter(w_seq)
         tp = self.space.type(w_iterator)
         while True:
-            unpack_driver.jit_merge_point(selfclass=self.__class__,
-                                          tp=tp, self=self,
-                                          w_iterator=w_iterator)
             space = self.space
             try:
                 w_item = space.next(w_iterator)
@@ -888,11 +875,6 @@ class ArrayBuffer(RawBuffer):
 
     def get_raw_address(self):
         return self.w_array._charbuf_start()
-
-
-unpack_driver = jit.JitDriver(name='unpack_array',
-                              greens=['selfclass', 'tp'],
-                              reds=['self', 'w_iterator'])
 
 def make_array(mytype):
     W_ArrayBase = globals()['W_ArrayBase']

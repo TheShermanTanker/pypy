@@ -780,7 +780,6 @@ class W_TextIOWrapper(W_TextIOBase):
         return space.newutf8(text, lgt)
 
     def _readline(self, space, limit):
-        # This is a separate function so that readline_w() can be jitted.
         remnant = None
         remnant_ulen = -1
         builder = Utf8StringBuilder()
@@ -899,7 +898,6 @@ class W_TextIOWrapper(W_TextIOBase):
         return space.newint(textlen)
 
     def _writeflush(self, space):
-        # jit inlinable fast path
         if not self.pending_bytes:
             return
 

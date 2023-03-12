@@ -139,13 +139,6 @@ to go for tagging the release as 0.99.0, mainly because
 we have some efforts pending to integrate and complete 
 research and coding work: 
 
-* the JIT Compiler Generator is ready, but not fully integrated
-  with the PyPy interpreter.  As a result, the JIT does not give
-  actual speed improvements yet, so we chose to leave it out of the
-  0.99 release: the result doesn't meet yet the speed expectations
-  that we set for ourselves - and which some blogs and people 
-  have chosen as the main criterium for looking at PyPy.
-
 * the extension enabling runtime changes of the Python grammar is not
   yet integrated. This will be used to provide Aspect-Oriented
   Programming extensions and Design by Contract facilities in PyPy. 

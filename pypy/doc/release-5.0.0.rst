@@ -3,11 +3,7 @@ PyPy 5.0
 ========
 
 We have released PyPy 5.0, about three months after PyPy 4.0.1.
-We encourage all users of PyPy to update to this version. Apart from the usual
-bug fixes, there is an ongoing effort to improve the warmup time and memory
-usage of JIT-related metadata. The exact effects depend vastly on the program
-you're running and can range from insignificant to warmup being up to 30%
-faster and memory dropping by about 30%.
+We encourage all users of PyPy to update to this version.
 
 We also merged a major upgrade to our C-API layer (cpyext), simplifying the
 interaction between c-level objects and PyPy interpreter level objects. As a
@@ -28,8 +24,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 CFFI
 ====
@@ -51,8 +46,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other
 `dynamic languages`_ to see what RPython can do for them.
@@ -97,8 +91,7 @@ Other Highlights (since 4.0.1 released in November 2015)
 
 * Bug Fixes
 
-  * Backport always using os.urandom for uuid4 from cpython and fix the JIT as well
-    (issue #2202)
+  * Backport always using os.urandom for uuid4 from cpython (issue #2202)
 
   * More completely support datetime, optimize timedelta creation
 
@@ -153,11 +146,6 @@ Other Highlights (since 4.0.1 released in November 2015)
 
   * Optimize global lookups
 
-  * Improve the memory signature of numbering instances in the JIT. This should
-    massively decrease the amount of memory consumed by the JIT, which is
-    significant for most programs. Also compress the numberings using variable-
-    size encoding
-
   * Optimize string concatenation
 
   * Use INT_LSHIFT instead of INT_MUL when possible
@@ -186,8 +174,6 @@ Other Highlights (since 4.0.1 released in November 2015)
 
   * Support list-resizing setslice operations in RPython
 
-  * Tweak the trace-too-long heuristic for multiple jit drivers
-
   * Refactor bookkeeping (such a cool word - three double letters) in the
     annotater
 
@@ -195,16 +181,13 @@ Other Highlights (since 4.0.1 released in November 2015)
 
   * Simplify backend loading instructions to only use four variants
 
-  * Simplify GIL handling in non-jitted code
+  * Simplify GIL handling
 
   * Refactor naming in optimizeopt
 
   * Change GraphAnalyzer to use a more precise way to recognize external
     functions and fix null pointer handling, generally clean up external
     function handling
-
-  * Remove pure variants of ``getfield_gc_*`` operations from the JIT by
-    determining purity while tracing
 
   * Refactor databasing
 

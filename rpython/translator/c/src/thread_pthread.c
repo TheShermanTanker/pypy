@@ -597,7 +597,6 @@ static inline int mutex2_lock_timeout(mutex2_t *mutex, double delay) {
 #define RPy_CompilerMemoryBarrier()    asm("":::"memory")
 #define HAVE_PTHREAD_ATFORK            1
 
-#include "src/asm.h"   /* for RPy_YieldProcessor() */
 #ifndef RPy_YieldProcessor
 #  define RPy_YieldProcessor()   /* nothing */
 #endif

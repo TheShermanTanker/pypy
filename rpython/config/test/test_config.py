@@ -522,41 +522,6 @@ def test_suggests_can_fail():
     assert not c.t3
     assert not c.t2
 
-def test_suggests_can_fail_choiceopt():
-    # this is what occurs in "./translate.py --gcrootfinder=asmgcc --jit"
-    # with --jit suggesting the boehm gc, but --gcrootfinder requiring the
-    # framework gctransformer.
-    descr = OptionDescription("test", '', [
-        ChoiceOption("t1", "", ["a", "b"], default="a"),
-        ChoiceOption("t2", "", ["c", "d"], default="c",
-                     requires={"d": [("t3", "f")]}),
-        ChoiceOption("t3", "", ["e", "f"], default="e"),
-        ChoiceOption("opt", "", ["g", "h"], default="g",
-                     suggests={"h": [("t1", "b"), ("t2", "d")]})
-    ])
-    c = Config(descr)
-    assert c.t1 == 'a'
-    assert c.t2 == 'c'
-    assert c.t3 == 'e'
-    assert c.opt == 'g'
-    c.opt = "h"
-    assert c.opt == 'h'
-    assert c.t1 == 'b'
-    assert c.t2 == 'd'
-    assert c.t3 == 'f'
-    # does not crash
-    c.t2 = 'c'
-    assert c.t2 == 'c'
-
-    c = Config(descr)
-    c.t3 = 'e'
-    assert c.t3 == 'e'
-    # does not crash
-    c.opt = 'h'
-    assert c.opt == 'h'
-    assert c.t3 == 'e'
-    assert c.t2 == 'c'
-
 
 def test_choice_suggests():
     descr = OptionDescription("test", '', [

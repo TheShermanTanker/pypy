@@ -4,7 +4,6 @@ import sys
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.module._rawffi.interp_rawffi import wrap_dlopenerror
 
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import specialize, we_are_translated
 from rpython.rlib.rarithmetic import r_uint, r_ulonglong
 from rpython.rlib.unroll import unrolling_iterable
@@ -67,7 +66,7 @@ def read_raw_ulong_data(target, size):
 
 @specialize.arg(0)
 def _read_raw_float_data_tp(TPP, target):
-    # in its own function: FLOAT may make the whole function jit-opaque
+    # in its own function
     return rffi.cast(lltype.Float, rffi.cast(TPP, target)[0])
 
 def read_raw_float_data(target, size):
@@ -98,7 +97,7 @@ def write_raw_signed_data(target, source, size):
 
 @specialize.arg(0, 1)
 def _write_raw_float_data_tp(TP, TPP, target, source):
-    # in its own function: FLOAT may make the whole function jit-opaque
+    # in its own function
     rffi.cast(TPP, target)[0] = rffi.cast(TP, source)
 
 def write_raw_float_data(target, source, size):
@@ -111,7 +110,6 @@ def write_raw_float_data(target, source, size):
 def write_raw_longdouble_data(target, source):
     rffi.cast(rffi.LONGDOUBLEP, target)[0] = source
 
-@jit.dont_look_inside    # lets get_nonmovingbuffer_ll_final_null be inlined
 def write_string_as_charp(target, string):
     from pypy.module._cffi_backend.ctypefunc import set_mustfree_flag
     buf, llobj, buf_flag = rffi.get_nonmovingbuffer_ll_final_null(string)
@@ -262,8 +260,6 @@ _is_nonnull_longdouble = rffi.llexternal(
     compilation_info=eci, _nowrapper=True, elidable_function=True,
     sandboxsafe=True)
 
-# split here for JIT backends that don't support floats/longlongs/etc.
-@jit.dont_look_inside
 def is_nonnull_longdouble(cdata):
     return _is_nonnull_longdouble(read_raw_longdouble_data(cdata))
 def is_nonnull_float(cdata, size):
@@ -302,20 +298,12 @@ def object_as_bool(space, w_ob):
 
 @specialize.arg(0)
 def _raw_memcopy_tp(TPP, source, dest):
-    # in its own function: LONGLONG may make the whole function jit-opaque
+    # in its own function
     rffi.cast(TPP, dest)[0] = rffi.cast(TPP, source)[0]
 
 def _raw_memcopy(source, dest, size):
-    if jit.isconstant(size):
-        # for the JIT: first handle the case where 'size' is known to be
-        # a constant equal to 1, 2, 4, 8
-        for TP, TPP in _prim_unsigned_types:
-            if size == rffi.sizeof(TP):
-                _raw_memcopy_tp(TPP, source, dest)
-                return
     _raw_memcopy_opaque(source, dest, size)
 
-@jit.dont_look_inside
 def _raw_memcopy_opaque(source, dest, size):
     # push push push at the llmemory interface (with hacks that are all
     # removed after translation)
@@ -327,7 +315,7 @@ def _raw_memcopy_opaque(source, dest, size):
 
 @specialize.arg(0, 1)
 def _raw_memclear_tp(TP, TPP, dest):
-    # in its own function: LONGLONG may make the whole function jit-opaque
+    # in its own function
     rffi.cast(TPP, dest)[0] = rffi.cast(TP, 0)
 
 def _raw_memclear(dest, size):

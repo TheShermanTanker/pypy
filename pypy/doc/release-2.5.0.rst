@@ -35,8 +35,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison).
 
 This release supports **x86** machines on most common operating systems
 (Linux 32/64, Mac OS X 64, Windows, and OpenBSD),
@@ -57,10 +56,9 @@ Highlights
   rpython and the python interpreter PyPy is now much clearer in the
   `PyPy documentation`_  and we now have seperate `RPython documentation`_.
 
-* We have improved warmup time as well as jitted code performance: more than 10%
-  compared to pypy-2.4.0, due to internal cleanup and gc nursery improvements.
-  We no longer zero-out memory allocated in the gc nursery by default, work that
-  was started during a GSoC.
+* We have improved warmup time: more than 10% compared to pypy-2.4.0, due to
+  internal cleanup and gc nursery improvements. We no longer zero-out memory
+  allocated in the gc nursery by default, work that was started during a GSoC.
 
 * Passing objects between C and PyPy has been improved. We are now able to pass
   raw pointers to C (without copying) using **pinning**. This improves I/O;
@@ -80,8 +78,7 @@ Highlights
 * Our nightly translations use --shared by default, including on OS/X and linux
 
 * We now more carefully handle errno (and GetLastError, WSAGetLastError) tying
-  the handlers as close as possible to the external function call, in non-jitted
-  as well as jitted code.
+  the handlers as close as possible to the external function call.
 
 * Issues reported with our previous release were resolved_ after reports from users on
   our issue tracker at https://bitbucket.org/pypy/pypy/issues or on IRC at

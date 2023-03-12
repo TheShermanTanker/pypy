@@ -296,7 +296,7 @@ def fetch_cur_frame(silent=False):
     if ec is None:
         frame = None
     else:
-        frame = ec.topframeref()
+        frame = ec.topframeref
     if frame is None and not silent:
         revdb.send_print("No stack.")
     return frame

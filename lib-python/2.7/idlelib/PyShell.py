@@ -585,7 +585,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
                 if what is not None:
                     print(repr(what), file=console)
             elif how == "EXCEPTION":
-                if self.tkconsole.getvar("<<toggle-jit-stack-viewer>>"):
+                if self.tkconsole.getvar("<<toggle-open-stack-viewer>>"):
                     self.remote_stack_viewer()
             elif how == "ERROR":
                 errmsg = "PyShell.ModifiedInterpreter: Subprocess ERROR:\n"
@@ -754,7 +754,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         self.tkconsole.resetoutput()
         self.checklinecache()
         InteractiveInterpreter.showtraceback(self)
-        if self.tkconsole.getvar("<<toggle-jit-stack-viewer>>"):
+        if self.tkconsole.getvar("<<toggle-open-stack-viewer>>"):
             self.tkconsole.open_stack_viewer()
 
     def checklinecache(self):
@@ -905,7 +905,7 @@ class PyShell(OutputWindow):
         text.bind("<<end-of-file>>", self.eof_callback)
         text.bind("<<open-stack-viewer>>", self.open_stack_viewer)
         text.bind("<<toggle-debugger>>", self.toggle_debugger)
-        text.bind("<<toggle-jit-stack-viewer>>", self.toggle_jit_stack_viewer)
+        text.bind("<<toggle-open-stack-viewer>>", self.toggle_open_stack_viewer)
         if use_subprocess:
             text.bind("<<view-restart>>", self.view_restart_mark)
             text.bind("<<restart-shell>>", self.restart_shell)
@@ -962,7 +962,7 @@ class PyShell(OutputWindow):
         db = self.interp.getdebugger()
         self.setvar("<<toggle-debugger>>", not not db)
 
-    def toggle_jit_stack_viewer(self, event=None):
+    def toggle_open_stack_viewer(self, event=None):
         pass # All we need is the variable
 
     def close_debugger(self):

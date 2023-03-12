@@ -31,8 +31,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 2.2 and cpython 2.7.2`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 2.2 and cpython 2.7.2`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64, Windows
 32, or ARM (ARMv6 or ARMv7, with VFPv3).
@@ -51,15 +50,7 @@ Highlights
   could take arbitrarily long if your process is using a whole lot of
   RAM.  Now the same work is done in steps.  This should make PyPy
   more responsive, e.g. in games.  There are still other pauses, from
-  the GC and the JIT, but they should be on the order of 5
-  milliseconds each.
-
-* The JIT counters for hot code were never reset, which meant that a
-  process running for long enough would eventually JIT-compile more
-  and more rarely executed code.  Not only is it useless to compile
-  such code, but as more compiled code means more memory used, this
-  gives the impression of a memory leak.  This has been tentatively
-  fixed by decreasing the counters from time to time.
+  the GC, but they should be on the order of 5 milliseconds each.
 
 * NumPy has been split: now PyPy only contains the core module, called
   ``_numpypy``.  The ``numpy`` module itself has been moved to
@@ -71,8 +62,6 @@ Highlights
   ``cd numpy``; ``pypy setup.py install``.
 
 * non-inlined calls have less overhead
-
-* Things that use ``sys.set_trace`` are now JITted (like coverage)
 
 * JSON decoding is now very fast (JSON encoding was already very fast)
 

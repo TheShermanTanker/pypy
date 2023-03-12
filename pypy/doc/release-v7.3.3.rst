@@ -43,8 +43,7 @@ increase in the number of drive-by contributors who are able to use gitlab +
 mercurial to create merge requests.
 
 The `CFFI`_ backend has been updated to version 1.14.3. We recommend using CFFI
-rather than c-extensions to interact with C, and using cppyy_ for performant
-wrapping of C++ code for Python.
+rather than c-extensions to interact with C.
 
 A new contributor took us up on the challenge to get `windows 64-bit`_ support.
 The work is proceeding on the ``win64`` branch, more help in coding or
@@ -65,13 +64,12 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 2 new contributors,
-thanks for pitching in.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy. Since the previous release, we have accepted contributions from 2 new
+contributors, thanks for pitching in.
 
 If you are a python library maintainer and use c-extensions, please consider
-making a cffi / cppyy version of your library that would be performant on PyPy.
+making a cffi version of your library that would be performant on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
 
@@ -79,7 +77,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _`blog post`: https://morepypy.blogspot.com/2020/02/pypy-and-cffi-have-moved-to-heptapod.html
@@ -98,7 +95,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.6, and
 3.7. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.

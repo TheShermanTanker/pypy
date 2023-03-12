@@ -1,4 +1,4 @@
-from rpython.rlib import rutf8, jit
+from rpython.rlib import rutf8
 
 from pypy.interpreter.gateway import unwrap_spec, WrappedDefault
 from pypy.interpreter.error import OperationError, oefmt
@@ -69,7 +69,6 @@ def get_category(space, w_message, w_category):
 
     return w_category
 
-@jit.look_inside_iff(lambda space, stacklevel: jit.isconstant(stacklevel))
 def _get_frame(space, stacklevel):
     ec = space.getexecutioncontext()
     frame = ec.gettopframe_nohidden()

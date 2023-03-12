@@ -1,7 +1,6 @@
 import sys
 
 from rpython.rlib.objectmodel import specialize
-from rpython.rlib import jit
 from rpython.rlib.debug import check_nonneg
 from pypy.interpreter import gateway
 from pypy.interpreter.baseobjspace import W_Root
@@ -51,11 +50,6 @@ class Block(object):
 
 class Lock(object):
     pass
-
-
-def get_printable_location(tp):
-    return "deque._find [%s]" % (tp.getname(tp.space), )
-find_jmp = jit.JitDriver(greens=['tp'], reds='auto', name='deque._find', get_printable_location=get_printable_location)
 
 # ------------------------------------------------------------
 
@@ -257,7 +251,6 @@ class W_Deque(W_Root):
         lock = self.getlock()
         tp = space.type(w_x)
         for i in range(self.len):
-            find_jmp.jit_merge_point(tp=tp)
             w_item = block.data[index]
             equal = space.eq_w(w_item, w_x)
             self.checklock(lock)

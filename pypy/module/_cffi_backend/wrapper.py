@@ -3,7 +3,6 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, interp_attrproperty
 from pypy.interpreter.typedef import GetSetProperty
 from pypy.interpreter.gateway import interp2app
-from rpython.rlib import jit
 
 from pypy.module._cffi_backend.cdataobj import W_CData
 from pypy.module._cffi_backend.cdataobj import W_CDataPtrToStructOrUnion
@@ -52,7 +51,7 @@ class W_FunctionWrapper(W_Root):
 
     def descr_call(self, args_w):
         space = self.space
-        rawfunctype = jit.promote(self.rawfunctype)
+        rawfunctype = self.rawfunctype
         ctype = rawfunctype.nostruct_ctype
         locs = rawfunctype.nostruct_locs
         nargs_expected = rawfunctype.nostruct_nargs
@@ -108,7 +107,6 @@ class W_FunctionWrapper(W_Root):
         return self
 
 
-@jit.unroll_safe
 def prepare_args(space, rawfunctype, args_w, start_index):
     # replaces struct/union arguments with ptr-to-struct/union arguments
     # as well as complex numbers

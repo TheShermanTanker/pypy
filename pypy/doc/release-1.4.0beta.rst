@@ -17,14 +17,10 @@ output at the end of your program run.
 
 Highlights:
 
-* x86_64 JIT backend
-
 * since PyPy 1.3 we have an experimental support for CPython C extensions.
   Those have to be recompiled using `pypy setup.py build`. Extensions usually
   have to be tweaked for e.g. refcounting bugs that don't manifest on CPython.
   There is a `list of patches`_ available for some extensions.
-
-* rewritten fast and jitted regular expressions
 
 * improvements all across the board (for example faster map calls)
 

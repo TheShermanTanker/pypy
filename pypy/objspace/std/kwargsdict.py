@@ -3,7 +3,7 @@
 Based on two lists containing unwrapped key value pairs.
 """
 
-from rpython.rlib import jit, rerased, objectmodel
+from rpython.rlib import rerased, objectmodel
 
 from pypy.objspace.std.dictmultiobject import (
     BytesDictStrategy, DictStrategy, EmptyDictStrategy, ObjectDictStrategy,
@@ -59,8 +59,6 @@ class KwargsDictStrategy(DictStrategy):
     def setitem_str(self, w_dict, key, w_value):
         self._setitem_str_indirection(w_dict, key, w_value)
 
-    @jit.look_inside_iff(lambda self, w_dict, key, w_value:
-            jit.isconstant(self.length(w_dict)) and jit.isconstant(key))
     def _setitem_str_indirection(self, w_dict, key, w_value):
         keys, values_w = self.unerase(w_dict.dstorage)
         for i in range(len(keys)):
@@ -99,8 +97,6 @@ class KwargsDictStrategy(DictStrategy):
     def getitem_str(self, w_dict, key):
         return self._getitem_str_indirection(w_dict, key)
 
-    @jit.look_inside_iff(lambda self, w_dict, key:
-            jit.isconstant(self.length(w_dict)) and jit.isconstant(key))
     def _getitem_str_indirection(self, w_dict, key):
         keys, values_w = self.unerase(w_dict.dstorage)
         for i in range(len(keys)):

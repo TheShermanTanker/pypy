@@ -5,15 +5,15 @@ logfile generated with the PYPYLOG env variable.
 
 Run your program like this::
 
-    $ PYPYLOG=gc-collect,jit-mem:logfile pypy your-program.py
+    $ PYPYLOG=gc-collect:logfile pypy your-program.py
 
 This will produce "logfile", containing information about the memory used by
-the GC and the number of loops created/freed by the JIT.
+the GC.
 
 If you want, you can also measure the amout of used memory as seen by the OS
 (the VmRSS) using memusage.py::
 
-    $ PYPYLOG=gc-collect,jit-mem:logfile ./memusage.py -o logfile.vmrss /path/to/pypy your-program.py
+    $ PYPYLOG=gc-collect:logfile ./memusage.py -o logfile.vmrss /path/to/pypy your-program.py
 
 log2gnumeric will automatically pick logfile.vmrss, if present.
 
@@ -28,7 +28,7 @@ on the graph the plot will be scaled to match the duration of the PyPy run
 (i.e., the two lines will end "at the same time").
 
 If you are benchmarking translate.py, you can add the "translation-task"
-category to the log, by setting PYPYLOG=gc-collect,jit-mem,translation-task.
+category to the log, by setting PYPYLOG=gc-collect,translation-task.
 
 You can freely edit the graph in log-template.gnumeric: this script will
 create a new file replacing the 'translation-task' and 'gc-collect' sheets.
@@ -50,7 +50,6 @@ def main(logname, options):
     xml = gzip.open('log-template.gnumeric').read()
     xml = replace_sheet(xml, 'translation-task', tasks_rows(time0, data))
     xml = replace_sheet(xml, 'gc-collect', gc_collect_rows(time0, data))
-    xml = replace_sheet(xml, 'loops', loops_rows(time0, data))
     xml = replace_sheet(xml, 'vmrss', vmrss_rows(logname + '.vmrss', maxtime))
     xml = replace_sheet(xml, 'cpython-vmrss', vmrss_rows(options.cpython_vmrss, maxtime))
     #
@@ -143,31 +142,6 @@ starting ([\w-]+)
     for a,b in r.findall(data):
         clock = read_clock(a) - time0
         yield clock, 1, b
-
-
-def loops_rows(time0, data):
-    s = r"""
-\[([0-9a-f]+)\] \{jit-mem-looptoken-(alloc|free)
-(.*?)\[
-"""
-    #
-    r = re.compile(s.replace('\n', ''))
-    yield 'clock', 'total', 'loops', 'bridges'
-    loops = 0
-    bridges = 0
-    fake_total = 0
-    for clock, action, text in r.findall(data):
-        clock = read_clock(clock) - time0
-        if text.startswith('allocating Loop #'):
-            loops += 1
-        elif text.startswith('allocating Bridge #'):
-            bridges += 1
-        elif text.startswith('freeing Loop #'):
-            match = re.match('freeing Loop # .* with ([0-9]*) attached bridges', text)
-            loops -=1
-            bridges -= int(match.group(1))
-        total = loops+bridges
-        yield clock, loops+bridges, loops, bridges
 
 
 def vmrss_rows(filename, maxtime):

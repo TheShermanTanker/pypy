@@ -1,6 +1,6 @@
 import weakref, sys
 
-from rpython.rlib import jit, objectmodel, debug, rerased
+from rpython.rlib import objectmodel, debug, rerased
 from rpython.rlib.rarithmetic import intmask, r_uint, LONG_BIT
 from rpython.rlib.longlong2float import longlong2float, float2longlong
 
@@ -48,14 +48,7 @@ class AbstractAttribute(object):
         attr = self.find_map_attr(name, attrkind)
         if attr is None:
             return self.terminator._read_terminator(obj, name, attrkind)
-        if (
-            jit.isconstant(attr) and
-            jit.isconstant(obj) and
-            not attr.ever_mutated
-        ):
-            return attr._pure_direct_read(obj)
-        else:
-            return attr._direct_read(obj)
+        return attr._direct_read(obj)
 
     def write(self, obj, name, attrkind, w_value):
         attr = self.find_map_attr(name, attrkind)
@@ -69,7 +62,6 @@ class AbstractAttribute(object):
     def delete(self, obj, name, attrkind):
         return None
 
-    @jit.elidable
     def find_map_attr(self, name, attrkind):
         # attr cache
         space = self.space
@@ -135,7 +127,6 @@ class AbstractAttribute(object):
     def search(self, attrtype):
         return None
 
-    @jit.elidable
     def _get_new_attr(self, name, attrkind, unbox_type):
         cache = self.cache_attrs
         if cache is None:
@@ -150,7 +141,6 @@ class AbstractAttribute(object):
         space = self.space
         self._reorder_and_add(obj, name, attrkind, w_value)
 
-    @jit.elidable
     def _find_branch_to_move_into(self, name, attrkind, unbox_type):
         # walk up the map chain to find an ancestor with lower order that
         # already has the current name as a child inserted
@@ -175,10 +165,6 @@ class AbstractAttribute(object):
             current_order = current.order
             current = current.back
 
-    @jit.look_inside_iff(lambda self, obj, name, attrkind, w_value:
-            jit.isconstant(self) and
-            jit.isconstant(name) and
-            jit.isconstant(attrkind))
     def _reorder_and_add(self, obj, name, attrkind, w_value):
         # the idea is as follows: the subtrees of any map are ordered by
         # insertion.  the invariant is that subtrees that are inserted later
@@ -385,10 +371,6 @@ class PlainAttribute(AbstractAttribute):
 
     _prim_direct_read = _direct_read
 
-    @jit.elidable
-    def _pure_direct_read(self, obj):
-        return unerase_item(obj._mapdict_read_storage(self.storageindex))
-
     def _direct_write(self, obj, w_value):
         obj._mapdict_write_storage(self.storageindex, erase_item(w_value))
 
@@ -538,11 +520,9 @@ class UnboxedPlainAttribute(PlainAttribute):
     def _pure_direct_read(self, obj):
         # somewhat tricky! note that _direct_read isn't really elidable (it has
         # potential side effects, and the boxes aren't always the same)
-        # but _pure_unboxed_read is elidable, and we can let the jit see the
-        # boxing
+        # but _pure_unboxed_read is elidable
         return self._box(self._pure_unboxed_read(obj))
 
-    @jit.elidable
     def _pure_unboxed_read(self, obj):
         return unerase_unboxed(obj._mapdict_read_storage(self.storageindex))[self.listindex]
 
@@ -797,7 +777,7 @@ def _obj_setdict(self, space, w_dict):
 
 class MapdictStorageMixin(object):
     def _get_mapdict_map(self):
-        return jit.promote(self.map)
+        return self.map
     def _set_mapdict_map(self, map):
         self.map = map
 
@@ -865,7 +845,7 @@ def _make_storage_mixin_size_n(n=SUBCLASSES_NUM_FIELDS):
     valnmin1 = "_value%s" % nmin1
     class subcls(object):
         def _get_mapdict_map(self):
-            return jit.promote(self.map)
+            return self.map
         def _set_mapdict_map(self, map):
             if self._has_storage_list() and map.storage_needed() <= n:
                 # weird corner case interacting with unboxing, see test_unbox_reorder_bug3
@@ -1207,7 +1187,6 @@ class CacheEntry(object):
         map = w_obj._get_mapdict_map()
         return self.is_valid_for_map(map)
 
-    @jit.dont_look_inside
     def is_valid_for_map(self, map):
         # note that 'map' can be None here
         mymap = self.map_wref()
@@ -1230,7 +1209,6 @@ def init_mapdict_cache(pycode):
     num_entries = len(pycode.co_names_w)
     pycode._mapdict_caches = [INVALID_CACHE_ENTRY] * num_entries
 
-@jit.dont_look_inside
 def _fill_cache(pycode, nameindex, map, version_tag, attr, w_method=None):
     if not pycode.space._side_effects_ok():
         return
@@ -1249,8 +1227,7 @@ def _fill_cache(pycode, nameindex, map, version_tag, attr, w_method=None):
         entry.failure_counter += 1
 
 def LOAD_ATTR_caching(pycode, w_obj, nameindex):
-    # this whole mess is to make the interpreter quite a bit faster; it's not
-    # used if we_are_jitted().
+    # this whole mess is to make the interpreter quite a bit faster.
     entry = pycode._mapdict_caches[nameindex]
     map = w_obj._get_mapdict_map()
     if entry.is_valid_for_map(map) and entry.w_method is None:

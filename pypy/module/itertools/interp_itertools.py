@@ -2,7 +2,6 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.typedef import TypeDef, make_weakref_descr
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
-from rpython.rlib import jit
 
 
 class W_Count(W_Root):
@@ -321,14 +320,6 @@ W_IFilterFalse.typedef = TypeDef(
                 yield x
     """)
 
-
-def get_printable_location(greenkey):
-    return "islice_ignore_items [%s]" % (greenkey.iterator_greenkey_printable(), )
-islice_ignore_items_driver = jit.JitDriver(name='islice_ignore_items',
-                                           greens=['greenkey'],
-                                           reds='auto',
-                                           get_printable_location=get_printable_location)
-
 class W_ISlice(W_Root):
     def __init__(self, space, w_iterable, w_startstop, args_w):
         self.iterable = space.iter(w_iterable)
@@ -422,7 +413,6 @@ class W_ISlice(W_Root):
 
         greenkey = self.space.iterator_greenkey(w_iterator)
         while True:
-            islice_ignore_items_driver.jit_merge_point(greenkey=greenkey)
             try:
                 self.space.next(w_iterator)
             except OperationError as e:
@@ -573,7 +563,6 @@ class W_IMap(W_Root):
             return self.space.call(self.w_fun, w_objects)
 
     def _get_objects(self):
-        # the loop is out of the way of the JIT
         return [self.space.next(w_elem) for w_elem in self.iterators_w]
 
 
@@ -678,7 +667,6 @@ class W_IZipLongest(W_IMap):
         return self.space.newtuple(objects)
 
     def _get_objects(self):
-        # the loop is out of the way of the JIT
         nb = len(self.iterators_w)
         if nb == 0:
             raise OperationError(self.space.w_StopIteration, self.space.w_None)
@@ -1108,8 +1096,7 @@ class W_Product(W_Root):
             self.lst = None
 
     def fill_next_result(self):
-        # the last gear is done here, in a function with no loop,
-        # to allow the JIT to look inside
+        # the last gear is done here, in a function with no loop
         lst = self.lst
         x = len(self.gears) - 1
         if x >= 0:

@@ -11,7 +11,6 @@ like: (on the left, without the new bytecodes; on the right, with them)
 """
 
 from pypy.interpreter import function
-from rpython.rlib import jit
 from pypy.objspace.std.mapdict import LOOKUP_METHOD_mapdict, \
     LOOKUP_METHOD_mapdict_fill_cache_method
 
@@ -34,10 +33,9 @@ def LOOKUP_METHOD(f, nameindex, *ignored):
     space = f.space
     w_obj = f.popvalue()
 
-    if not jit.we_are_jitted():
-        # mapdict has an extra-fast version of this function
-        if LOOKUP_METHOD_mapdict(f, nameindex, w_obj):
-            return
+    # mapdict has an extra-fast version of this function
+    if LOOKUP_METHOD_mapdict(f, nameindex, w_obj):
+        return
 
     w_name = f.getname_w(nameindex)
     w_value = None
@@ -71,18 +69,15 @@ def LOOKUP_METHOD(f, nameindex, *ignored):
                     # nothing in the instance
                     f.pushvalue(w_descr)
                     f.pushvalue(w_obj)
-                    if not jit.we_are_jitted():
-                        # let mapdict cache stuff
-                        LOOKUP_METHOD_mapdict_fill_cache_method(
-                            space, f.getcode(), name, nameindex, w_obj, w_type,
-                            w_descr_cell)
-                    return
+                    # let mapdict cache stuff
+                    LOOKUP_METHOD_mapdict_fill_cache_method(
+                        space, f.getcode(), name, nameindex, w_obj, w_type,
+                        w_descr_cell)
     if w_value is None:
         w_value = space.getattr(w_obj, w_name)
     f.pushvalue(w_value)
     f.pushvalue_none()
 
-@jit.unroll_safe
 def CALL_METHOD(f, oparg, *ignored):
     # opargs contains the arg, and kwarg count, excluding the implicit 'self'
     n_args = oparg & 0xff

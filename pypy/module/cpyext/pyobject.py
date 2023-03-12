@@ -16,7 +16,7 @@ from pypy.objspace.std.objectobject import W_ObjectObject
 from rpython.rlib.objectmodel import specialize, we_are_translated
 from rpython.rlib.objectmodel import keepalive_until_here
 from rpython.rtyper.annlowlevel import llhelper, cast_instance_to_base_ptr
-from rpython.rlib import rawrefcount, jit
+from rpython.rlib import rawrefcount
 from rpython.rlib.debug import ll_assert, fatalerror
 
 
@@ -208,7 +208,6 @@ def get_typedescr(typedef):
 class InvalidPointerException(Exception):
     pass
 
-@jit.dont_look_inside
 def create_ref(space, w_obj, w_userdata=None, immortal=False):
     """
     Allocates a PyObject, and fills its fields with info from the given
@@ -248,7 +247,6 @@ def track_reference(space, py_obj, w_obj):
 
 w_marker_deallocating = W_Root()
 
-@jit.dont_look_inside
 def from_ref(space, ref):
     """
     Finds the interpreter object corresponding to the given reference.  If the
@@ -288,7 +286,6 @@ def from_ref(space, ref):
     assert isinstance(w_type, W_TypeObject)
     return get_typedescr(w_type.layout.typedef).realize(space, ref)
 
-@jit.dont_look_inside
 def as_pyobj(space, w_obj, w_userdata=None, immortal=False):
     """
     Returns a 'PyObject *' representing the given interpreter object.

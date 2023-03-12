@@ -66,8 +66,8 @@ dynamically and incrementally evolving project with many
 one-week meetings to follow.  You are invited to consider coming to 
 the next such meeting in Paris mid October 2005 where we intend to 
 plan and head for an even more intense phase of the project
-involving building a JIT-Compiler and enabling unique
-features not found in other Python language implementations.
+involving enabling unique features not found in other Python language
+implementations.
 
 PyPy has been a community effort from the start and it would
 not have got that far without the coding and feedback support

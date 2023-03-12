@@ -1,5 +1,5 @@
 
-from rpython.rlib import rerased, jit
+from rpython.rlib import rerased
 from rpython.rlib.objectmodel import keepalive_until_here
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.objspace.std.listobject import (
@@ -321,7 +321,6 @@ class CPyListStrategy(ListStrategy):
             retval[i] = from_ref(w_list.space, storage._elems[i])
         return retval
 
-    @jit.unroll_safe
     def getitems_unroll(self, w_list):
         storage = self.unerase(w_list.lstorage)
         retval = [None] * storage._length
@@ -329,9 +328,6 @@ class CPyListStrategy(ListStrategy):
             retval[i] = from_ref(w_list.space, storage._elems[i])
         return retval
 
-    @jit.look_inside_iff(lambda self, w_list:
-            jit.loop_unrolling_heuristic(w_list, w_list.length(),
-                                         UNROLL_CUTOFF))
     def getitems_fixedsize(self, w_list):
         return self.getitems_unroll(w_list)
 

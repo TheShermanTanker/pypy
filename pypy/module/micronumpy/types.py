@@ -6,7 +6,7 @@ from pypy.interpreter.error import OperationError, oefmt
 from pypy.objspace.std.floatobject import float2string
 from pypy.objspace.std.complexobject import str_format
 from pypy.interpreter.baseobjspace import W_Root, ObjSpace
-from rpython.rlib import clibffi, jit, rfloat, rcomplex
+from rpython.rlib import clibffi, rfloat, rcomplex
 from rpython.rlib.objectmodel import specialize, we_are_translated
 from rpython.rlib.rarithmetic import widen, byteswap, r_ulonglong, \
     most_neg_value_of, LONG_BIT
@@ -512,7 +512,6 @@ class Integer(Primitive):
         return v1 % v2
 
     @simple_binary_op
-    @jit.look_inside_iff(lambda self, v1, v2: jit.isconstant(v2))
     def pow(self, v1, v2):
         if v2 < 0:
             return 0
@@ -1866,7 +1865,6 @@ class ObjectType(Primitive, BaseType):
     def byteswap(self, w_v):
         return w_v
 
-    @jit.dont_look_inside
     def _write(self, storage, i, offset, w_obj, gcstruct):
         # no GC anywhere in this function!
         if we_are_translated():
@@ -1878,7 +1876,6 @@ class ObjectType(Primitive, BaseType):
             _all_objs_for_tests.append(w_obj)
         raw_storage_setitem_unaligned(storage, i + offset, value)
 
-    @jit.dont_look_inside
     def _read(self, storage, i, offset, native=True):
         res = raw_storage_getitem_unaligned(self.T, storage, i + offset)
         if we_are_translated():
@@ -2160,7 +2157,6 @@ class StringType(FlexibleType):
     kind = NPY.STRINGLTR
     char = NPY.STRINGLTR
 
-    @jit.unroll_safe
     def coerce(self, space, dtype, w_item):
         if isinstance(w_item, boxes.W_StringBox):
             return w_item
@@ -2182,7 +2178,6 @@ class StringType(FlexibleType):
         with arr as storage:
             return self._store(storage, i, offset, box, size)
 
-    @jit.unroll_safe
     def _store(self, storage, i, offset, box, size):
         assert isinstance(box, boxes.W_StringBox)
         with box.arr as box_storage:
@@ -2267,7 +2262,6 @@ class UnicodeType(FlexibleType):
     def get_element_size(self):
         return 4  # always UTF-32
 
-    @jit.unroll_safe
     def coerce(self, space, dtype, w_item):
         if isinstance(w_item, boxes.W_UnicodeBox):
             return w_item
@@ -2288,7 +2282,6 @@ class UnicodeType(FlexibleType):
         with arr as storage:
             self._store(storage, i, offset, box, arr.dtype.elsize)
 
-    @jit.unroll_safe
     def _store(self, storage, i, offset, box, width):
         v = self.convert_utf8_to_unichar_list(box._value)
         size = min(width // 4, len(v))
@@ -2437,7 +2430,6 @@ class VoidType(FlexibleType):
         self._coerce(space, arr, 0, dtype, w_items, dtype.shape)
         return boxes.W_VoidBox(arr, 0, dtype)
 
-    @jit.unroll_safe
     def store(self, arr, i, offset, box, native):
         assert isinstance(box, boxes.W_VoidBox)
         assert box.dtype is box.arr.dtype
@@ -2459,7 +2451,6 @@ class VoidType(FlexibleType):
     def read(self, arr, i, offset, dtype):
         return boxes.W_VoidBox(arr, i + offset, dtype)
 
-    @jit.unroll_safe
     def str_format(self, box, add_quotes=True):
         assert isinstance(box, boxes.W_VoidBox)
         arr = self.readarray(box.arr, box.ofs, 0, box.dtype)
@@ -2539,7 +2530,6 @@ class RecordType(FlexibleType):
     def read(self, arr, i, offset, dtype):
         return boxes.W_VoidBox(arr, i + offset, dtype)
 
-    @jit.unroll_safe
     def coerce(self, space, dtype, w_item):
         return record_coerce(self, space, dtype, w_item)
 
@@ -2552,7 +2542,6 @@ class RecordType(FlexibleType):
         with arr as storage:
             self._store(storage, i, offset, box, box.dtype.elsize)
 
-    @jit.unroll_safe
     def _store(self, storage, i, ofs, box, size):
         with box.arr as box_storage:
             for k in range(size):
@@ -2578,7 +2567,6 @@ class RecordType(FlexibleType):
             items.append(subdtype.itemtype.to_builtin_type(space, subbox))
         return space.newtuple(items)
 
-    @jit.unroll_safe
     def str_format(self, box, add_quotes=True):
         assert isinstance(box, boxes.W_VoidBox)
         pieces = ["("]

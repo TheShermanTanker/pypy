@@ -12,7 +12,7 @@ from pypy.interpreter.baseobjspace import W_Root, CannotHaveLock
 from pypy.interpreter.eval import Code
 from pypy.interpreter.pycode import PyCode
 from pypy.interpreter.streamutil import wrap_streamerror
-from rpython.rlib import streamio, jit
+from rpython.rlib import streamio
 from rpython.rlib.streamio import StreamErrors
 from rpython.rlib.objectmodel import we_are_translated, specialize
 from pypy.module.sys.version import PYPY_VERSION
@@ -151,7 +151,6 @@ def check_sys_modules(space, w_modulename):
 def check_sys_modules_w(space, modulename):
     return space.finditem_str(space.sys.get('modules'), modulename)
 
-@jit.elidable
 def _get_dot_position(str, n):
     # return the index in str of the '.' such that there are n '.'-separated
     # strings after it
@@ -163,8 +162,6 @@ def _get_dot_position(str, n):
 
 def _get_relative_name(space, modulename, level, w_globals):
     ctxt_w_package = space.finditem_str(w_globals, '__package__')
-    ctxt_w_package = jit.promote(ctxt_w_package)
-    level = jit.promote(level)
 
     ctxt_package = None
     if ctxt_w_package is not None and ctxt_w_package is not space.w_None:
@@ -213,7 +210,6 @@ def _get_relative_name(space, modulename, level, w_globals):
         ctxt_w_name = space.finditem_str(w_globals, '__name__')
         ctxt_w_path = space.finditem_str(w_globals, '__path__')
 
-        ctxt_w_name = jit.promote(ctxt_w_name)
         ctxt_name = None
         if ctxt_w_name is not None:
             try:
@@ -305,10 +301,9 @@ def importhook(space, name, w_globals=None,
 def absolute_import(space, modulename, baselevel, w_fromlist, tentative):
     # Short path: check in sys.modules, but only if there is no conflict
     # on the import lock.  In the situation of 'import' statements
-    # inside tight loops, this should be true, and absolute_import_try()
-    # should be followed by the JIT and turned into not much code.  But
-    # if the import lock is currently held by another thread, then we
-    # have to wait, and so shouldn't use the fast path.
+    # inside tight loops, this should be true.  But if the import lock is
+    # currently held by another thread, then we have to wait, and so shouldn't
+    # use the fast path.
     if not getimportlock(space).lock_held_by_someone_else():
         w_mod = absolute_import_try(space, modulename, baselevel, w_fromlist)
         if w_mod is not None and not space.is_w(w_mod, space.w_None):
@@ -316,7 +311,6 @@ def absolute_import(space, modulename, baselevel, w_fromlist, tentative):
     return absolute_import_with_lock(space, modulename, baselevel,
                                      w_fromlist, tentative)
 
-@jit.dont_look_inside
 def absolute_import_with_lock(space, modulename, baselevel,
                               w_fromlist, tentative):
     lock = getimportlock(space)
@@ -327,7 +321,6 @@ def absolute_import_with_lock(space, modulename, baselevel,
     finally:
         lock.release_lock(silent_after_fork=True)
 
-@jit.unroll_safe
 def absolute_import_try(space, modulename, baselevel, w_fromlist):
     """ Only look up sys.modules, not actually try to load anything
     """
@@ -624,7 +617,6 @@ def load_c_extension(space, filename, modulename):
     return load_extension_module(space, filename, modulename)
     # NB. cpyext.api.load_extension_module() can also delegate to _cffi_backend
 
-@jit.dont_look_inside
 def load_module(space, w_modulename, find_info, reuse=False):
     """Like load_module() in CPython's import.c, this will normally
     make a module object, store it in sys.modules, execute code in it,
@@ -720,7 +712,6 @@ def load_part(space, w_path, prefix, partname, w_parent, tentative):
         # ImportError
         raise oefmt(space.w_ImportError, "No module named %s", modulename)
 
-@jit.dont_look_inside
 def reload(space, w_module):
     """Reload the module.
     The module must have been successfully imported before."""
@@ -913,7 +904,6 @@ def exec_code_module(space, w_mod, code_w, w_modulename, check_afterwards=True):
     return w_mod
 
 
-@jit.dont_look_inside
 def load_source_module(space, w_modulename, w_mod, pathname, source, fd,
                        write_pyc=True, check_afterwards=True):
     """
@@ -1065,7 +1055,6 @@ def read_compiled_module(space, cpathname, strbuf):
         raise oefmt(space.w_ImportError, "Non-code object in %s", cpathname)
     return w_code
 
-@jit.dont_look_inside
 def load_compiled_module(space, w_modulename, w_mod, cpathname, magic,
                          timestamp, source, check_afterwards=True):
     """

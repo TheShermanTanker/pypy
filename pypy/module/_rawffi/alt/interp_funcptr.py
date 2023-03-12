@@ -6,7 +6,6 @@ from pypy.module._rawffi.alt.interp_ffitype import W_FFIType
 #
 from rpython.rtyper.lltypesystem import lltype, rffi
 #
-from rpython.rlib import jit
 from rpython.rlib import libffi
 from rpython.rlib.clibffi import get_libc_name, StackCheckError, LibFFIError
 from rpython.rlib.rdynload import DLOpenError
@@ -87,7 +86,6 @@ class W_FuncPtr(W_Root):
         self.w_restype = w_restype
         self.to_free = []
 
-    @jit.unroll_safe
     def build_argchain(self, space, args_w):
         expected = len(self.argtypes_w)
         given = len(args_w)
@@ -108,7 +106,6 @@ class W_FuncPtr(W_Root):
         return argchain
 
     def call(self, space, args_w):
-        self = jit.promote(self)
         argchain = self.build_argchain(space, args_w)
         func_caller = CallFunctionConverter(space, self.func, argchain)
         try:

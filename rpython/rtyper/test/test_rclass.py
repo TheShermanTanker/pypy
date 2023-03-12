@@ -898,32 +898,6 @@ class TestRclass(BaseRtypingTest):
         B_TYPE = graph.getreturnvar().concretetype.TO
         assert B_TYPE._hints["immutable"]
 
-    def test_quasi_immutable(self):
-        class A(object):
-            _immutable_fields_ = ['x', 'y', 'a?', 'b?']
-        class B(A):
-            pass
-        def f():
-            a = A()
-            a.x = 42
-            a.a = 142
-            b = B()
-            b.x = 43
-            b.y = 41
-            b.a = 44
-            b.b = 45
-            return B()
-        t, typer, graph = self.gengraph(f, [])
-        B_TYPE = graph.getreturnvar().concretetype.TO
-        accessor = B_TYPE._hints["immutable_fields"]
-        assert accessor.fields == {"inst_y": IR_IMMUTABLE,
-                                   "inst_b": IR_QUASIIMMUTABLE}
-        found = []
-        for op in graph.startblock.operations:
-            if op.opname == 'jit_force_quasi_immutable':
-                found.append(op.args[1].value)
-        assert found == ['mutate_a', 'mutate_a', 'mutate_b']
-
     def test_quasi_immutable_clashes_with_immutable(self):
         class A(object):
             _immutable_ = True
@@ -935,25 +909,6 @@ class TestRclass(BaseRtypingTest):
             return A()
         with py.test.raises(TyperError):
             self.gengraph(f, [])
-
-    def test_quasi_immutable_array(self):
-        class A(object):
-            _immutable_fields_ = ['c?[*]']
-        class B(A):
-            pass
-        def f():
-            a = A()
-            a.c = [3, 4, 5]
-            return A()
-        t, typer, graph = self.gengraph(f, [])
-        A_TYPE = graph.getreturnvar().concretetype.TO
-        accessor = A_TYPE._hints["immutable_fields"]
-        assert accessor.fields == {"inst_c": IR_QUASIIMMUTABLE_ARRAY}
-        found = []
-        for op in graph.startblock.operations:
-            if op.opname == 'jit_force_quasi_immutable':
-                found.append(op.args[1].value)
-        assert found == ['mutate_c']
 
     def test_bad_type_for_immutable_field_1(self):
         class A:

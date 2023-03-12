@@ -36,7 +36,7 @@ working_modules.update([
     "cStringIO", "thread", "itertools", "pyexpat", "cpyext", "array",
     "binascii", "_multiprocessing", '_warnings', "_collections",
     "_multibytecodec", "micronumpy", "_continuation", "_cffi_backend",
-    "_csv", "_cppyy", "_pypyjson", "_jitlog",
+    "_csv", "_pypyjson",
     # "_hashlib", "crypt"
 ])
 
@@ -83,7 +83,7 @@ if sys.platform == "win32":
 
     # not ported yet
     if IS_64_BITS:
-        for name in ["cpyext", "_cppyy", "micronumpy"]:
+        for name in ["cpyext", "micronumpy"]:
             if name in working_modules:
                 working_modules.remove(name)
 
@@ -91,8 +91,6 @@ if sys.platform == "sunos5":
     working_modules.remove('fcntl')  # LOCK_NB not defined
     working_modules.remove("_minimal_curses")
     working_modules.remove("termios")
-    if "_cppyy" in working_modules:
-        working_modules.remove("_cppyy")  # depends on ctypes
 
 #if sys.platform.startswith("linux"):
 #    _mach = os.popen('uname -m', 'r').read().strip()
@@ -104,7 +102,6 @@ module_dependencies = {
     '_multiprocessing': [('objspace.usemodules.time', True),
                          ('objspace.usemodules.thread', True)],
     'cpyext': [('objspace.usemodules.array', True)],
-    '_cppyy': [('objspace.usemodules.cpyext', True)],
     'faulthandler': [('objspace.usemodules._vmprof', True)],
     }
 module_suggests = {
@@ -239,7 +236,7 @@ def set_pypy_opt_level(config, level):
     The optimizations depend on the selected level and possibly on the backend.
     """
     # all the good optimizations for PyPy should be listed here
-    if level in ['2', '3', 'jit']:
+    if level in ['2', '3']:
         config.objspace.std.suggest(intshortcut=True)
         config.objspace.std.suggest(optimized_list_getitem=True)
         #config.objspace.std.suggest(newshortcut=True)
@@ -259,10 +256,6 @@ def set_pypy_opt_level(config, level):
         config.objspace.std.suggest(withliststrategies=True)
         if not IS_64_BITS:
             config.objspace.std.suggest(withsmalllong=True)
-
-    # extra optimizations with the JIT
-    if level == 'jit':
-        pass # none at the moment
 
 
 def enable_allworkingmodules(config):

@@ -21,17 +21,7 @@ Highlights
 
 * Additional support for the u'unicode' syntax (`PEP 414`_) from Python 3.3
 
-* Updates from the default branch, such as incremental GC and various JIT
-  improvements
-
-* Resolved some notable JIT performance regressions from PyPy2:
-
- - Re-enabled the previously disabled collection (list/dict/set) strategies
-
- - Resolved performance of iteration over range objects
-
- - Resolved handling of Python 3's exception __context__ unnecessarily forcing
-   frame object overhead
+* Updates from the default branch, such as incremental GC improvements
 
 .. _`PEP 414`: https://legacy.python.org/dev/peps/pep-0414/
 
@@ -39,7 +29,7 @@ What is PyPy?
 ==============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7.6 or 3.2.5. It's fast due to its integrated tracing JIT compiler.
+CPython 2.7.6 or 3.2.5.
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64, Windows,
 and OpenBSD,

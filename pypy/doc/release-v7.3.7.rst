@@ -33,11 +33,11 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on PyPy, or general `help`_ with making RPython's JIT even better. 
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on PyPy. 
 
 If you are a python library maintainer and use C-extensions, please consider
-making a CFFI_ / cppyy_ version of your library that would be performant on PyPy.
+making a CFFI_ version of your library that would be performant on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
 
@@ -45,7 +45,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _CFFI: https://cffi.readthedocs.io
-.. _cppyy: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _`blog site`: https://pypy.org/blog
@@ -56,7 +55,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.7, and
 3.8. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.

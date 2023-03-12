@@ -116,7 +116,6 @@ class MixLevelAnnotatorPolicy(LowLevelAnnotatorPolicy):
         return funcdesc.cachedgraph(key, alt_name=valid_identifier(alt_name))
 
     def specialize__genconst(self, funcdesc, args_s, i):
-        # XXX this is specific to the JIT
         TYPE = annotation_to_lltype(args_s[i], 'genconst')
         args_s[i] = lltype_to_annotation(TYPE)
         alt_name = funcdesc.name + "__%s" % (TYPE._short_name(),)

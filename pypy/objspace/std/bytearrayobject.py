@@ -7,7 +7,6 @@ from rpython.rlib.debug import check_list_of_chars, check_nonneg
 from rpython.rtyper.lltypesystem import rffi
 from rpython.rlib.rgc import (resizable_list_supporting_raw_ptr,
                               nonmoving_raw_ptr_for_resizable_list)
-from rpython.rlib import jit
 from rpython.rlib.buffer import (GCBuffer,
                                  get_gc_data_for_list_of_chars,
                                  get_gc_data_offset_for_list_of_chars)
@@ -437,8 +436,8 @@ class W_BytearrayObject(W_Root):
     def _delete_from_start(self, n):
         assert n >= 0
         self._offset += n
-        jit.conditional_call(self._offset > len(self._data) / 2,
-                             _shrink_after_delete_from_start, self)
+        if self._offset > len(self._data) / 2:
+            _shrink_after_delete_from_start(self)
 
     def descr_append(self, space, w_item):
         self._data.append(space.byte_w(w_item))
@@ -562,19 +561,7 @@ def makebytearraydata_w(space, w_source):
         return list(buf.as_str())
     return _from_byte_sequence(space, w_source)
 
-def _get_printable_location(greenkey):
-    return ('bytearray_from_byte_sequence [%s]' %
-            greenkey.iterator_greenkey_printable())
-
-_byteseq_jitdriver = jit.JitDriver(
-    name='bytearray_from_byte_sequence',
-    greens=['greenkey'],
-    reds='auto',
-    get_printable_location=_get_printable_location)
-
 def _from_byte_sequence(space, w_source):
-    # Split off in a separate function for the JIT's benefit
-    # and add a jitdriver with the type of w_iter as the green key
     w_iter = space.iter(w_source)
     length_hint = space.length_hint(w_source, 0)
     data = newlist_hint(length_hint)
@@ -589,7 +576,6 @@ def _from_byte_sequence(space, w_source):
 def _from_byte_sequence_loop(space, w_iter, data):
     greenkey = space.iterator_greenkey(w_iter)
     while True:
-        _byteseq_jitdriver.jit_merge_point(greenkey=greenkey)
         try:
             w_item = space.next(w_iter)
         except OperationError as e:

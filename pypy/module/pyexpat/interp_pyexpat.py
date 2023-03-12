@@ -2,7 +2,7 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, GetSetProperty
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
 from pypy.interpreter.error import OperationError, oefmt
-from rpython.rlib import rgc, jit, rutf8
+from rpython.rlib import rgc, rutf8
 from rpython.rlib.objectmodel import specialize
 from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.rtyper.tool import rffi_platform
@@ -283,7 +283,6 @@ for index, (name, params) in enumerate(HANDLERS.items()):
         post_code = ''
 
     src = py.code.Source("""
-    @jit.jit_callback('XML:%(name)s')
     def %(name)s_callback(%(first_arg)s, %(args)s):
         id = rffi.cast(lltype.Signed, %(ll_id)s)
         userdata = global_storage.get_object(id)

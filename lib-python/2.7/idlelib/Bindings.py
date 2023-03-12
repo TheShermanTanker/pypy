@@ -74,7 +74,7 @@ menudefs = [
    ('_Go to File/Line', '<<goto-file-line>>'),
    ('!_Debugger', '<<toggle-debugger>>'),
    ('_Stack Viewer', '<<open-stack-viewer>>'),
-   ('!_Auto-open Stack Viewer', '<<toggle-jit-stack-viewer>>'),
+   ('!_Auto-open Stack Viewer', '<<toggle-open-stack-viewer>>'),
    ]),
  ('options', [
    ('Configure _IDLE', '<<open-config-dialog>>'),

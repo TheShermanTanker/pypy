@@ -47,8 +47,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _CFFI: https://cffi.readthedocs.io/en/latest/whatsnew.html
 .. _grant: https://morepypy.blogspot.com/2016/08/pypy-gets-funding-from-mozilla-for.html
@@ -63,8 +62,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -98,7 +96,6 @@ See also issues that were resolved_
   * detect and raise on recreation of a PyPy object from a PyObject during
     tp_dealloc
   * refactor and clean up poor handling of unicode exposed in work on py3.5
-  * builtin module cppyy_ supports C++ 11, 14, etc. via cling (reflex has been removed)
   * adapt ``weakref`` according to CPython issue 19542_, will be in CPython 2.7.14
   * support translations with cpyext and the Boehm GC (for special cases like
     RevDB_
@@ -141,18 +138,13 @@ See also issues that were resolved_
 
 * Performance improvements:
 
-  * clean-ups in the jit optimizeopt
   * optimize ``if x is not None: return x`` or ``if x != 0: return x``
-  * add ``jit.conditional_call_elidable()``, a way to tell the JIT 
-    "conditonally call this function" returning a result
   * try harder to propagate ``can_be_None=False`` information
   * add ``rarithmetic.ovfcheck_int32_add/sub/mul``
   * add and use ``rgc.may_ignore_finalizer()``: an optimization hint that makes
     the GC stop tracking the object
   * replace malloc+memset with a single calloc, useful for large allocations?
   * linux: try to implement os.urandom() as the syscall getrandom() if available
-  * propagate ``debug.ll_assert_not_none()`` through the JIT to reduce number of
-    guards
   * improve the performance of ``PyDict_Next``
   * improve ``dict.pop()``
   * improve the optimization of branchy Python code by retaining more
@@ -166,8 +158,6 @@ See also issues that were resolved_
   * improve shadowstack to where it is now the default in place of asmgcc
   * add a rpython implementation of siphash24, allow choosing hash algorithm
     randomizing the seed
-  * add rstack.stack_almost_full() and use it to avoid stack overflow due to
-    the JIT where possible
 
 Highlights of the PyPy3.5 release (since 5.5 alpha released Oct, 2016)
 ==========================================================================
@@ -204,7 +194,6 @@ Development moved from the py3k branch to the py3.5 branch in the PyPy bitbucket
 .. _2504: https://bitbucket.org/pypy/pypy/issues/2504
 .. _RevDB: https://bitbucket.org/pypy/revdb
 .. _cryptography: https://cryptography.io
-.. _cppyy: cppyy.html
 
 Please update, and continue to help us make PyPy better.
 

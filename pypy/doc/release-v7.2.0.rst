@@ -43,14 +43,12 @@ Until downstream providers begin to distribute c-extension builds with PyPy, we
 have made packages for some common packages `available as wheels`_.
 
 The `CFFI`_ backend has been updated to version 1.13.0. We recommend using CFFI
-rather than c-extensions to interact with C, and `cppyy`_ for interacting with
-C++ code.
+rather than c-extensions to interact with C.
 
 Thanks to Anvil_, we revived the `PyPy Sandbox`_, which allows total control
 over a python interpreter's interactions with the external world.
 
-We implemented a new JSON decoder that is much faster, uses less memory, and
-uses a JIT-friendly specialized dictionary.
+We implemented a new JSON decoder that is much faster, and uses less memory.
 
 As always, this release is 100% compatible with the previous one and fixed
 several issues and bugs raised by the growing community of PyPy users.
@@ -67,22 +65,19 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 27 new contributors,
-thanks for pitching in.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy. Since the previous release, we have accepted contributions from 27
+new contributors, thanks for pitching in.
 
 .. _`PyPy`: index.html
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 .. _`Baroque Software`: https://baroquesoftware.com
 .. _Anvil: https://anvil.works
 .. _`PyPy Sandbox`: https://morepypy.blogspot.com/2019/08
 .. _`Crossbar.io`: https://crossbario.com
-.. _`blog post`:  https://morepypy.blogspot.com/2019/07/pypy-jit-for-aarch64.html
 .. _cryptography: https://cryptography.io/en/latest
 
 What is PyPy?
@@ -90,7 +85,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.6. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -123,12 +118,10 @@ Changes released in v7.1.1
 * Improve performance of ``u''.append``
 * Prevent a crash in ``zlib`` when flushing a closed stream
 * Fix a few corner cases when encountering unicode values above 0x110000
-* Teach the JIT how to handle very large constant lists, sets, or dicts
 * Fix building on ARM32 (`issue 2984`_)
 * Fix a bug in register assignment in ARM32
 * Package windows DLLs needed by cffi modules next to the cffi c-extensions
   (`issue 2988`_)
-* Cleanup and refactor JIT code to remove ``rpython.jit.metainterp.typesystem``
 * Fix memoryviews of ctype structures with padding, (CPython issue 32780_)
 
 Changes to Python 3.6 released in v7.1.1
@@ -158,7 +151,6 @@ Changes shared across versions
   ``endswith``,
 * Reduce the probability of a deadlock when acquiring a semaphore by
   moving global state changes closer to the actual aquire (`issue 2953`_)
-* Cleanup and refactor parts of the JIT code
 * Cleanup ``optimizeopt``
 * Support the ``z15`` variant of the ``s390x`` CPU.
 * Fixes to ``_ctypes`` handling of memoryviews
@@ -166,8 +158,6 @@ Changes shared across versions
 * Fix a bug that prevent memory-tracking in vmprof working on PyPy
 * Improve the speed and memory use of the ``_pypyjson`` JSON decoder. The
   resulting dictionaries that come out of the JSON decoder have faster lookups too
-* ``struct.unpack`` of a sliced ``bytearray`` exposed a subtle bug where the
-  JIT's ``gc_load`` family of calls must force some lazy code (`issue 3014`_)
 * Remove ``copystrcontent`` and ``copyunicodecontent`` in the backends.
   Instead, replace it in ``rewrite.py`` with a direct call to ``memcpy()`` and
   a new basic operation, ``load_effective_address``, which the backend can

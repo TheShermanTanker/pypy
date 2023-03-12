@@ -1,5 +1,5 @@
 from rpython.rlib import libffi
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.rarithmetic import r_uint, intmask
 from pypy.interpreter.error import oefmt
 from pypy.module._rawffi.structure import W_StructureInstance, W_Structure
@@ -58,27 +58,21 @@ class FromAppLevelConverter(object):
             self.error(w_ffitype, w_obj)
 
     def _longlong(self, w_ffitype, w_obj):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether longlongs are supported
         longlongval = self.space.truncatedlonglong_w(w_obj, allow_conversion=False)
         self.handle_longlong(w_ffitype, w_obj, longlongval)
 
     def _float(self, w_ffitype, w_obj):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether floats are supported
         floatval = self.space.float_w(w_obj, allow_conversion=False)
         self.handle_float(w_ffitype, w_obj, floatval)
 
     def _singlefloat(self, w_ffitype, w_obj):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether singlefloats are supported
         from rpython.rlib.rarithmetic import r_singlefloat
         floatval = self.space.float_w(w_obj, allow_conversion=False)
         singlefloatval = r_singlefloat(floatval)
         self.handle_singlefloat(w_ffitype, w_obj, singlefloatval)
 
     def maybe_handle_char_or_unichar_p(self, w_ffitype, w_obj):
-        w_type = jit.promote(self.space.type(w_obj))
+        w_type = self.space.type(w_obj)
         if w_ffitype.is_char_p() and w_type is self.space.w_bytes:
             strval = self.space.bytes_w(w_obj)
             self.handle_char_p(w_ffitype, w_obj, strval)
@@ -249,8 +243,6 @@ class ToAppLevelConverter(object):
             self.error(w_ffitype)
 
     def _longlong(self, w_ffitype):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether longlongs are supported
         if w_ffitype is app_types.slonglong:
             longlongval = self.get_longlong(w_ffitype)
             return self.space.newint(longlongval)
@@ -261,14 +253,10 @@ class ToAppLevelConverter(object):
             self.error(w_ffitype)
 
     def _float(self, w_ffitype):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether floats are supported
         floatval = self.get_float(w_ffitype)
         return self.space.newfloat(floatval)
 
     def _singlefloat(self, w_ffitype):
-        # a separate function, which can be seen by the jit or not,
-        # depending on whether singlefloats are supported
         singlefloatval = self.get_singlefloat(w_ffitype)
         return self.space.newfloat(float(singlefloatval))
 

@@ -1,6 +1,5 @@
 from rpython.rlib import libffi, clibffi
 from rpython.rlib.rarithmetic import intmask
-from rpython.rlib import jit
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, interp_attrproperty
 from pypy.interpreter.gateway import interp2app
@@ -17,7 +16,6 @@ class W_FFIType(W_Root):
         self.w_pointer_to = w_pointer_to
         self.set_ffitype(ffitype)
 
-    @jit.elidable
     def get_ffitype(self):
         if not self._ffitype:
             raise ValueError("Operation not permitted on an incomplete type")

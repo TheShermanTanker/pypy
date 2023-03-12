@@ -24,9 +24,8 @@ usage.  You are hereby warned.
 
 We target a large variety of platforms, small and large, by providing a
 compiler toolsuite that can produce custom Python versions.  Platform, memory
-and threading models, as well as the JIT compiler itself, are aspects of the
-translation process - as opposed to encoding low level details into the
-language implementation itself.
+and threading models, are aspects of the translation process - as opposed to
+encoding low level details into the language implementation itself.
 
 For more details, have a look at our :doc:`architecture overview <architecture>`.
 

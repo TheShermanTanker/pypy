@@ -1,5 +1,4 @@
 from pypy.tool import stdlib_opcode as pythonopcode
-from rpython.rlib import jit
 from pypy.interpreter.error import OperationError
 from pypy.interpreter.pyframe import PyFrame
 from pypy.module._continuation.interp_continuation import State, global_state
@@ -75,7 +74,7 @@ def resume_trampoline_callback(h, arg):
             #
             while True:
                 ec = sthread.ec
-                frame = ec.topframeref()
+                frame = ec.topframeref
                 assert frame is not None     # XXX better error message
                 exit_continulet = sthread.frame2continulet.get(frame)
                 #
@@ -94,7 +93,7 @@ def resume_trampoline_callback(h, arg):
                 if exit_continulet is not None:
                     self = exit_continulet
                     break
-            sthread.ec.topframeref = jit.vref_None
+            sthread.ec.topframeref = None
             if operr:
                 raise operr
     except Exception as e:

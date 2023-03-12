@@ -16,7 +16,6 @@ from pypy.interpreter.astcompiler.consts import (
 from pypy.tool.stdlib_opcode import opcodedesc, HAVE_ARGUMENT
 from rpython.rlib.rarithmetic import intmask, r_longlong
 from rpython.rlib.objectmodel import compute_hash, we_are_translated
-from rpython.rlib import jit
 from rpython.rlib.debug import debug_start, debug_stop, debug_print
 
 
@@ -215,8 +214,7 @@ class PyCode(eval.Code):
                                   func)
         sig = self._signature
         # speed hack
-        fresh_frame = jit.hint(frame, access_directly=True,
-                                      fresh_virtualizable=True)
+        fresh_frame = frame
         args.parse_into_scope(None, fresh_frame.locals_cells_stack_w, func.name,
                               sig, func.defs_w)
         fresh_frame.init_cells()
@@ -227,8 +225,7 @@ class PyCode(eval.Code):
                                   func)
         sig = self._signature
         # speed hack
-        fresh_frame = jit.hint(frame, access_directly=True,
-                                      fresh_virtualizable=True)
+        fresh_frame = frame
         args.parse_into_scope(w_obj, fresh_frame.locals_cells_stack_w, func.name,
                               sig, func.defs_w)
         fresh_frame.init_cells()

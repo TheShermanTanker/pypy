@@ -10,8 +10,7 @@ important lessons that everyone willing to contribute should learn:
 * PyPy has layers. There are many pieces of architecture that are very well
   separated from each other. More about this below, but often the manifestation
   of this is that things are at a different layer than you would expect them
-  to be. For example if you are looking for the JIT implementation, you will
-  not find it in the implementation of the Python programming language.
+  to be.
 
 * Because of the above, we are very serious about Test Driven Development.
   It's not only what we believe in, but also that PyPy's architecture is
@@ -195,11 +194,7 @@ Architecture
 PyPy has layers. Just like ogres or onions. Those layers help us keep the
 respective parts separated enough to be worked on independently and make the
 complexity manageable. This is, again, just a sanity requirement for such
-a complex project. For example writing a new optimization for the JIT usually
-does **not** involve touching a Python interpreter at all or the JIT assembler
-backend or the garbage collector. Instead it requires writing small tests in
-``rpython/jit/metainterp/optimizeopt/test/test_*`` and fixing files there.
-After that, you can just compile PyPy and things should just work.
+a complex project.
 
 Further Reading: :doc:`architecture <architecture>`
 

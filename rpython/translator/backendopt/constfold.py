@@ -372,13 +372,4 @@ def replace_symbolic(graph, symbolic, value):
             result = True
     return result
 
-def replace_we_are_jitted(graph):
-    from rpython.rlib import jit
-    replacement = Constant(0)
-    replacement.concretetype = lltype.Signed
-    did_replacement = replace_symbolic(graph, jit._we_are_jitted, replacement)
-    if did_replacement:
-        constant_fold_graph(graph)
-    return did_replacement
-
 

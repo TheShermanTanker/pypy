@@ -74,7 +74,7 @@ special preparations are necessary, or you may want to use the following method
 to reduce memory usage at the price of a slower translation::
 
     set PYPY_GC_MAX_DELTA=200MB
-    pypy --jit loop_longevity=300 ../../rpython/bin/rpython -Ojit targetpypystandalone
+    pypy ../../rpython/bin/rpython targetpypystandalone
     set PYPY_GC_MAX_DELTA=
     # This is done as part of translation
     PYTHONPATH=../.. ./pypy-c ../../lib_pypy/pypy_tools/build_cffi_imports.py

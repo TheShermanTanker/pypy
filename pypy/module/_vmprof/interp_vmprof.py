@@ -3,7 +3,7 @@ from pypy.interpreter.gateway import unwrap_spec
 from pypy.interpreter.pyframe import PyFrame
 from pypy.interpreter.pycode import PyCode
 from pypy.interpreter.baseobjspace import W_Root
-from rpython.rlib import rvmprof, jit
+from rpython.rlib import rvmprof
 from pypy.interpreter.error import oefmt
 
 # ____________________________________________________________

@@ -4,7 +4,7 @@ indirection is introduced to make the version tag change less often.
 """
 import weakref
 
-from rpython.rlib import jit, rerased, objectmodel
+from rpython.rlib import rerased, objectmodel
 
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.objspace.std.dictmultiobject import (
@@ -46,10 +46,8 @@ class ModuleDictStrategy(DictStrategy):
     def getdictvalue_no_unwrapping(self, w_dict, key):
         # NB: it's important to promote self here, so that self.version is a
         # no-op due to the quasi-immutable field
-        self = jit.promote(self)
         return self._getdictvalue_no_unwrapping_pure(self.version, w_dict, key)
 
-    @jit.elidable_promote('0,1,2')
     def _getdictvalue_no_unwrapping_pure(self, version, w_dict, key):
         return self.unerase(w_dict.dstorage).get(key, None)
 
@@ -257,7 +255,7 @@ def LOAD_GLOBAL_cached(self, nameindex, next_instr):
 @objectmodel.always_inline
 def _LOAD_GLOBAL_cached(self, nameindex, next_instr):
     pycode = self.pycode
-    if jit.we_are_jitted() or (
+    if (
             self.debugdata is not None and
             self.debugdata.w_globals is not pycode.w_globals):
         varname = self.getname_u(nameindex)
@@ -300,7 +298,7 @@ def _load_global_fallback(self, varname):
 
 def STORE_GLOBAL_cached(self, nameindex, next_instr):
     w_newvalue = self.popvalue()
-    if jit.we_are_jitted() or self.getdebug() is not None:
+    if self.getdebug() is not None:
         varname = self.getname_u(nameindex)
         self.space.setitem_str(self.get_w_globals(), varname, w_newvalue)
         return

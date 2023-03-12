@@ -36,17 +36,10 @@ Development of PyPy is transitioning to https://foss.heptapod.net/pypy/pypy.
 This move was covered more extensively in the `blog post`_ from last month.
 
 The `CFFI`_ backend has been updated to version 14.0. We recommend using CFFI
-rather than c-extensions to interact with C, and using cppyy_ for performant
-wrapping of C++ code for Python. The ``cppyy`` backend has been enabled
-experimentally for win32, try it out and let use know how it works.
-
-Enabling ``cppyy`` requires a more modern C compiler, so win32 is now built
-with MSVC160 (Visual Studio 2019). This is true for PyPy 3.6 as well as for 2.7.
+rather than c-extensions to interact with C.
 
 We have improved warmup time by up to 20%, performance of ``io.StringIO`` to
-match if not be faster than CPython, and improved JIT code generation for
-generators (and generator expressions in particular) when passing them to
-functions like ``sum``, ``map``, and ``map`` that consume them.
+match if not be faster than CPython.
 
 As always, this release fixed several issues and bugs raised by the growing
 community of PyPy users.  We strongly recommend updating. Many of the fixes are
@@ -63,13 +56,12 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 13 new contributors,
-thanks for pitching in.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy. Since the previous release, we have accepted contributions from 13
+new contributors, thanks for pitching in.
 
 If you are a python library maintainer and use c-extensions, please consider
-making a cffi / cppyy version of your library that would be performant on PyPy.
+making a cffi version of your library that would be performant on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy wheels.
 
@@ -77,7 +69,6 @@ building wheels for PyPy wheels.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 .. _`portable-pypy`: https://github.com/squeaky-pl/portable-pypy
 .. _`docker images`: https://github.com/pypy/manylinux
@@ -94,7 +85,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.6, and soon 3.7. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -149,8 +140,6 @@ Changes shared across versions
 - ``rstruct.runpack`` should align for next read
 - Fix `issue 3155`_: virtualenv on win32 installs into Scripts, not bin
 - Add Python3.6 ``socket`` constants, they will be exposed in pypy2.7 as well
-- Use better green keys for non-standard jitdrivers to make sure that e.g.
-  generators are specialized based on their code object
 - Improve warmup speed of PyPy by around ~5-20%
 
   - a few minor tweaks in the interpreter
@@ -174,7 +163,6 @@ Changes shared across versions
 - Update ``pip`` and ``setuptools`` in ``ensurepip`` to 20.0.2 and 44.0.0
   respectively
 - Fix potential segfault in the zipimporter
-- Fixes in the JIT backend for PowerPC 
 - Update the statically-linked openssl to 1.1.1f on macOS.
 - Fix `re` grouprefs which were broken for unicode
 

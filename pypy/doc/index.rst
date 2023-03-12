@@ -47,7 +47,6 @@ Using PyPy
   cpython_differences
   extending
   gc_info
-  jit-hooks
   stackless
   __pypy__-module
   sandbox

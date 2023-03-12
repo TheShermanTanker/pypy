@@ -1,5 +1,4 @@
 from rpython.rtyper.lltypesystem import lltype, rffi
-from rpython.rlib import jit
 
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
@@ -48,8 +47,6 @@ def cfunction_dealloc(space, py_obj):
 def w_kwargs_from_args(space, __args__):
     if __args__.keywords is None:
         return None
-    # CCC: we should probably have a @jit.look_inside_iff if the
-    # keyword count is constant, as we do in Arguments.unpack
     w_kwargs = space.newdict()
     for i in range(len(__args__.keywords)):
         key = __args__.keywords[i]
@@ -251,7 +248,6 @@ class W_PyCWrapperObject(W_Root):
     def call(self, space, w_self, __args__):
         raise NotImplementedError
 
-    @jit.unroll_safe
     def get_func_to_call(self):
         func_to_call = self.func
         if self.offset:

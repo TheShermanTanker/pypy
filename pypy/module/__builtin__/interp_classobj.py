@@ -7,7 +7,6 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import GetSetProperty, descr_get_dict, descr_set_dict
 from rpython.rlib.objectmodel import compute_identity_hash
 from rpython.rlib.debug import make_sure_not_resized
-from rpython.rlib import jit
 
 
 def raise_type_err(space, argument, expected, w_obj):
@@ -78,7 +77,6 @@ class W_ClassObject(W_Root):
                             "__bases__ items must be classes")
         self.bases_w = bases_w
 
-    @jit.unroll_safe
     def is_subclass_of(self, other):
         assert isinstance(other, W_ClassObject)
         if self is other:
@@ -89,7 +87,6 @@ class W_ClassObject(W_Root):
                 return True
         return False
 
-    @jit.unroll_safe
     def lookup(self, space, attr):
         # returns w_value or interplevel None
         w_result = space.finditem_str(self.w_dict, attr)
@@ -317,7 +314,7 @@ class W_InstanceObject(W_Root):
         # This method ignores the instance dict and the __getattr__.
         # Returns None if not found.
         assert isinstance(name, str)
-        w_value = jit.promote(self.w_class).lookup(space, name)
+        w_value = self.w_class.lookup(space, name)
         if w_value is None:
             return None
         w_descr_get = space.lookup(w_value, '__get__')

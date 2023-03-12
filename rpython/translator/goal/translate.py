@@ -23,8 +23,6 @@ except Exception:
 GOALS = [
     ("annotate", "do type inference", "-a --annotate", ""),
     ("rtype", "do rtyping", "-t --rtype", ""),
-    ("pyjitpl", "JIT generation step", "--pyjitpl", ""),
-    ("jittest", "JIT test with llgraph backend", "--pyjittest", ""),
     ("backendopt", "do backend optimizations", "--backendopt", ""),
     ("source", "create source", "-s --source", ""),
     ("compile", "compile", "-c --compile", " (default goal)"),
@@ -285,13 +283,6 @@ def main():
                                                        disable=translateconfig.skipped_goals,
                                                        default_goal='compile')
         log_config(translateconfig, "translate.py configuration")
-        if config.translation.jit:
-            if (translateconfig.goals != ['annotate'] and
-                translateconfig.goals != ['rtype']):
-                drv.set_extra_goals(['pyjitpl'])
-            # early check:
-            from rpython.jit.backend.detect_cpu import getcpuclassname
-            getcpuclassname(config.translation.jit_backend)
 
         log_config(config.translation, "translation configuration")
         pdb_plus_show.expose({'drv': drv, 'prof': prof})

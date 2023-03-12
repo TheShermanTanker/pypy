@@ -7,7 +7,6 @@ from pypy.interpreter.typedef import default_identity_hash, use_special_method_s
 from rpython.tool.sourcetools import compile2, func_with_new_name
 from pypy.module.__builtin__.interp_classobj import W_InstanceObject
 from rpython.rlib.objectmodel import specialize, always_inline
-from rpython.rlib import jit
 
 @specialize.memo()
 def object_getattribute(space):
@@ -140,10 +139,6 @@ def get_printable_location(itergreenkey, w_itemtype):
     return "DescrOperation.contains [%s, %s]" % (
             itergreenkey.iterator_greenkey_printable(),
             w_itemtype.getname(w_itemtype.space))
-
-contains_jitdriver = jit.JitDriver(name='contains',
-        greens=['itergreenkey', 'w_itemtype'], reds='auto',
-        get_printable_location=get_printable_location)
 
 class DescrOperation(object):
     # This is meant to be a *mixin*.
@@ -451,7 +446,6 @@ class DescrOperation(object):
         itergreenkey = space.iterator_greenkey(w_iter)
         w_itemtype = space.type(w_item)
         while 1:
-            contains_jitdriver.jit_merge_point(itergreenkey=itergreenkey, w_itemtype=w_itemtype)
             try:
                 w_next = space.next(w_iter)
             except OperationError as e:
@@ -484,9 +478,8 @@ class DescrOperation(object):
         else:
             raise oefmt(space.w_TypeError,
                         "__hash__() should return an int or long not '%T'", w_result)
-        # turn -1 into -2 without using a condition, which would
-        # create a potential bridge in the JIT
-        h -= (h == -1)
+        if h == -1:
+            h = -2
         return h
 
     def hash(space, w_obj):

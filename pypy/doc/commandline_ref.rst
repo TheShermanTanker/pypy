@@ -9,4 +9,3 @@ Manual pages
 
    man/pypy.1.rst
    man/pypy3.1.rst
-   jit_help.rst

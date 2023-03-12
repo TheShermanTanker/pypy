@@ -19,12 +19,12 @@ pypy-c:
 	@echo
 	@echo "===================================================================="
 ifeq ($(PYPY_EXECUTABLE),)
-	@echo "Building a regular (jitting) version of PyPy, using CPython."
+	@echo "Building a regular version of PyPy, using CPython."
 	@echo "This takes around 2 hours and $(URAM) GB of RAM."
 	@echo "Note that pre-installing a PyPy binary would reduce this time"
 	@echo "and produce basically the same result."
 else
-	@echo "Building a regular (jitting) version of PyPy, using"
+	@echo "Building a regular version of PyPy, using"
 	@echo "$(PYPY_EXECUTABLE) to run the translation itself."
 	@echo "This takes up to 1 hour and $(URAM) GB of RAM."
 endif
@@ -35,7 +35,7 @@ endif
 	@echo "===================================================================="
 	@echo
 	@sleep 5
-	cd pypy/goal && $(RUNINTERP) ../../rpython/bin/rpython $(JOBS) -Ojit targetpypystandalone.py
+	cd pypy/goal && $(RUNINTERP) ../../rpython/bin/rpython $(JOBS) --opt=2 targetpypystandalone.py
 
 cffi_imports: pypy-c
 	cd lib_pypy && ../pypy/goal/pypy-c pypy_tools/build_cffi_imports.py || /bin/true

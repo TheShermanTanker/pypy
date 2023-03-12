@@ -194,11 +194,7 @@ Run the translation
 We usually translate in the ``pypy/goal`` directory, so all the following
 commands assume your ``$pwd`` is there.
 
-Translate with JIT::
-
-    pypy ../../rpython/bin/rpython --opt=jit
-
-Translate without JIT::
+Translate::
 
     pypy ../../rpython/bin/rpython --opt=2
 

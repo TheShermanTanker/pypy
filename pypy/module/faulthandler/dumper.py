@@ -39,10 +39,6 @@ def dump_code(pycode, loc, fd):
         _dump_nonneg_int(fd, pycode.co_firstlineno)
         _dump(fd, " in ")
         _dump(fd, pycode.co_name)
-    if loc == traceback.LOC_JITTED:
-        _dump(fd, " [jitted]")
-    elif loc == traceback.LOC_JITTED_INLINED:
-        _dump(fd, " [jit inlined]")
     _dump(fd, "\n")
 
 

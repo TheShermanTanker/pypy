@@ -21,7 +21,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7.3. It's fast (`pypy 2.0 beta 1 and cpython 2.7.3`_
-performance comparison) due to its integrated tracing JIT compiler.
+performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or
 Windows 32. It also supports ARM machines running Linux.
@@ -89,9 +89,6 @@ Highlights
 
   * ``complex128`` and ``complex64`` dtypes
 
-* `JIT hooks`_ are now a powerful tool to introspect the JITting process that
-  PyPy performs.
-
 * ``**kwds`` usage is much faster in the typical scenario
 
 * operations on ``long`` objects are now as fast as in CPython (from
@@ -102,17 +99,13 @@ Highlights
   and more compact.
 
 .. _`cpython issue tracker`: https://bugs.python.org/issue14621
-.. _`jit hooks`: https://doc.pypy.org/en/latest/jit-hooks.html
 
 Things we're working on
 =======================
 
 There are a few things that did not make it to the 2.0 beta 1, which
-are being actively worked on. Greenlets support in the JIT is one
-that we would like to have before 2.0 final. Two important items that
-will not make it to 2.0, but are being actively worked on, are:
-
-* Faster JIT warmup time.
+are being actively worked on. Important items that will not make it
+to 2.0, but are being actively worked on, are:
 
 * Software Transactional Memory.
 

@@ -35,7 +35,6 @@ def create_entry_point(space, w_dict):
         w_entry_point = space.getitem(w_dict, space.newtext('entry_point'))
         w_run_toplevel = space.getitem(w_dict, space.newtext('run_toplevel'))
         w_initstdio = space.getitem(w_dict, space.newtext('initstdio'))
-        withjit = space.config.objspace.usemodules.pypyjit
         hashfunc = space.config.objspace.hash
     else:
         w_initstdio = space.appexec([], """():
@@ -43,10 +42,6 @@ def create_entry_point(space, w_dict):
         """)
 
     def entry_point(argv):
-        if withjit:
-            from rpython.jit.backend.hlinfo import highleveljitinfo
-            highleveljitinfo.sys_executable = argv[0]
-
         if hashfunc == "siphash24":
             from rpython.rlib import rsiphash
             rsiphash.enable_siphash24()
@@ -228,7 +223,7 @@ class PyPyTarget(object):
         if (not translateconfig.help and
             translateconfig._cfgimpl_value_owners['opt'] == 'default'):
             raise Exception("You have to specify the --opt level.\n"
-                    "Try --opt=2 or --opt=jit, or equivalently -O2 or -Ojit .")
+                    "Try --opt=2 .")
         self.translateconfig = translateconfig
         # set up the objspace optimizations based on the --opt argument
         from pypy.config.pypyoption import set_pypy_opt_level
@@ -308,11 +303,6 @@ class PyPyTarget(object):
         if not config.translation.rweakref:
             config.objspace.usemodules._weakref = False
 
-        if config.translation.jit:
-            config.objspace.usemodules.pypyjit = True
-        elif config.objspace.usemodules.pypyjit:
-            config.translation.jit = True
-
         if config.translation.sandbox:
             assert 0, ("--sandbox is not tested nor maintained.  If you "
                        "really want to try it anyway, remove this line in "
@@ -369,11 +359,6 @@ class PyPyTarget(object):
         driver.default_goal = 'build_cffi_imports'
         # HACKHACKHACK end
 
-    def jitpolicy(self, driver):
-        from pypy.module.pypyjit.policy import PyPyJitPolicy
-        from pypy.module.pypyjit.hooks import pypy_hooks
-        return PyPyJitPolicy(pypy_hooks)
-
     def get_gchooks(self):
         from pypy.module.gc.hook import LowLevelGcHooks
         if self.space is None:
@@ -394,7 +379,7 @@ class PyPyTarget(object):
 
     def interface(self, ns):
         for name in ['take_options', 'handle_config', 'print_help', 'target',
-                     'jitpolicy', 'get_entry_point',
+                     'get_entry_point',
                      'get_additional_config_options']:
             ns[name] = getattr(self, name)
         ns['get_gchooks'] = self.get_gchooks

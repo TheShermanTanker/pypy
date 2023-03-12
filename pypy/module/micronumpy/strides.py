@@ -1,5 +1,4 @@
 from pypy.interpreter.error import oefmt
-from rpython.rlib import jit
 from pypy.module.micronumpy import constants as NPY
 from pypy.module.micronumpy.base import W_NDimArray
 
@@ -113,7 +112,6 @@ def new_view(space, w_arr, chunks):
     return W_NDimArray.new_slice(space, start, strides[:], backstrides[:],
                                  shape[:], arr, w_arr)
 
-@jit.unroll_safe
 def _extend_shape(old_shape, chunks):
     shape = []
     i = -1
@@ -140,7 +138,6 @@ class BroadcastTransform(BaseTransform):
         self.res_shape = res_shape
 
 
-@jit.look_inside_iff(lambda chunks: jit.isconstant(len(chunks)))
 def enumerate_chunks(chunks):
     result = []
     i = -1
@@ -150,8 +147,6 @@ def enumerate_chunks(chunks):
     return result
 
 
-@jit.look_inside_iff(lambda space, shape, start, strides, backstrides, chunks:
-                     jit.isconstant(len(chunks)))
 def calculate_slice_strides(space, shape, start, strides, backstrides, chunks):
     """
     Note: `chunks` can contain at most one EllipsisChunk object.
@@ -216,7 +211,6 @@ def calculate_broadcast_strides(strides, backstrides, orig_shape, res_shape, bac
     return rstrides, rbackstrides
 
 
-@jit.unroll_safe
 def shape_agreement(space, shape1, w_arr2, broadcast_down=True):
     if w_arr2 is None:
         return shape1
@@ -241,7 +235,6 @@ def shape_agreement(space, shape1, w_arr2, broadcast_down=True):
     return ret
 
 
-@jit.unroll_safe
 def shape_agreement_multiple(space, array_list, shape=None):
     """ call shape_agreement recursively, allow elements from array_list to
     be None (like w_out)
@@ -254,7 +247,6 @@ def shape_agreement_multiple(space, array_list, shape=None):
                 shape = shape_agreement(space, shape, arr)
     return shape
 
-@jit.unroll_safe
 def _shape_agreement(shape1, shape2):
     """ Checks agreement about two shapes with respect to broadcasting. Returns
     the resulting shape.
@@ -328,7 +320,6 @@ def get_shape_from_iterable(space, old_size, w_iterable):
     return new_shape
 
 
-@jit.unroll_safe
 def calc_strides(shape, dtype, order):
     strides = []
     backstrides = []
@@ -346,7 +337,6 @@ def calc_strides(shape, dtype, order):
         backstrides.reverse()
     return strides, backstrides
 
-@jit.unroll_safe
 def calc_backstrides(strides, shape):
     ndims = len(shape)
     new_backstrides = [0] * ndims
@@ -424,7 +414,6 @@ def calc_start(shape, strides):
             start -= strides[i] * (shape[i] - 1)
     return start
 
-@jit.unroll_safe
 def is_c_contiguous(arr):
     shape = arr.get_shape()
     strides = arr.get_strides()
@@ -440,7 +429,6 @@ def is_c_contiguous(arr):
         sd *= dim
     return ret
 
-@jit.unroll_safe
 def is_f_contiguous(arr):
     shape = arr.get_shape()
     strides = arr.get_strides()

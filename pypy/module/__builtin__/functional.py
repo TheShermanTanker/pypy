@@ -8,7 +8,7 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
 from pypy.interpreter.typedef import TypeDef
-from rpython.rlib import jit, rarithmetic
+from rpython.rlib import rarithmetic
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rarithmetic import r_uint, intmask
 from rpython.rlib.rbigint import rbigint
@@ -131,39 +131,18 @@ def range_with_longs(space, w_start, w_stop, w_step):
         v = v.add(step)
     return space.newlist(res_w)
 
-def get_printable_location(has_key, has_item, greenkey):
-    return "min [has_key=%s, has_item=%s, %s]" % (
-            has_key, has_item, greenkey.iterator_greenkey_printable())
-
-min_jitdriver = jit.JitDriver(name='min',
-        greens=['has_key', 'has_item', 'greenkey'], reds='auto',
-        get_printable_location=get_printable_location)
-
-def get_printable_location(has_key, has_item, greenkey):
-    return "min [has_key=%s, has_item=%s, %s]" % (
-            has_key, has_item, greenkey.iterator_greenkey_printable())
-
-max_jitdriver = jit.JitDriver(name='max',
-        greens=['has_key', 'has_item', 'greenkey'], reds='auto',
-        get_printable_location=get_printable_location)
-
 @specialize.arg(3)
 def min_max_sequence(space, w_sequence, w_key, implementation_of):
     if implementation_of == "max":
         compare = space.gt
-        jitdriver = max_jitdriver
     else:
         compare = space.lt
-        jitdriver = min_jitdriver
     w_iter = space.iter(w_sequence)
-    greenkey = space.iterator_greenkey(w_iter)
     has_key = w_key is not None
     has_item = False
     w_max_item = None
     w_max_val = None
     while True:
-        jitdriver.jit_merge_point(has_key=has_key, has_item=has_item,
-                                  greenkey=greenkey)
         try:
             w_item = space.next(w_iter)
         except OperationError as e:
@@ -184,8 +163,6 @@ def min_max_sequence(space, w_sequence, w_key, implementation_of):
     return w_max_item
 
 @specialize.arg(3)
-@jit.look_inside_iff(lambda space, args_w, w_key, implementation_of:
-        jit.loop_unrolling_heuristic(args_w, len(args_w), 3))
 def min_max_multiple_args(space, args_w, w_key, implementation_of):
     # case of multiple arguments (at least two).  We unroll it if there
     # are 2 or 3 arguments.

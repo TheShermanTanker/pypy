@@ -337,7 +337,6 @@ def test_attr_immutability(monkeypatch):
         return unerase_item(obj._mapdict_read_storage(0))
 
     obj.map.back._pure_direct_read = _pure_direct_read
-    monkeypatch.setattr(jit, "isconstant", lambda c: True)
 
     assert obj.getdictvalue(space, "a") == 10
     assert obj.getdictvalue(space, "b") == 30
@@ -709,7 +708,6 @@ def test_unboxed_attr_immutability(monkeypatch):
         return float2longlong(10.12)
 
     obj.map.back._pure_unboxed_read = _pure_unboxed_read
-    monkeypatch.setattr(jit, "isconstant", lambda c: True)
 
     assert obj.getdictvalue(space, "a") == 10.12
     assert obj.getdictvalue(space, "b") == 30.12

@@ -5,16 +5,6 @@ What's new in PyPy2.7 6.0+
 .. this is a revision shortly after release-pypy-6.0.0
 .. startrev: e50e11af23f1
 
-.. branch: cppyy-packaging
-
-Main items: vastly better template resolution and improved performance. In
-detail: upgrade to backend 1.4, improved handling of templated methods and
-functions (in particular automatic deduction of types), improved pythonization
-interface, range of compatibility fixes for Python3, free functions now take
-fast libffi path when possible, moves for strings (incl. from Python str),
-easier/faster handling of std::vector by numpy, improved and faster object
-identity preservation
-
 .. branch: socket_default_timeout_blockingness
 
 Make sure 'blocking-ness' of socket is set along with default timeout

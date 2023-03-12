@@ -75,16 +75,6 @@ Update the version of Tk/Tcl on windows to 8.6
 
 Backport changes to ``_ctypes`` needed for maxos BigSur from py3.7
 
-.. branch: cppyy-packaging
-
-Updated the API to the latest cppyy_backend (1.14.2), made all types used
-consistent to avoid void*/long casting problems on Win64, and added several
-new "builtin" types (wide chars, complex, etc.).
-
-
-.. branch: intbound-improvements-3
-
-Refactor the intbound analysis in the JIT
 
 .. branch: issue-3404
 

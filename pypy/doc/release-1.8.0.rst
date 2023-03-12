@@ -21,8 +21,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 1.8 and cpython 2.7.1`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 1.8 and cpython 2.7.1`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 32/64 or
 Windows 32. Windows 64 work has been stalled, we would welcome a volunteer
@@ -35,9 +34,7 @@ Highlights
 ==========
 
 * List strategies. Now lists that contain only ints or only floats should
-  be as efficient as storing them in a binary-packed array. It also improves
-  the JIT performance in places that use such lists. There are also special
-  strategies for unicode and string lists.
+  be as efficient as storing them in a binary-packed array.
 
 * As usual, numerous performance improvements. There are many examples
   of python constructs that now should be faster; too many to list them.
@@ -62,9 +59,6 @@ Highlights
   names. However, because it's incomplete, you have to `import numpypy` first
   before doing any imports from `numpy`.
 
-* New JIT hooks that allow you to hook into the JIT process from your python
-  program. There is a `brief overview`_ of what they offer.
-
 * Standard library upgrade from 2.7.1 to 2.7.2.
 
 Ongoing work
@@ -72,8 +66,6 @@ Ongoing work
 
 As usual, there is quite a bit of ongoing work that either didn't make it to
 the release or is not ready yet. Highlights include:
-
-* Non-x86 backends for the JIT: ARMv7 (almost ready) and PPC64 (in progress)
 
 * Specialized type instances - allocate instances as efficient as C structs,
   including type specialization
@@ -90,7 +82,6 @@ the release or is not ready yet. Highlights include:
 Cheers,
 The PyPy Team
 
-.. _`brief overview`: https://doc.pypy.org/en/latest/jit-hooks.html
 .. _`numpy status page`: https://buildbot.pypy.org/numpy-status/latest.html
 .. _`numpy status update blog report`: https://morepypy.blogspot.com/2012/01/numpypy-status-update.html
 .. _`numpypy`: https://pypy.org/numpydonate.html

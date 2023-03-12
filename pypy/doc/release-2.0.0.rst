@@ -29,8 +29,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or
 Windows 32.  Windows 64 work is still stalling, we would welcome a volunteer
@@ -49,14 +48,8 @@ Highlights
   CPython; the two versions should be fully compatible.)  It is the
   preferred way of calling C from Python that works on PyPy.
 
-* Callbacks from C are now JITted, which means XML parsing is much faster.
-
 * A lot of speed improvements in various language corners, most of them small,
   but speeding up some particular corners a lot.
-
-* The JIT was refactored to emit machine code which manipulates a "frame"
-  that lives on the heap rather than on the stack.  This is what makes
-  Stackless work, and it could bring another future speed-up (not done yet).
 
 * A lot of stability issues fixed.
 

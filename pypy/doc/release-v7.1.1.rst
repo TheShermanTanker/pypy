@@ -31,8 +31,8 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy.
 
 .. _`PyPy`: index.html
 .. _`RPython`: https://rpython.readthedocs.org
@@ -43,7 +43,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.6. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -76,12 +76,10 @@ Changes shared across versions:
 
 * Fix a few corner cases when encountering unicode values above 0x110000
 
-* Teach the JIT how to handle very large constant lists, sets, or dicts
 * Fix building on ARM32 (issue 2984_)
 * Fix a bug in register assignment in ARM32
 * Package windows DLLs needed by cffi modules next to the cffi c-extensions
   (issue 2988_)
-* Cleanup and refactor JIT code to remove ``rpython.jit.metainterp.typesystem``
 * Fix memoryviews of ctype structures with padding, (cpython issue 32780_)
 * CFFI updated to as-yet-unreleased 1.12.3
 

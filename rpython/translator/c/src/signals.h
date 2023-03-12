@@ -24,7 +24,6 @@ RPY_EXTERN
 void pypysig_pushback(int signum);
 
 /* When a signal is received, pypysig_counter is set to -1. */
-/* This is a struct for the JIT. See rsignal.py. */
 struct pypysig_long_struct {
     Signed value;
 };

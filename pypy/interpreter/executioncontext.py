@@ -2,13 +2,12 @@ import sys
 from pypy.interpreter.error import OperationError, get_cleared_operation_error
 from rpython.rlib.unroll import unrolling_iterable
 from rpython.rlib.objectmodel import specialize, not_rpython
-from rpython.rlib import jit, rgc, objectmodel
+from rpython.rlib import rgc, objectmodel
 
 TICK_COUNTER_STEP = 100
 
 def app_profile_call(space, w_callable, frame, event, w_arg):
     # from here on, frame is just a normal w_object
-    frame = jit.hint(frame, access_directly=False)
     space.call_function(w_callable,
                         frame,
                         space.newtext(event), w_arg)
@@ -17,11 +16,6 @@ class ExecutionContext(object):
     """An ExecutionContext holds the state of an execution thread
     in the Python interpreter."""
 
-    # XXX JIT: when tracing (but not when blackholing!), the following
-    # XXX fields should be known to a constant None or False:
-    # XXX   self.w_tracefunc, self.profilefunc
-    # XXX   frame.is_being_profiled
-
     # XXX [fijal] but they're not. is_being_profiled is guarded a bit all
     #     over the place as well as w_tracefunc
 
@@ -29,7 +23,7 @@ class ExecutionContext(object):
 
     def __init__(self, space):
         self.space = space
-        self.topframeref = jit.vref_None
+        self.topframeref = None
         self.w_tracefunc = None
         self.is_tracing = 0
         self.compiler = space.createcompiler()
@@ -51,28 +45,26 @@ class ExecutionContext(object):
                 ec.thread_disappeared = True
 
     def gettopframe(self):
-        return self.topframeref()
+        return self.topframeref
 
-    @jit.unroll_safe
     def gettopframe_nohidden(self):
-        frame = self.topframeref()
+        frame = self.topframeref
         while frame and frame.hide():
-            frame = frame.f_backref()
+            frame = frame.f_backref
         return frame
 
     @staticmethod
-    @jit.unroll_safe  # should usually loop 0 times, very rarely more than once
     def getnextframe_nohidden(frame):
-        frame = frame.f_backref()
+        frame = frame.f_backref
         while frame and frame.hide():
-            frame = frame.f_backref()
+            frame = frame.f_backref
         return frame
 
     def enter(self, frame):
         if self.space.reverse_debugging:
             self._revdb_enter(frame)
         frame.f_backref = self.topframeref
-        self.topframeref = jit.virtual_ref(frame)
+        self.topframeref = frame
 
     def leave(self, frame, w_exitvalue, got_exception):
         try:
@@ -84,13 +76,9 @@ class ExecutionContext(object):
             if frame.escaped or got_exception:
                 # if this frame escaped to applevel, we must ensure that also
                 # f_back does
-                f_back = frame.f_backref()
+                f_back = frame.f_backref
                 if f_back:
                     f_back.mark_as_escaped()
-                # force the frame (from the JIT point of view), so that it can
-                # be accessed also later
-                frame_vref()
-            jit.virtual_ref_finish(frame_vref, frame)
             if self.space.reverse_debugging:
                 self._revdb_leave(got_exception)
 
@@ -169,7 +157,6 @@ class ExecutionContext(object):
             return
         self.run_trace_func(frame)
 
-    @jit.unroll_safe
     def run_trace_func(self, frame):
         code = frame.getcode() # promote the frame!
         d = frame.getorcreatedebug()
@@ -231,7 +218,6 @@ class ExecutionContext(object):
             self._trace(frame, 'exception', None, operationerr)
         #operationerr.print_detailed_traceback(self.space)
 
-    @jit.dont_look_inside
     @specialize.arg(1)
     def sys_exc_info(self, for_hidden=False):
         """Implements sys.exc_info().
@@ -261,7 +247,6 @@ class ExecutionContext(object):
                 break
             frame = self.getnextframe_nohidden(frame)
 
-    @jit.dont_look_inside
     def settrace(self, w_func):
         """Set the global trace function."""
         if self.space.is_w(w_func, self.space.w_None):
@@ -269,12 +254,9 @@ class ExecutionContext(object):
         else:
             self.force_all_frames()
             self.w_tracefunc = w_func
-            # Increase the JIT's trace_limit when we have a tracefunc, it
-            # generates a ton of extra ops.
-            jit.set_param(None, 'trace_limit', 10000)
 
     def gettrace(self):
-        return jit.promote(self.w_tracefunc)
+        return self.w_tracefunc
 
     def setprofile(self, w_func):
         """Set the global trace function."""
@@ -296,14 +278,6 @@ class ExecutionContext(object):
         self.w_profilefuncarg = w_arg
 
     def force_all_frames(self, is_being_profiled=False):
-        # "Force" all frames in the sense of the jit, and optionally
-        # set the flag 'is_being_profiled' on them.  A forced frame is
-        # one out of which the jit will exit: if it is running so far,
-        # in a piece of assembler currently running a CALL_MAY_FORCE,
-        # then being forced means that it will fail the following
-        # GUARD_NOT_FORCED operation, and so fall back to interpreted
-        # execution.  (We get this effect simply by reading the f_back
-        # field of all frames, during the loop below.)
         frame = self.gettopframe_nohidden()
         while frame:
             if is_being_profiled:
@@ -349,7 +323,6 @@ class ExecutionContext(object):
                     d.is_in_line_tracing = True
                 try:
                     # from here on, frame is just a normal w_object
-                    frame = jit.hint(frame, access_directly=False)
                     w_result = space.call_function(w_callback, frame, space.newtext(event), w_arg)
                     if space.is_w(w_result, space.w_None):
                         # bug-to-bug compatibility with CPython
@@ -405,12 +378,12 @@ class ExecutionContext(object):
     def _revdb_enter(self, frame):
         # moved in its own function for the import statement
         from pypy.interpreter.reverse_debugging import enter_call
-        enter_call(self.topframeref(), frame)
+        enter_call(self.topframeref, frame)
 
     def _revdb_leave(self, got_exception):
         # moved in its own function for the import statement
         from pypy.interpreter.reverse_debugging import leave_call
-        leave_call(self.topframeref(), got_exception)
+        leave_call(self.topframeref, got_exception)
 
     def _revdb_potential_stop_point(self, frame):
         # moved in its own function for the import statement
@@ -505,7 +478,6 @@ class AbstractActionFlag(object):
     def _rebuild_action_dispatcher(self):
         periodic_actions = unrolling_iterable(self._periodic_actions)
 
-        @jit.unroll_safe
         @objectmodel.dont_inline
         def action_dispatcher(ec, frame):
             # periodic actions (first reset the bytecode counter)
@@ -552,11 +524,8 @@ class ActionFlag(AbstractActionFlag):
     def decrement_ticker(self, by):
         value = self._ticker
         if self.has_bytecode_counter:    # this 'if' is constant-folded
-            if jit.isconstant(by) and by == 0:
-                pass     # normally constant-folded too
-            else:
-                value -= by
-                self._ticker = value
+            value -= by
+            self._ticker = value
         return value
 
 
@@ -604,7 +573,6 @@ class UserDelAction(AsyncAction):
     def perform(self, executioncontext, frame):
         self._run_finalizers()
 
-    @jit.dont_look_inside
     def _run_finalizers(self):
         # called by perform() when we have to "perform" this action,
         # and also directly at the end of gc.collect).

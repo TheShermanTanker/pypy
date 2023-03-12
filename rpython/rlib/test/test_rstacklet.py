@@ -7,7 +7,6 @@ try:
 except CompilationError as e:
     py.test.skip("cannot import rstacklet: %s" % e)
 
-from rpython.config.translationoption import DEFL_ROOTFINDER_WITHJIT
 from rpython.rlib import rrandom, rgc
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib.nonconst import NonConstant

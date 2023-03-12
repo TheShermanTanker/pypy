@@ -34,7 +34,6 @@ PyPy options and arguments:
 -X track-resources : track the creation of files and sockets and display
                      a warning if they are not closed explicitly
 -X faulthandler    : attempt to display tracebacks when PyPy crashes
--X jit-off         : turn the JIT off, equivalent to --jit off
 """
 # Missing vs CPython: PYTHONHOME, PYTHONCASEOK
 USAGE2 = """
@@ -46,7 +45,6 @@ PYTHONIOENCODING: Encoding[:errors] used for stdin/stdout/stderr.
 PYPY_IRC_TOPIC: if set to a non-empty value, print a random #pypy IRC
                topic at startup of interactive mode.
 PYPYLOG: If set to a non-empty value, enable logging.
-PYPY_DISABLE_JIT: if set to a non-empty value, disable JIT.
 """
 
 try:
@@ -213,39 +211,8 @@ def print_help(*args):
     print 'usage: %s [option] ... [-c cmd | -m mod | file | -] [arg] ...' % (
         get_sys_executable(),)
     print USAGE1,
-    if 'pypyjit' in sys.builtin_module_names:
-        print "--jit options: advanced JIT options: try 'off' or 'help'"
     print (USAGE2 % (pathsep,)),
     raise SystemExit
-
-def _print_jit_help():
-    try:
-        import pypyjit
-    except ImportError:
-        print >> sys.stderr, "No jit support in %s" % (get_sys_executable(),)
-        return
-    items = sorted(pypyjit.defaults.items())
-    print 'Advanced JIT options: a comma-separated list of OPTION=VALUE:'
-    for key, value in items:
-        print
-        print ' %s=N' % (key,)
-        doc = '%s (default %s)' % (pypyjit.PARAMETER_DOCS[key], value)
-        while len(doc) > 72:
-            i = doc[:74].rfind(' ')
-            if i < 0:
-                i = doc.find(' ')
-                if i < 0:
-                    i = len(doc)
-            print '    ' + doc[:i]
-            doc = doc[i+1:]
-        print '    ' + doc
-    print
-    print ' off'
-    print '    turn off the JIT'
-    print ' help'
-    print '    print this page'
-    print
-    print 'The "pypyjit" module can be used to control the JIT from inside python'
 
 def print_version(*args):
     print >> sys.stderr, "Python", sys.version
@@ -254,19 +221,6 @@ def print_version(*args):
 
 def funroll_loops(*args):
     print("Vroom vroom, I'm a racecar!")
-
-
-def set_jit_option(options, jitparam, *args):
-    options['_jitoptions'] = jitparam
-    if jitparam == 'help':
-        _print_jit_help()
-        raise SystemExit
-    if 'pypyjit' not in sys.builtin_module_names:
-        print >> sys.stderr, ("Warning: No jit support in %s" %
-                              (get_sys_executable(),))
-    else:
-        import pypyjit
-        pypyjit.set_param(jitparam)
 
 def run_faulthandler():
     if 'faulthandler' in sys.builtin_module_names:
@@ -281,11 +235,9 @@ def set_runtime_options(options, Xparam, *args):
         sys.pypy_set_track_resources(True)
     elif Xparam == 'faulthandler':
         run_faulthandler()
-    elif Xparam == 'jit-off':
-        set_jit_option(options, 'off')
     else:
         print >> sys.stderr, 'usage: %s -X [options]' % (get_sys_executable(),)
-        print >> sys.stderr, '[options] can be: track-resources, faulthandler, jit-off'
+        print >> sys.stderr, '[options] can be: track-resources, faulthandler
         raise SystemExit
 
 class CommandLineError(Exception):
@@ -469,7 +421,6 @@ cmdline_options = {
     '--version': (print_version,   None),
     'Q':         (div_option,      Ellipsis),
     '--info':    (print_info,      None),
-    '--jit':     (set_jit_option,  Ellipsis),
     '-funroll-loops': (funroll_loops, None),
     '-X':        (set_runtime_options, Ellipsis),
     '--':        (end_options,     None),
@@ -558,8 +509,6 @@ def parse_command_line(argv):
             options["unbuffered"] = 1
         parse_env('PYTHONVERBOSE', "verbose", options)
         parse_env('PYTHONOPTIMIZE', "optimize", options)
-        if getenv('PYPY_DISABLE_JIT'):
-            set_jit_option(options, 'off')
     if (options["interactive"] or
         (not options["ignore_environment"] and getenv('PYTHONINSPECT'))):
         options["inspect"] = 1

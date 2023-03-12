@@ -27,12 +27,6 @@ debian- and RedHat-based distributions (including Ubuntu, CentOS, and Fedora).
 The `CFFI`_ backend has been updated to version 1.13.1. We recommend using CFFI
 rather than c-extensions to interact with C.
 
-The built-in ``_cppyy`` module was upgraded to 1.10.6, which
-provides, among others, better template resolution, stricter ``enum`` handling,
-anonymous struct/unions, cmake fragments for distribution, optimizations for
-PODs, and faster wrapper calls. We reccomend using cppyy_ for performant
-wrapping of C++ code for Python.
-
 The vendored pyrepl package for interaction inside the REPL was updated.
 
 Support for codepage encoding and decoding was added for Windows.
@@ -52,13 +46,12 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 3 new contributors,
-thanks for pitching in.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy. Since the previous release, we have accepted contributions from 3 new
+contributors, thanks for pitching in.
 
 If you are a python library maintainer and use c-extensions, please consider
-making a cffi / cppyy version of your library that would be performant on PyPy.
+making a cffi version of your library that would be performant on PyPy.
 If you are stuck with using the C-API, you can use `docker images`_ with PyPy
 built in or the `multibuild system`_ to build wheels.
 
@@ -66,7 +59,6 @@ built in or the `multibuild system`_ to build wheels.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 .. _`portable-pypy`: https://github.com/squeaky-pl/portable-pypy
 .. _`docker images`: https://github.com/pypy/manylinux
@@ -77,7 +69,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.6. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -109,12 +101,9 @@ Changes shared across versions
 
 * Fix segfault when calling descr-methods with no arguments
 * Change the SOABI and subsequently change the reported ABI tag.
-* Update the builtin ``_cppyy`` backend to 1.10.6
 * Performance improvements in string/unicode handling
 * Fix compilation error when building `revdb`_ (`issue 3084`_, actually
   released in PyPy 7.2 but not mentioned in the release notes)
-* Add JIT options to documentation and an option for JIT help via ``pypy --jit
-  help``
 * Fix regex escapes in pyrepl (`issue 3097`_)
 * Allow reloading of subclasses of module (`issue 3099`_)
 * Work around a gcc bug, which was reported to them and fixed (`issue 3086`_)
@@ -127,7 +116,6 @@ Changes shared across versions
 * Workaround for programs calling ``sys.setrecursionlimit(huge_value)`` (`issue
   3094`_)
 * Set minimal ``MACOSX_DEPLOYMENT_TARGET`` to 10.7 on macOS; cpython uses 10.5
-* Fix a JIT bug causing rare register corruption on aarch64
 * Add discovery of ``ncursesw`` when building ``_minimal_curses`` and improve
   handling of old curses versions (`issue 2970`_)
 * Improve the error message for ``class X(random_object)`` (`issue 3109`_)
@@ -147,7 +135,6 @@ Changes shared across versions
 * Fix multithread contention when creating an object in cffi (PyPy only)
 * Copy lib/* shared objects in portable builds when creating virtual
   environments with virtualenv and venv
-* Potential fix in rare-case JIT optimizer (`issue 3128`_)
 
 C-API (cpyext) and c-extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

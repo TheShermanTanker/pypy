@@ -5,7 +5,7 @@ Primitives.
 import sys
 
 from rpython.rlib.rarithmetic import r_uint, r_ulonglong, intmask
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rtyper.tool import rfficache
 
@@ -101,7 +101,7 @@ class W_CTypePrimitive(W_CType):
             return self._nonzero_longlong(cdata)
 
     def _nonzero_longlong(self, cdata):
-        # in its own function: LONGLONG may make the whole function jit-opaque
+        # in its own function
         value = misc.read_raw_signed_data(cdata, self.size)
         return bool(value)
 
@@ -246,7 +246,7 @@ class W_CTypePrimitiveSigned(W_CTypePrimitive):
             return self._convert_to_object_longlong(cdata)
 
     def _convert_to_object_longlong(self, cdata):
-        # in its own function: LONGLONG may make the whole function jit-opaque
+        # in its own function
         value = misc.read_raw_signed_data(cdata, self.size)
         return self.space.newint(value)    # r_longlong => on 32-bit, 'long'
 
@@ -261,7 +261,7 @@ class W_CTypePrimitiveSigned(W_CTypePrimitive):
             self._convert_from_object_longlong(cdata, w_ob)
 
     def _convert_from_object_longlong(self, cdata, w_ob):
-        # in its own function: LONGLONG may make the whole function jit-opaque
+        # in its own function
         value = misc.as_long_long(self.space, w_ob)
         misc.write_raw_signed_data(cdata, value, self.size)
 
@@ -337,7 +337,7 @@ class W_CTypePrimitiveUnsigned(W_CTypePrimitive):
             self._convert_from_object_longlong(cdata, w_ob)
 
     def _convert_from_object_longlong(self, cdata, w_ob):
-        # in its own function: LONGLONG may make the whole function jit-opaque
+        # in its own function
         value = misc.as_unsigned_long_long(self.space, w_ob, strict=True)
         misc.write_raw_unsigned_data(cdata, value, self.size)
 
@@ -352,7 +352,7 @@ class W_CTypePrimitiveUnsigned(W_CTypePrimitive):
             return self._convert_to_object_longlong(cdata)
 
     def _convert_to_object_longlong(self, cdata):
-        # in its own function: LONGLONG may make the whole function jit-opaque
+        # in its own function
         value = misc.read_raw_unsigned_data(cdata, self.size)
         return self.space.newint(value)    # r_ulonglong => 'long' object
 
@@ -507,7 +507,6 @@ class W_CTypePrimitiveLongDouble(W_CTypePrimitiveFloat):
     _attrs_ = []
     is_indirect_arg_for_call_python = True
 
-    @jit.dont_look_inside
     def extra_repr(self, cdata):
         lvalue = misc.read_raw_longdouble_data(cdata)
         return misc.longdouble2str(lvalue)
@@ -521,18 +520,15 @@ class W_CTypePrimitiveLongDouble(W_CTypePrimitiveFloat):
         else:
             return W_CTypePrimitiveFloat.cast(self, w_ob)
 
-    @jit.dont_look_inside
     def _to_longdouble_and_write(self, value, cdata):
         lvalue = rffi.cast(rffi.LONGDOUBLE, value)
         misc.write_raw_longdouble_data(cdata, lvalue)
 
-    @jit.dont_look_inside
     def _read_from_longdouble(self, cdata):
         lvalue = misc.read_raw_longdouble_data(cdata)
         value = rffi.cast(lltype.Float, lvalue)
         return value
 
-    @jit.dont_look_inside
     def _copy_longdouble(self, cdatasrc, cdatadst):
         lvalue = misc.read_raw_longdouble_data(cdatasrc)
         misc.write_raw_longdouble_data(cdatadst, lvalue)
@@ -571,7 +567,6 @@ class W_CTypePrimitiveLongDouble(W_CTypePrimitiveFloat):
         return W_CTypePrimitive.pack_list_of_items(self, cdata, w_ob,
                                                    expected_length)
 
-    @jit.dont_look_inside
     def nonzero(self, cdata):
         return misc.is_nonnull_longdouble(cdata)
 

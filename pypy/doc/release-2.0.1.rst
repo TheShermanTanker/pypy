@@ -14,8 +14,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 2.0 and cpython 2.7.3`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or
 Windows 32.  Support for ARM is progressing but not bug-free yet.
@@ -24,9 +23,6 @@ Windows 32.  Support for ARM is progressing but not bug-free yet.
 
 Highlights
 ==========
-
-- fix an occasional crash in the JIT that ends in `RPython Fatal error:
-  NotImplementedError`__.
 
 - `id(x)` is now always a positive number (except on int/float/long/complex).
   This fixes an issue in ``_sqlite.py`` (mostly for 32-bit Linux).

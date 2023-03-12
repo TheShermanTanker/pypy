@@ -12,5 +12,4 @@ Help from domain experts would be welcome, since some of these documents probabl
    discussion/howtoimplementpickling
    discussion/improve-rpython
    discussion/ctypes-implementation
-   discussion/jit-profiler
    discussion/rawrefcount

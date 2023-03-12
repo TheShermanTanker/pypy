@@ -15,10 +15,6 @@ Clean up numpy types, add newbyteorder functionality
 
 Package tk/tcl runtime with win32
 
-.. branch: armhf-singlefloat
-
-JIT support for singlefloats on ARM using the hardfloat ABI
-
 .. branch: voidtype_strformat
 
 Better support for record numpy arrays
@@ -49,8 +45,6 @@ along with libcompat.a.
 .. branch: OlivierBlanvillain/fix-3-broken-links-on-pypy-published-pap-1386250839215
 
 Fix 3 broken links on PyPy published papers in docs.
-
-.. branch: jit-ordereddict
 
 .. branch: refactor-str-types
 
@@ -87,11 +81,6 @@ Essential!
 .. branch: NonConstant
 
 Simplify implementation of NonConstant.
-
-.. branch: array-propagate-len
-
-Kill some guards and operations in JIT traces by adding integer bounds
-propagation for getfield_(raw|gc) and getarrayitem_(raw|gc).
 
 .. branch: optimize-int-and
 
@@ -177,10 +166,6 @@ Fix issues with reimporting builtin modules
 
 Implement the core of nditer, without many of the fancy flags (external_loop, buffered)
 
-.. branch: numpy-speed
-
-Separate iterator from its state so jit can optimize better
-
 .. branch: numpy-searchsorted
 
 Implement searchsorted without sorter kwarg
@@ -188,10 +173,6 @@ Implement searchsorted without sorter kwarg
 .. branch: openbsd-lib-prefix
 
 add 'lib' prefix to link libraries on OpenBSD
-
-.. branch: small-unroll-improvements
-
-Improve optimization of small allocation-heavy loops in the JIT
 
 .. branch: reflex-support
 

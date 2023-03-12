@@ -1,7 +1,6 @@
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rlib import clibffi
 from rpython.rlib import libffi
-from rpython.rlib import jit
 from rpython.rlib.rgc import must_be_light_finalizer
 from rpython.rlib.rarithmetic import r_uint, r_ulonglong, intmask
 from pypy.interpreter.baseobjspace import W_Root
@@ -101,7 +100,6 @@ class W__StructDescr(W_Root):
         rawmem = rffi.cast(rffi.VOIDP, addr)
         return W__StructInstance(self, allocate=False, autofree=True, rawmem=rawmem)
 
-    @jit.elidable_promote('0')
     def get_type_and_offset_for_field(self, space, name):
         try:
             w_field = self.name2w_field[name]

@@ -104,13 +104,10 @@ Other Changes
   - A number of rarely used features of PyPy were removed since the previous
     release because they were unmaintained and/or buggy. Those are: The
     LLVM and the JS backends, the aspect-oriented programming features,
-    the logic object space, the extension compiler and the first
-    incarnation of the JIT generator. The new JIT generator is in active
-    development, but not included in the release.
+    the logic object space, and the extension compiler.
 
     https://codespeak.net/pipermail/pypy-dev/2009q2/005143.html
     https://morepypy.blogspot.com/2009/03/good-news-everyone.html
-    https://morepypy.blogspot.com/2009/03/jit-bit-of-look-inside.html
 
 
 What is PyPy?

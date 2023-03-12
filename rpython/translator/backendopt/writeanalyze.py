@@ -66,9 +66,6 @@ class WriteAnalyzer(graphanalyze.GraphAnalyzer):
             if graphinfo is None or not graphinfo.is_fresh_malloc(op.args[0]):
                 return self._gc_store_indexed_result(op)
         elif op.opname == 'gc_add_memory_pressure':
-            # special_memory_pressure would be overwritten by zero, because
-            # the JIT cannot see the field write, which is why we assume
-            # it can write anything
             return top_set
         return empty_set
 

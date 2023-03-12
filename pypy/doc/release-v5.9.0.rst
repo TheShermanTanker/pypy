@@ -52,8 +52,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _vmprof: https://vmprof.readthedocs.io
 .. _CFFI: https://cffi.readthedocs.io/en/latest/whatsnew.html
@@ -67,8 +66,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -112,7 +110,6 @@ Note that these are also merged into PyPy 3.5
     different bound method object every time.  For ``type.method``, PyPy2 still
     returns always the same *unbound* method object; CPython does it for built-in
     types but not for user-defined types
-  * Link to disable PaX protection for the JIT when needed
   * Update build instructions and an rarely used Makefile
   * Recreate support for using leakfinder in cpyext tests which had suffered
     bit-rot, disable due to many false positives
@@ -137,7 +134,6 @@ Note that these are also merged into PyPy 3.5
   * Improve performance of ``bytearray.extend`` by rewriting portions in app-level
   * Optimize list accesses with constant indexes better by retaining more
     information about them
-  * Add a jit driver for ``array.count`` and ``array.index``
   * Improve information retained in a bridge wrt ``array``
   * Move some dummy CAPI functions and ``Py*_Check`` functions from RPython into
     pure C macros
@@ -181,7 +177,6 @@ Highlights of the PyPy3.5 release (since 5.8 beta released June 2017)
   * Update the macros ``Py_DECREF`` and similar to use the CPython 3.5 version
   * Ensure that ``mappingproxy`` is recognised as a mapping, not a sequence
   * Enable PGO for CLang
-  * Rework ``cppyy`` packaging and rename the backend to ``_cppyy``
   * Support for libressl 2.5.4
   * Mirror CPython ``classmethod __reduce__`` which fixes pickling test
   * Use utf-8 for ``readline`` history file

@@ -6,7 +6,6 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.typedef import TypeDef, interp_attrproperty, interp_attrproperty_w
 
-from rpython.rlib import jit
 from rpython.rlib.rarithmetic import r_uint, r_ulonglong, r_longlong, intmask
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rtyper.lltypesystem import lltype, rffi
@@ -110,7 +109,6 @@ class W_CTypeStructOrUnion(W_CType):
         if not self._copy_from_same(cdata, w_ob):
             self.convert_struct_from_object(cdata, w_ob, optvarsize=-1)
 
-    @jit.unroll_safe
     def _max_initializers(self):
         if self._with_var_array:
             return -1
@@ -121,33 +119,12 @@ class W_CTypeStructOrUnion(W_CType):
                                W_CField.BF_IGNORE_IN_CTOR)
         return res
 
-    @jit.unroll_safe
     def _unpack_initializer(self, w_ob):
         from pypy.objspace.std.listobject import W_ListObject
         from pypy.objspace.std.tupleobject import W_AbstractTupleObject
         space = self.space
-        # this code is a bit weird. in theory, the look_inside_iff decorations
-        # on space.listview and its callees should be enough to get the correct
-        # unrolling effect. however, in a typicaly use case of ffi.new, there
-        # is too much app-level code running between the call to ffi.new and
-        # reaching convert_struct_from_object and the front-end loses the
-        # virtualness information. therefore we unroll a bit more aggressively
-        # here: we unroll, if the struct is not var-sized and the initializer
-        # length is up to the number of fields of the struct. in addition, the
-        # W_*Object must be virtual. see test_cffi_init_struct_with_list.
-        if jit.we_are_jitted() and not self._with_var_array:
-            max_num_initializer = self._max_initializers()
-            length = space.len_w(w_ob)
-            if max_num_initializer >= length:
-                if isinstance(w_ob, W_AbstractTupleObject) and space._uses_tuple_iter(w_ob):
-                    return w_ob.getitems_copy()
-                if type(w_ob) is W_ListObject:
-                    return w_ob.getitems_unroll()[:]
         return space.listview(w_ob)
 
-    @jit.look_inside_iff(
-        lambda self, cdata, w_ob, optvarsize: jit.isvirtual(w_ob)
-    )
     def convert_struct_from_object(self, cdata, w_ob, optvarsize):
         self.force_lazy_struct()
 
@@ -191,7 +168,6 @@ class W_CTypeStructOrUnion(W_CType):
                 msg = "list or tuple or dict"
             raise self._convert_error(msg, w_ob)
 
-    @jit.elidable
     def _getcfield_const(self, attr):
         return self._fields_dict[attr]
 
@@ -205,8 +181,6 @@ class W_CTypeStructOrUnion(W_CType):
             if self.size < 0:
                 return None
             self.force_lazy_struct()
-        self = jit.promote(self)
-        attr = jit.promote_string(attr)
         return self._getcfield_const(attr)    # <= KeyError here
 
     def cdata_dir(self):

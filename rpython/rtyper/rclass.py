@@ -89,24 +89,16 @@ def getinstancerepr(rtyper, classdef, default_flavor='gc'):
 
 
 def buildinstancerepr(rtyper, classdef, gcflavor='gc'):
-    from rpython.rtyper.rvirtualizable import VirtualizableInstanceRepr
-
     if classdef is None:
         unboxed = []
-        virtualizable = False
     else:
         unboxed = [subdef for subdef in classdef.getallsubdefs() if
             subdef.classdesc.pyobj is not None and
             issubclass(subdef.classdesc.pyobj, UnboxedValue)]
-        virtualizable = classdef.classdesc.get_param('_virtualizable_', False)
     config = rtyper.annotator.translator.config
     usetagging = len(unboxed) != 0 and config.translation.taggedpointers
 
-    if virtualizable:
-        assert len(unboxed) == 0
-        assert gcflavor == 'gc'
-        return VirtualizableInstanceRepr(rtyper, classdef)
-    elif usetagging:
+    if usetagging:
         # the UnboxedValue class and its parent classes need a
         # special repr for their instances
         if len(unboxed) != 1:
@@ -713,9 +705,7 @@ class InstanceRepr(Repr):
         pass        # for virtualizables; see rvirtualizable.py
 
     def hook_setfield(self, vinst, fieldname, llops):
-        if self.is_quasi_immutable(fieldname):
-            c_fieldname = inputconst(Void, 'mutate_' + fieldname)
-            llops.genop('jit_force_quasi_immutable', [vinst, c_fieldname])
+        pass
 
     def is_quasi_immutable(self, fieldname):
         search1 = fieldname + '?'
@@ -898,10 +888,6 @@ class InstanceRepr(Repr):
         # like file.__del__() closing the file descriptor; or if they
         # want to do more like call an app-level __del__() method, they
         # enqueue the object instead, and the actual call is done later.
-        #
-        # Here, as a quick way to check "not doing too much", we check
-        # that from no RPython-level __del__() method we can reach a
-        # JitDriver.
         #
         # XXX wrong complexity, but good enough because the set of
         # reachable graphs should be small

@@ -9,23 +9,6 @@ What's new in PyPy2.7 5.6
 
 Backport rpython changes made directly on the py3k and py3.5 branches.
 
-.. branch: buffer-interface
-
-Implement PyObject_GetBuffer, PyMemoryView_GET_BUFFER, and handles memoryviews
-in numpypy
-
-.. branch: force-virtual-state
-
-Improve merging of virtual states in the JIT in order to avoid jumping to the
-preamble. Accomplished by allocating virtual objects where non-virtuals are
-expected.
-
-.. branch: conditional_call_value_3
-
-JIT residual calls: if the called function starts with a fast-path
-like "if x.foo != 0: return x.foo", then inline the check before
-doing the CALL.  For now, string hashing is about the only case.
-
 .. branch: search-path-from-libpypy
 
 The compiled pypy now looks for its lib-python/lib_pypy path starting
@@ -73,7 +56,6 @@ Make optimiseopt iterative instead of recursive so it can be reasoned about
 more easily and debugging is faster.
 
 .. branch: Tiberiumk/fix-2412-1476011166874
-.. branch: redirect-assembler-jitlog
 .. branch: stdlib-2.7.12
 
 Update stdlib to version 2.7.12

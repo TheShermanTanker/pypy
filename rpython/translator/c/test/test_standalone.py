@@ -18,7 +18,6 @@ from rpython.annotator.listdef import s_list_of_strings
 from rpython.tool.udir import udir
 from rpython.translator import cdir
 from rpython.conftest import option
-from rpython.rlib.jit import JitDriver
 
 def setup_module(module):
     if os.name == 'nt':
@@ -1032,9 +1031,6 @@ class TestStandalone(StandaloneTests):
         assert counts[0.4] > counts[1.0] / 4
 
     def test_stack_criticalcode(self):
-        # check for rpython.rlib.rstack._stack_criticalcode_start/stop()
-        from rpython.rlib.rstack import _stack_criticalcode_start
-        from rpython.rlib.rstack import _stack_criticalcode_stop
         from rpython.rlib.rstackovf import StackOverflow
         class A:
             pass
@@ -1048,9 +1044,7 @@ class TestStandalone(StandaloneTests):
                 if glob.caught:
                     print 'Oups! already caught!'
                 glob.caught = True
-                _stack_criticalcode_start()
                 critical(100)   # recurse another 100 times here
-                _stack_criticalcode_stop()
                 return 789
         def critical(n):
             if n > 0:

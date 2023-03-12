@@ -27,17 +27,6 @@ syntax: regexp
 ^pypy/module/cpyext/test/.+\.manifest$
 ^pypy/module/test_lib_pypy/ctypes_tests/.+\.o$
 ^pypy/module/test_lib_pypy/ctypes_tests/_ctypes_test\.o$
-^pypy/module/_cppyy/src/.+\.o$
-^pypy/module/_cppyy/bench/.+\.so$
-^pypy/module/_cppyy/bench/.+\.root$
-^pypy/module/_cppyy/bench/.+\.d$
-^pypy/module/_cppyy/src/.+\.errors$
-^pypy/module/_cppyy/test/.+_rflx\.cpp$
-^pypy/module/_cppyy/test/.+\.so$
-^pypy/module/_cppyy/test/.+\.rootmap$
-^pypy/module/_cppyy/test/.+\.exe$
-^pypy/module/_cppyy/test/.+_cint.h$
-^pypy/module/_cppyy/.+/*\.pcm$
 ^pypy/module/test_lib_pypy/cffi_tests/__pycache__.+$
 ^pypy/doc/.+\.html$
 ^pypy/doc/config/.+\.rst$

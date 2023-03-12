@@ -4,7 +4,7 @@ from pypy.module.cpyext.api import cpython_api, INTP_real
 from pypy.module.cpyext.pyobject import PyObject
 from rpython.rlib import rdtoa
 from rpython.rlib import rfloat
-from rpython.rlib import rposix, jit
+from rpython.rlib import rposix
 from rpython.rlib.rarithmetic import intmask
 from rpython.rtyper.lltypesystem import lltype
 from rpython.rtyper.lltypesystem import rffi
@@ -23,7 +23,7 @@ DOUBLE_TO_STRING_TYPES_MAP = {
 }
 
 @cpython_api([rffi.CONST_CCHARP, rffi.CCHARPP, PyObject], rffi.DOUBLE, error=-1.0)
-@jit.dont_look_inside       # direct use of _get_errno()
+# direct use of _get_errno()
 def PyOS_string_to_double(space, s, endptr, w_overflow_exception):
     """Convert a string s to a double, raising a Python
     exception on failure.  The set of accepted strings corresponds to

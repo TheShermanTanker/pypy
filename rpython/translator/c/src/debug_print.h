@@ -64,8 +64,6 @@ RPY_EXPORTED FILE *pypy_debug_file;
 
 #define OP_LL_READ_TIMESTAMP(val) READ_TIMESTAMP(val)
 
-#include "src/asm.h"
-
 /* asm_xxx.h may contain a specific implementation of READ_TIMESTAMP.
  * This is the default generic timestamp implementation.
  */

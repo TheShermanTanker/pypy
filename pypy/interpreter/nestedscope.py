@@ -1,5 +1,4 @@
 from rpython.tool.uid import uid
-from rpython.rlib import jit
 
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import oefmt
@@ -16,22 +15,8 @@ class Cell(W_Root):
         self.family = family
 
     def get(self):
-        if jit.isconstant(self):
-            # ever_mutated is False if we never see a transition from not-None to
-            # not-None. That means _elidable_get might return an out-of-date
-            # None, and by now the cell was to, with a not-None. So if we see a
-            # None, we don't return that and instead read self.w_value in the
-            # code below.
-            if not self.family.ever_mutated:
-                w_res = self._elidable_get()
-                if w_res is not None:
-                    return w_res
         if self.w_value is None:
             raise ValueError("get() from an empty cell")
-        return self.w_value
-
-    @jit.elidable
-    def _elidable_get(self):
         return self.w_value
 
     def set(self, w_value):

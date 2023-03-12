@@ -25,8 +25,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _`PyPy`: https://doc.pypy.org
 .. _`RPython`: https://rpython.readthedocs.org
@@ -37,8 +36,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -150,10 +148,7 @@ Other Highlights (since 5.1 released in April 2016)
     EffectInfo
 
   * Remove most of the _ovf, _zer and _val operations from RPython.  Kills
-    quite some code internally, and allows the JIT to do better
-    optimizations: for example, app-level code like ``x / 2`` or ``x % 2``
-    can now be turned into ``x >> 1`` or ``x & 1``, even if x is possibly
-    negative.
+    quite some code internally.
 
   * Copy CPython's 'optimization': ignore __iter__ etc. for `f(**dict_subclass())`
 
@@ -177,7 +172,7 @@ Other Highlights (since 5.1 released in April 2016)
     all generated subclasses
 
   * Share cpyext Py* function wrappers according to the signature, shrinking the
-    translated libpypy.so by about 10% (measured without the JIT)
+    translated libpypy.so by about 10%
 
   * Compile c snippets with -Werror, and fix warnings it exposed
 

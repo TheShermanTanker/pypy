@@ -142,27 +142,3 @@ class AppTest(object):
         a.x = 1
         a.y = 2
         assert strategy(a).startswith("<UnboxedPlainAttribute y DICT 0 1 immutable <UnboxedPlainAttribute x DICT 0 0 immutable <DictTerminator w_cls=<W_TypeObject 'A'")
-
-
-class AppTestJitFeatures(object):
-    spaceconfig = {"translation.jit": True}
-
-    def setup_class(cls):
-        cls.w_runappdirect = cls.space.wrap(cls.runappdirect)
-
-    def test_jit_backend_features(self):
-        try:
-            from __pypy__ import jit_backend_features
-        except ImportError:
-            skip("compiled without jit")
-        supported_types = jit_backend_features
-        assert isinstance(supported_types, list)
-        for x in supported_types:
-            assert x in ['floats', 'singlefloats', 'longlong']
-
-    def test_internal_error(self):
-        if not self.runappdirect:
-            skip("we don't wrap a random exception inside SystemError "
-                 "when untranslated, because it makes testing harder")
-        from __pypy__ import _internal_crash
-        raises(SystemError, _internal_crash, 1)

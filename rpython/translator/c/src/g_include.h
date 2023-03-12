@@ -23,7 +23,6 @@
 #include "src/threadlocal.h"
 
 #include "src/instrument.h"
-#include "src/asm.h"
 
 #include "src/profiling.h"
 

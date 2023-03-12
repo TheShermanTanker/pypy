@@ -3,7 +3,6 @@ Arguments objects.
 """
 from rpython.rlib.debug import make_sure_not_resized
 from rpython.rlib.objectmodel import not_rpython
-from rpython.rlib import jit
 
 from pypy.interpreter.error import OperationError, oefmt
 
@@ -13,10 +12,6 @@ class Arguments(object):
     Collects the arguments of a function call.
 
     Instances should be considered immutable.
-
-    Some parts of this class are written in a slightly convoluted style to help
-    the JIT. It is really crucial to get this right, because Python's argument
-    semantics are complex, but calls occur everywhere.
     """
 
     ###  Construction  ###
@@ -40,9 +35,6 @@ class Arguments(object):
 
         make_sure_not_resized(self.arguments_w)
         self._combine_wrapped(w_stararg, w_starstararg)
-        # a flag that specifies whether the JIT can unroll loops that operate
-        # on the keywords
-        self._jit_few_keywords = self.keywords is None or jit.isconstant(len(self.keywords))
         # a flag whether this is likely a method call, which doesn't change the
         # behaviour but produces better error messages
         self.methodcall = methodcall
@@ -59,7 +51,6 @@ class Arguments(object):
 
     ###  Manipulation  ###
 
-    @jit.look_inside_iff(lambda self: self._jit_few_keywords)
     def unpack(self): # slowish
         "Return a ([w1,w2...], {'kw':w3...}) pair."
         kwds_w = {}
@@ -159,7 +150,6 @@ class Arguments(object):
 
     ###  Parsing for function calls  ###
 
-    @jit.unroll_safe
     def _match_signature(self, w_firstarg, scope_w, signature, defaults_w=None,
                          blindargs=0):
         """Parse args and kwargs according to the signature of a code object,
@@ -169,10 +159,6 @@ class Arguments(object):
         #   args_w = list of the normal actual parameters, wrapped
         #   scope_w = resulting list of wrapped values
         #
-
-        # some comments about the JIT: it assumes that signature is a constant,
-        # so all values coming from there can be assumed constant. It assumes
-        # that the length of the defaults_w does not vary too much.
         co_argcount = signature.num_argnames() # expected formal arguments, without */**
 
         # put the special w_firstarg into the scope, if it exists
@@ -198,8 +184,6 @@ class Arguments(object):
         if input_argcount < co_argcount:
             take = min(num_args, co_argcount - upfront)
 
-            # letting the JIT unroll this loop is safe, because take is always
-            # smaller than co_argcount
             for i in range(take):
                 scope_w[i + input_argcount] = args_w[i]
             input_argcount += take
@@ -233,7 +217,6 @@ class Arguments(object):
             # kwds_mapping maps target indexes in the scope (minus input_argcount)
             # to positions in the keywords_w list
             kwds_mapping = [0] * (co_argcount - input_argcount)
-            # initialize manually, for the JIT :-(
             for i in range(len(kwds_mapping)):
                 kwds_mapping[i] = -1
             # match the keywords given at the call site to the argument names
@@ -242,13 +225,13 @@ class Arguments(object):
             # escape
             num_remainingkwds = _match_keywords(
                     signature, blindargs, input_argcount, keywords,
-                    kwds_mapping, self._jit_few_keywords)
+                    kwds_mapping)
             if num_remainingkwds:
                 if w_kwds is not None:
                     # collect extra keyword arguments into the **kwarg
                     _collect_keyword_args(
                             self.space, keywords, keywords_w, w_kwds,
-                            kwds_mapping, self.keyword_names_w, self._jit_few_keywords)
+                            kwds_mapping, self.keyword_names_w)
                 else:
                     if co_argcount == 0:
                         raise self.argerrcount(avail, num_kwds, signature, defaults_w, 0)
@@ -341,16 +324,7 @@ class Arguments(object):
                     space.setitem(w_kwds, w_key, self.keywords_w[i])
         return w_args, w_kwds
 
-# JIT helper functions
-# these functions contain functionality that the JIT is not always supposed to
-# look at. They should not get a self arguments, which makes the amount of
-# arguments annoying :-(
-
-@jit.look_inside_iff(lambda space, existingkeywords, keywords, keywords_w:
-        jit.isconstant(len(keywords) and
-        jit.isconstant(existingkeywords)))
 def _check_not_duplicate_kwargs(space, existingkeywords, keywords, keywords_w):
-    # looks quadratic, but the JIT should remove all of it nicely.
     # Also, all the lists should be small
     for key in keywords:
         for otherkey in existingkeywords:
@@ -391,13 +365,8 @@ def _do_combine_starstarargs_wrapped(space, keys_w, w_starstararg, keywords,
         keywords_w[i] = w_value
         i += 1
 
-@jit.look_inside_iff(
-    lambda signature, blindargs, input_argcount,
-           keywords, kwds_mapping, jiton: jiton)
 def _match_keywords(signature, blindargs, input_argcount,
                     keywords, kwds_mapping, _):
-    # letting JIT unroll the loop is *only* safe if the callsite didn't
-    # use **args because num_kwds can be arbitrarily large otherwise.
     num_kwds = num_remainingkwds = len(keywords)
     for i in range(num_kwds):
         name = keywords[i]
@@ -421,17 +390,12 @@ def _match_keywords(signature, blindargs, input_argcount,
             num_remainingkwds -= 1
     return num_remainingkwds
 
-@jit.look_inside_iff(
-    lambda space, keywords, keywords_w, w_kwds, kwds_mapping,
-        keyword_names_w, jiton: jiton)
 def _collect_keyword_args(space, keywords, keywords_w, w_kwds, kwds_mapping,
                           keyword_names_w, _):
     limit = len(keywords)
     if keyword_names_w is not None:
         limit -= len(keyword_names_w)
     for i in range(len(keywords)):
-        # again a dangerous-looking loop that either the JIT unrolls
-        # or that is not too bad, because len(kwds_mapping) is small
         for j in kwds_mapping:
             if i == j:
                 break

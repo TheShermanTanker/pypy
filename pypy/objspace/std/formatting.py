@@ -2,7 +2,7 @@
 import math
 import sys
 
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rarithmetic import INT_MAX, r_uint
 from rpython.rlib.rfloat import DTSF_ALT, formatd
@@ -168,9 +168,6 @@ def make_formatter_subclass(do_unicode):
             except IndexError:
                 raise oefmt(self.space.w_ValueError, "incomplete format")
 
-        # Only shows up if we've already started inlining format(), so just
-        # unconditionally unroll this.
-        @jit.unroll_safe
         def getmappingkey(self):
             # return the mapping key in a '%(key)s' specifier
             fmt = self.fmt
@@ -234,7 +231,6 @@ def make_formatter_subclass(do_unicode):
             return w_value
 
         # Same as getmappingkey
-        @jit.unroll_safe
         def peel_flags(self):
             self.f_ljust = False
             self.f_sign  = False
@@ -258,7 +254,6 @@ def make_formatter_subclass(do_unicode):
                 self.forward()
 
         # Same as getmappingkey
-        @jit.unroll_safe
         def peel_num(self, name, maxval):
             space = self.space
             c = self.peekchr()
@@ -283,7 +278,6 @@ def make_formatter_subclass(do_unicode):
                 c = self.peekchr()
             return result
 
-        @jit.look_inside_iff(lambda self: jit.isconstant(self.fmt))
         def format(self):
             lgt = len(self.fmt) + 4 * len(self.values_w) + 10
             result = StringBuilder(lgt)
@@ -380,10 +374,7 @@ def make_formatter_subclass(do_unicode):
             result = self.result
             if len(prefix) == 0 and len(r) >= self.width:
                 # this is strictly a fast path: no prefix, and no padding
-                # needed.  It is more efficient code both in the non-jit
-                # case (less testing stuff) and in the jit case (uses only
-                # result.append(), and no startswith() if not f_sign and
-                # not f_blank).
+                # needed.  It is more efficient code (less testing stuff)
                 if self.f_sign and not r.startswith('-'):
                     result.append('+')
                 elif self.f_blank and not r.startswith('-'):

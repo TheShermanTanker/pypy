@@ -3,7 +3,7 @@ from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
 from pypy.interpreter.typedef import TypeDef, GetSetProperty, interp_attrproperty
 from pypy.interpreter.argument import Arguments
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rlib.rarithmetic import LONG_BIT, maxint, _get_bitsize
 from rpython.tool.sourcetools import func_with_new_name
 from rpython.rlib.rawstorage import (
@@ -496,7 +496,6 @@ class W_Ufunc1(W_Ufunc):
         dt_in, dt_out = self._calc_dtype(space, dtype, out, casting)
         return dt_in, dt_out, self.func
 
-    @jit.unroll_safe
     def _calc_dtype(self, space, arg_dtype, out=None, casting='unsafe'):
         if arg_dtype.is_object():
             return arg_dtype, arg_dtype
@@ -550,7 +549,6 @@ class W_Ufunc2(W_Ufunc):
             return True
         return False
 
-    @jit.unroll_safe
     def call(self, space, args_w, sig, casting, extobj):
         if len(args_w) > 2:
             [w_lhs, w_rhs, out] = args_w
@@ -706,7 +704,6 @@ class W_Ufunc2(W_Ufunc):
             "requested type has type code '%s'", self.name, dtype.char)
 
 
-    @jit.unroll_safe
     def _calc_dtype(self, space, l_dtype, r_dtype, out, casting,
                     w_arg1, w_arg2):
         if l_dtype.is_object() or r_dtype.is_object():
@@ -920,7 +917,6 @@ class W_UfuncGeneric(W_Ufunc):
             # do the iteration
         if self.stack_inputs:
             while not nd_it.done:
-                # XXX jit me
                 for it, st in nd_it.iters:
                     if not it.done(st):
                         break
@@ -935,7 +931,6 @@ class W_UfuncGeneric(W_Ufunc):
         else:
             # do the iteration
             while not nd_it.done:
-                # XXX jit me
                 for it, st in nd_it.iters:
                     if not it.done(st):
                         break

@@ -148,10 +148,6 @@ class TestParseCommandLine:
         self.check(['-S', '-tO', '--info'], {}, output_contains='translation')
         self.check(['-S', '-tO', '--version'], {}, output_contains='Python')
         self.check(['-S', '-tOV'], {}, output_contains='Python')
-        self.check(['--jit', 'off', '-S'], {}, sys_argv=[''],
-                   run_stdin=True, no_site=1, _jitoptions='off')
-        self.check(['-X', 'jit-off', '-S'], {}, sys_argv=[''],
-                   run_stdin=True, no_site=1, _jitoptions='off')
         self.check(['-c', 'pass'], {}, sys_argv=['-c'], run_command='pass')
         self.check(['-cpass'], {}, sys_argv=['-c'], run_command='pass')
         self.check(['-cpass','x'], {}, sys_argv=['-c','x'], run_command='pass')
@@ -189,8 +185,6 @@ class TestParseCommandLine:
         self.check([], {'PYTHONOPTIMIZE': '10'}, sys_argv=[''], run_stdin=True, optimize=10)
         self.check(['-O'], {'PYTHONOPTIMIZE': '10'}, sys_argv=[''], run_stdin=True, optimize=10)
         self.check(['-OOO'], {'PYTHONOPTIMIZE': 'abc'}, sys_argv=[''], run_stdin=True, optimize=3)
-
-        self.check([], {'PYPY_DISABLE_JIT': '1'}, sys_argv=[''], run_stdin=True, _jitoptions='off')
 
     def test_sysflags(self):
         flags = (

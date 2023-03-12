@@ -1,7 +1,7 @@
 import sys
 from rpython.rlib.rstring import StringBuilder
 from rpython.rlib.objectmodel import specialize, always_inline
-from rpython.rlib import rfloat, runicode, jit, objectmodel, rutf8
+from rpython.rlib import rfloat, runicode, objectmodel, rutf8
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rlib.rarithmetic import r_uint
 from pypy.interpreter.error import oefmt
@@ -30,9 +30,6 @@ class IntCache(object):
 
     # I also tried various combinations of having an LRU cache for ints as
     # well, didn't really help.
-
-    # XXX one thing to do would be to use withintprebuilt in general again,
-    # hidden behind a 'we_are_jitted'
 
     START = -10
     END = 256
@@ -1118,7 +1115,6 @@ class JSONMap(MapBase):
     # _____________________________________________________
     # methods for JsonDictStrategy
 
-    @jit.elidable
     def get_index(self, w_key):
         from pypy.objspace.std.unicodeobject import W_UnicodeObject
         assert isinstance(w_key, W_UnicodeObject)
@@ -1176,7 +1172,6 @@ class JSONMap(MapBase):
             res += ", fillcolor=lightslategray"
         return res
 
-@jit.dont_look_inside
 def loads(space, w_s):
     if space.isinstance_w(w_s, space.w_unicode):
         raise oefmt(space.w_TypeError,

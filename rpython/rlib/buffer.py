@@ -7,7 +7,7 @@ from rpython.rtyper.lltypesystem.rstr import STR, copy_string_to_raw
 from rpython.rtyper.lltypesystem.rlist import LIST_OF
 from rpython.rtyper.annlowlevel import llstr
 from rpython.rlib.objectmodel import specialize, we_are_translated
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rlib.rgc import (resizable_list_supporting_raw_ptr,
                               nonmoving_raw_ptr_for_resizable_list,
                               ll_for_resizable_list)
@@ -98,8 +98,6 @@ class Buffer(object):
         for i in range(len(string)):
             self.setitem(start + i, string[i])
 
-    @jit.look_inside_iff(lambda self, index, count:
-                         jit.isconstant(count) and count <= 8)
     def setzeros(self, index, count):
         for i in range(index, index + count):
             self.setitem(i, '\x00')
@@ -232,11 +230,6 @@ class GCBuffer(Buffer):
 
     @staticmethod
     def decorate(targetcls):
-        """
-        Create and attach specialized versions of typed_{read,write}. We need to
-        do this becase the JIT codewriters mandates that base_ofs is an
-        RPython constant.
-        """
         if targetcls.__bases__ != (GCBuffer,):
             raise ValueError("@GCBuffer.decorate should be used only on "
                              "GCBuffer subclasses")
@@ -244,7 +237,6 @@ class GCBuffer(Buffer):
         base_ofs = targetcls._get_gc_data_offset()
         scale_factor = llmemory.sizeof(lltype.Char)
 
-        @specialize.ll_and_arg(1)
         def typed_read(self, TP, byte_offset):
             if not is_alignment_correct(TP, byte_offset):
                 raise CannotRead
@@ -253,7 +245,6 @@ class GCBuffer(Buffer):
             return llop.gc_load_indexed(TP, lldata, byte_offset,
                                         scale_factor, base_ofs)
 
-        @specialize.ll_and_arg(1)
         def typed_write(self, TP, byte_offset, value):
             if self.readonly or not is_alignment_correct(TP, byte_offset):
                 raise CannotWrite

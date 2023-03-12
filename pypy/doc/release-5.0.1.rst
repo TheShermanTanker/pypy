@@ -10,16 +10,11 @@ at pypy.org/download.html
 .. _`lxml 3.6.0`: https://pypi.python.org/pypi/lxml/3.6.0
 .. _`crash on large files`: https://bitbucket.org/pypy/pypy/issues/2260
 
-The changes between PyPy 5.0 and 5.0.1 are only two bug fixes: one in
-cpyext, which fixes notably (but not only) lxml; and another for a
-corner case of the JIT.
-
 What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other
 `dynamic languages`_ to see what RPython can do for them.

@@ -39,8 +39,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _vmprof: https://vmprof.readthedocs.io
 .. _grant: https://morepypy.blogspot.com/2016/08/pypy-gets-funding-from-mozilla-for.html
@@ -53,8 +52,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -89,7 +87,6 @@ Changelog
 * posix.lockf
 * fixes for FreeBSD platform
 * add .debug files, so builds contain debugging info, instead of being stripped
-* improvements to cppyy
 * issue #2677 copy pure c PyBuffer_{From,To}Contiguous from cpython
 * issue #2682, split firstword on any whitespace in sqlite3
 * ctypes: allow ptr[0] = foo when ptr is a pointer to struct

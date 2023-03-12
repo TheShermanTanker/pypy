@@ -469,9 +469,6 @@ class LLFrame(object):
                                 KeyboardInterrupt, SystemExit,
                                 ImportError, SyntaxError)):
                 raise original[0], original[1], original[2]     # re-raise it
-            # for testing the JIT (see ContinueRunningNormally) we need
-            # to let some exceptions introduced by the JIT go through
-            # the llinterpreter uncaught
             if getattr(exc, '_go_through_llinterp_uncaught_', False):
                 raise original[0], original[1], original[2]     # re-raise it
             extraargs = (original,)
@@ -564,21 +561,6 @@ class LLFrame(object):
 
     def op_debug_catch_exception(self, *args):
         pass    # xxx write debugging code here?
-
-    def op_jit_marker(self, *args):
-        pass
-
-    def op_jit_record_exact_class(self, *args):
-        pass
-
-    def op_jit_record_exact_value(self, *args):
-        pass
-
-    def op_jit_conditional_call(self, *args):
-        raise NotImplementedError("should not be called while not jitted")
-
-    def op_jit_conditional_call_value(self, *args):
-        raise NotImplementedError("should not be called while not jitted")
 
     def op_get_exception_addr(self, *args):
         raise NotImplementedError
@@ -881,11 +863,6 @@ class LLFrame(object):
 
     def op_gc_restore_exception(self, exc):
         raise NotImplementedError("gc_restore_exception")
-
-    def op_gc_adr_of_nursery_top(self):
-        raise NotImplementedError
-    def op_gc_adr_of_nursery_free(self):
-        raise NotImplementedError
 
     def op_gc_adr_of_root_stack_base(self):
         raise NotImplementedError
@@ -1221,8 +1198,6 @@ class LLFrame(object):
         # a TypeError -- unless __nonzero__ has been explicitly overridden.
         assert is_valid_int(x) or isinstance(x, Symbolic)
         return bool(x)
-
-    # hack for jit.codegen.llgraph
 
     def op_check_and_clear_exc(self):
         exc_data = self.llinterpreter.get_transformed_exc_data(self.graph)

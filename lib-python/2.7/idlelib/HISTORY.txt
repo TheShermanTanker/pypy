@@ -228,7 +228,7 @@ menu update itself whenever a window is opened or closed.
 
 - Menu items can now be have a checkbox (when the menu label starts
 with "!"); use this for the Debugger and "Auto-open stack viewer"
-(was: JIT stack viewer) menu items.
+menu items.
 
 - Added a Quit button to the Debugger API.
 
@@ -276,8 +276,8 @@ Command to format a paragraph.
 
 Debug menu:
 
-JIT (Just-In-Time) stack viewer toggle -- if set, the stack viewer
-automaticall pops up when you get a traceback.
+Auto-open stack viewer toggle -- if set, the stack viewer
+automatically pops up when you get a traceback.
 
 Windows menu:
 

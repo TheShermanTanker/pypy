@@ -3,7 +3,7 @@ Callbacks.
 """
 import sys, os, py
 
-from rpython.rlib import clibffi, jit, objectmodel, rmmap
+from rpython.rlib import clibffi, objectmodel, rmmap
 from rpython.rlib.objectmodel import keepalive_until_here
 from rpython.rtyper.lltypesystem import lltype, rffi
 
@@ -20,7 +20,6 @@ BIG_ENDIAN = sys.byteorder == 'big'
 # ____________________________________________________________
 
 
-@jit.dont_look_inside
 def make_callback(space, ctype, w_callable, w_error, w_onerror):
     # Allocate a callback as a nonmovable W_CDataCallback instance, which
     # we can cast to a plain VOIDP.  As long as the object is not freed,
@@ -124,13 +123,6 @@ class W_ExternPython(W_CData):
             space.threadlocals.leave_thread(space)
 
     def py_invoke(self, ll_res, ll_args):
-        # For W_ExternPython only; overridden in W_CDataCallback.  Note
-        # that the details of the two jitdrivers differ.  For
-        # W_ExternPython, it depends on the identity of 'self', which
-        # means every @ffi.def_extern() gets its own machine code,
-        # which sounds reasonable here.  Moreover, 'll_res' is ignored
-        # as it is always equal to 'll_args'.
-        jitdriver2.jit_merge_point(externpython=self, ll_args=ll_args)
         self.do_invoke(ll_args, ll_args)
 
     def do_invoke(self, ll_res, ll_args):
@@ -144,11 +136,9 @@ class W_ExternPython(W_CData):
         except OperationError as e:
             self.handle_applevel_exception(e, ll_res, extra_line)
 
-    @jit.unroll_safe
     def prepare_args_tuple(self, ll_args):
         space = self.space
         ctype = self.getfunctype()
-        ctype = jit.promote(ctype)
         args_w = []
         decode_args_from_libffi = self.decode_args_from_libffi
         for i, farg in enumerate(ctype.fargs):
@@ -171,7 +161,6 @@ class W_ExternPython(W_CData):
         operr.write_unraisable(space, "cffi callback ", self.w_callable,
                                with_traceback=True, extra_line=extra_line)
 
-    @jit.dont_look_inside
     def handle_applevel_exception(self, e, ll_res, extra_line):
         from pypy.module._cffi_backend import errorbox
         space = self.space
@@ -233,10 +222,6 @@ class W_CDataCallback(W_ExternPython):
 
     def py_invoke(self, ll_res, ll_args):
         key_pycode = self.key_pycode
-        jitdriver1.jit_merge_point(callback=self,
-                                   key_pycode=key_pycode,
-                                   ll_res=ll_res,
-                                   ll_args=ll_args)
         self.do_invoke(ll_res, ll_args)
 
 
@@ -286,29 +271,6 @@ def convert_from_object_fficallback(fresult, ll_res, w_res,
 # ____________________________________________________________
 
 STDERR = 2
-
-
-# jitdrivers, for both W_CDataCallback and W_ExternPython
-
-def get_printable_location1(key_pycode):
-    if key_pycode is None:
-        return 'cffi_callback <?>'
-    return 'cffi_callback ' + key_pycode.get_repr()
-
-jitdriver1 = jit.JitDriver(name='cffi_callback',
-                           greens=['key_pycode'],
-                           reds=['ll_res', 'll_args', 'callback'],
-                           get_printable_location=get_printable_location1)
-
-def get_printable_location2(externpython):
-    with externpython as ptr:
-        externpy = rffi.cast(parse_c_type.PEXTERNPY, ptr)
-        return 'cffi_call_python ' + rffi.charp2str(externpy.c_name)
-
-jitdriver2 = jit.JitDriver(name='cffi_call_python',
-                           greens=['externpython'],
-                           reds=['ll_args'],
-                           get_printable_location=get_printable_location2)
 
 
 def invoke_callback(ffi_cif, ll_res, ll_args, ll_userdata):

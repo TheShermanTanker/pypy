@@ -11,10 +11,6 @@ Working hash function for numpy types.
 
 .. branch: array_equal
 
-.. branch: better-jit-hooks-2
-
-Improved jit hooks
-
 .. branch: faster-heapcache
 
 .. branch: faster-str-decode-escape
@@ -26,10 +22,6 @@ Added some primitives for dealing with floats as raw bytes.
 .. branch: float-bytes-2
 
 Added more float byte primitives.
-
-.. branch: jit-frame-counter
-
-Put more debug info into resops.
 
 .. branch: kill-geninterp
 
@@ -82,8 +74,6 @@ indexing by bool arrays
 .. branch: numpy-record-dtypes
 
 record dtypes on numpy has been started
-
-.. branch: numpy-single-jitdriver
 
 .. branch: numpy-ufuncs2
 
@@ -159,7 +149,7 @@ Memory "leaks" associated with zlib are fixed.
 .. branch: ffistruct
 
 The ``ffistruct`` branch adds a very low level way to express C structures
-with _ffi in a very JIT-friendly way
+with _ffi
 
 
 .. "uninteresting" branches that we should just ignore for the whatsnew:

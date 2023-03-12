@@ -280,7 +280,6 @@ class W_CData(W_Root):
     def _do_setslice_iterate(space, ctitem, w_value, target, ctitemsize,
                              length):
         # general case, contains a loop
-        # (XXX is it worth adding a jitdriver here?)
         w_iter = space.iter(w_value)
         for i in range(length):
             try:

@@ -24,13 +24,6 @@ PYPY_NO_EMBED_DEPENDENCIES
 
 .. branch: int-test-is-zero
 
-.. branch: cppyy-dev
-
-Upgraded the built-in ``_cppyy`` module to ``cppyy-backend 1.10.6``, which
-provides, among others, better template resolution, stricter ``enum`` handling,
-anonymous struct/unions, cmake fragments for distribution, optimizations for
-PODs, and faster wrapper calls.
-
 .. branch: backport-decode_timeval_ns-py3.7
 
 Backport ``rtime.decode_timeval_ns`` from py3.7 to rpython

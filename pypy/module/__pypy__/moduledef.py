@@ -115,7 +115,6 @@ class Module(MixedModule):
         'save_module_content_for_future_reload':
                           'interp_magic.save_module_content_for_future_reload',
         'decode_long'               : 'interp_magic.decode_long',
-        '_promote'                   : 'interp_magic._promote',
         'side_effects_ok'           : 'interp_magic.side_effects_ok',
         'stack_almost_full'         : 'interp_magic.stack_almost_full',
         'pyos_inputhook'            : 'interp_magic.pyos_inputhook',
@@ -148,20 +147,7 @@ class Module(MixedModule):
                                  'interp_magic.mapdict_cache_counter')
         PYC_MAGIC = get_pyc_magic(self.space)
         self.extra_interpdef('PYC_MAGIC', 'space.wrap(%d)' % PYC_MAGIC)
-        try:
-            from rpython.jit.backend import detect_cpu
-            model = detect_cpu.autodetect()
-            self.extra_interpdef('cpumodel', 'space.wrap(%r)' % model)
-        except Exception:
-            if self.space.config.translation.jit:
-                raise
-            else:
-                pass   # ok fine to ignore in this case
-        
-        if self.space.config.translation.jit:
-            features = detect_cpu.getcpufeatures(model)
-            self.extra_interpdef('jit_backend_features',
-                                    'space.wrap(%r)' % features)
+
         if self.space.config.translation.reverse_debugger:
             self.extra_interpdef('revdb_stop', 'interp_magic.revdb_stop')
         else:

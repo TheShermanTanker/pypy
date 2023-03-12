@@ -2,7 +2,6 @@
 Implementation of interpreter-level 'sys' routines.
 """
 
-from rpython.rlib import jit
 from rpython.rlib.rutf8 import MAXUNICODE
 
 from pypy.interpreter import gateway
@@ -27,7 +26,6 @@ purposes only."""
     return getframe(space, depth)
 
 
-@jit.look_inside_iff(lambda space, depth: jit.isconstant(depth))
 def getframe(space, depth):
     ec = space.getexecutioncontext()
     f = ec.gettopframe_nohidden()
@@ -120,48 +118,8 @@ def exc_info_without_tb(space, frame):
 
 def exc_info_direct(space, frame):
     from pypy.tool import stdlib_opcode
-    # In order to make the JIT happy, we try to return (exc, val, None)
-    # instead of (exc, val, tb).  We can do that only if we recognize
-    # the following pattern in the bytecode:
-    #       CALL_FUNCTION/CALL_METHOD         <-- invoking me
-    #       LOAD_CONST 0, 1, -2 or -3
-    #       BINARY_SUBSCR
-    # or:
-    #       CALL_FUNCTION/CALL_METHOD
-    #       LOAD_CONST <=2
-    #       SLICE_2
-    # or:
-    #       CALL_FUNCTION/CALL_METHOD
-    #       LOAD_CONST any integer
-    #       LOAD_CONST <=2
-    #       SLICE_3
-    need_all_three_args = True
-    co = frame.getcode().co_code
-    p = frame.last_instr
-    if (ord(co[p]) == stdlib_opcode.CALL_FUNCTION or
-        ord(co[p]) == stdlib_opcode.CALL_METHOD):
-        if ord(co[p+3]) == stdlib_opcode.LOAD_CONST:
-            lo = ord(co[p+4])
-            hi = ord(co[p+5])
-            w_constant = frame.getconstant_w((hi * 256) | lo)
-            if space.isinstance_w(w_constant, space.w_int):
-                constant = space.int_w(w_constant)
-                if ord(co[p+6]) == stdlib_opcode.BINARY_SUBSCR:
-                    if -3 <= constant <= 1 and constant != -1:
-                        need_all_three_args = False
-                elif ord(co[p+6]) == stdlib_opcode.SLICE+2:
-                    if constant <= 2:
-                        need_all_three_args = False
-                elif (ord(co[p+6]) == stdlib_opcode.LOAD_CONST and
-                      ord(co[p+9]) == stdlib_opcode.SLICE+3):
-                    lo = ord(co[p+7])
-                    hi = ord(co[p+8])
-                    w_constant = frame.getconstant_w((hi * 256) | lo)
-                    if space.isinstance_w(w_constant, space.w_int):
-                        if space.int_w(w_constant) <= 2:
-                            need_all_three_args = False
     #
-    if need_all_three_args or frame.last_exception is None or frame.hide():
+    if frame.last_exception is None or frame.hide():
         return exc_info_with_tb(space)
     else:
         return exc_info_without_tb(space, frame)
@@ -245,7 +203,6 @@ def getwindowsversion(space):
     ])
     return space.call_function(w_windows_version_info, raw_version)
 
-@jit.dont_look_inside
 def get_dllhandle(space):
     if not space.config.objspace.usemodules.cpyext:
         return space.newint(0)

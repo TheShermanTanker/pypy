@@ -12,15 +12,9 @@ Main site:
 
     https://pypy.org/
 
-The JIT is stable and we don't observe crashes. Nevertheless we
-would recommend you to treat it as beta software and as a way to try
-out the JIT to see how it works for you.
-
 
 Highlights of This Release
 ==========================
-
-* The JIT compiler.
 
 * Various interpreter optimizations that improve performance
   as well as help save memory.
@@ -36,17 +30,6 @@ Highlights of This Release
   having them as of now.
 
 
-Known JIT problems (or why you should consider this beta software):
-
-* The only supported platform is 32bit x86 for now, we're
-  looking for help with other platforms.
-
-* It is still memory-hungry.  There is no limit on the amount
-  of RAM that the assembler can consume; it is thus possible
-  (although unlikely) that the assembler ends up using
-  unreasonable amounts of memory.
-
-
 If you want to try PyPy, go to the "download page" on our excellent
 new site at https://pypy.org/download.html and find the binary for
 your platform. If the binary does not work (e.g. on Linux, because
@@ -59,10 +42,7 @@ What is PyPy?
 
 Technically, PyPy is both a Python interpreter implementation and an
 advanced compiler, or more precisely a framework for implementing
-dynamic languages and generating virtual machines for them.  The
-focus of this release is the introduction of a new transformation,
-the JIT Compiler Generator, and its application to the Python
-interpreter.
+dynamic languages and generating virtual machines for them.
 
 Socially, PyPy is a collaborative effort of many individuals working
 together in a distributed and sprint-driven way since 2003.  PyPy

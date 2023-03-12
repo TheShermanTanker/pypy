@@ -46,13 +46,12 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: bug fixes,
-`PyPy`_ and `RPython`_ documentation improvements, or general `help`_ with making
-RPython's JIT even better. Since the previous release, we have accepted
-contributions from one new contributor, thanks for pitching in, and welcome
-to the project!
+`PyPy`_ and `RPython`_ documentation improvements. Since the previous release,
+we have accepted contributions from one new contributor, thanks for pitching in,
+and welcome to the project!
 
 If you are a python library maintainer and use C-extensions, please consider
-making a HPy_ / CFFI_ / cppyy_ version of your library that would be performant
+making a HPy_ / CFFI_ version of your library that would be performant
 on PyPy. In any case, both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
 
@@ -60,7 +59,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _CFFI: https://cffi.readthedocs.io
-.. _cppyy: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _blog: https://pypy.org/blog
@@ -74,7 +72,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.8 and
 3.9. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -106,9 +104,6 @@ For all versions
 
 Bugfixes
 ~~~~~~~~
-- Fix several JIT optimizer bugs `using SMT solvers and fuzzing`_. The bugs
-  were around integer optimations (issue 3832_).
-- Only use ``pthread_jit_write_protect_np`` on macOS arm64 (issue 3865_).
 - Add ``sysconfig.get_config_var('CONFINCLUDEPY')`` needed in some
   cross-compilations
 - Package tkinter for macOS. Previously the portable builds did not include it
@@ -143,7 +138,6 @@ Python 3.9
   correct one (issue 3879_)
 - Fix invalid parsing rule for ``genexps`` as the non-singular argument in a call (issue 3873_)
 
-.. _`using SMT solvers and fuzzing`: https://www.pypy.org/posts/2022/12/jit-bug-finding-smt-fuzzing.html
 .. _`CPython release note`: https://www.python.org/downloads/release/python-3816
 .. _bpo-23880: https://bugs.python.org/issue23880
 .. _GH-100242: https://github.com/python/cpython/issues/100242

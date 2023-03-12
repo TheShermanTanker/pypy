@@ -2,10 +2,7 @@
 PyPy 4.0.1
 ==========
 
-We have released PyPy 4.0.1, three weeks after PyPy 4.0.0. We have fixed
-a few critical bugs in the JIT compiled code, reported by users. We therefore
-encourage all users of PyPy to update to this version. There are a few minor
-enhancements in this version as well.
+We have released PyPy 4.0.1, three weeks after PyPy 4.0.0.
 
 You can download the PyPy 4.0.1 release here:
 
@@ -17,8 +14,7 @@ project.
 We would also like to thank our contributors and 
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_ 
-with making RPython's JIT even better. 
+improvements, or tweaking popular `modules`_ to run on pypy. 
 
 CFFI
 ====
@@ -39,8 +35,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison).
 
 We also welcome developers of other
 `dynamic languages`_ to see what RPython can do for them.
@@ -58,8 +53,6 @@ Other Highlights (since 4.0.0 released three weeks ago)
 
 * Bug Fixes
 
-  * Fix a bug when unrolling double loops in JITted code
-
   * Fix multiple memory leaks in the ssl module, one of which affected
     `cpython` as well (thanks to Alex Gaynor for pointing those out)
 
@@ -75,9 +68,7 @@ Other Highlights (since 4.0.0 released three weeks ago)
 
   * Support stackless and greenlets on PPC machines
 
-  * Improve debug logging in subprocesses: use PYPYLOG=jit:log.%d
-    for example to have all subprocesses write the JIT log to a file
-    called 'log.%d', with '%d' replaced with the subprocess' PID.
+  * Improve debug logging in subprocesses
 
   * Support PyOS_double_to_string in our cpyext capi compatibility layer
 

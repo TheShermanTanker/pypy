@@ -77,11 +77,6 @@ branch vmprof2:
 Add backend support for vmprof - a lightweight statistical profiler -
 to linux64, see client at https://vmprof.readthedocs.org
 
-.. branch: jit_hint_docs
-
-branch jit_hint_docs:
-Add more detail to @jit.elidable and @jit.promote in rpython/rlib/jit.py
-
 .. branch: remove-frame-debug-attrs
 
 branch remove_frame-debug-attrs:

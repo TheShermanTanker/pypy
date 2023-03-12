@@ -74,11 +74,6 @@ from c
 
 .. branch: kill-ootype
 
-.. branch: fast-slowpath
-
-Added an abstraction for functions with a fast and slow path in the JIT. This
-speeds up list.append() and list.pop().
-
 .. branch: curses_fixes
 
 .. branch: foldable-getarrayitem-indexerror
@@ -145,26 +140,9 @@ fastpath for cffi.new("long[]")
 
 remove a pointless abstraction
 
-.. branch: jit-settrace
-
-Allow the jit to continue running when sys.settrace() is active, necessary to
-make coverage.py fast
-
 .. branch: remove-numpypy
 
 Remove lib_pypy/numpypy in favor of external numpy fork
-
-.. branch: jit-counter
-
-Tweak the jit counters: decay them at minor collection (actually
-only every 32 minor collection is enough). Should avoid the "memory
-leaks" observed in long-running processes, actually created by the
-jit compiling more and more rarely executed paths.
-
-.. branch: fix-trace-jit
-
-Fixed the usage of sys.settrace() with the JIT. Also made it so using
-sys.settrace() doesn't cause the GIL to be released on every single iteration.
 
 .. branch: rordereddict
 

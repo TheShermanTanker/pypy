@@ -27,9 +27,8 @@ The GC now has `hooks`_ to gain more insights into its performance
 
 The Matplotlib TkAgg backend now works with PyPy, as do pygame and pygobject_.
 
-We updated the `cffi`_ module included in PyPy to version 1.11.5, and the
-`cppyy`_ backend to 0.6.0. Please use these to wrap your C and C++ code,
-respectively, for a JIT friendly experience.
+We updated the `cffi`_ module included in PyPy to version 1.11.5. Please use
+this to wrap your C code.
 
 As always, this release is 100% compatible with the previous one and fixed
 several issues and bugs raised by the growing community of PyPy users.
@@ -52,8 +51,8 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular `modules`_ to run
-on pypy, or general `help`_ with making RPython's JIT even better.
+and `RPython`_ documentation improvements, or tweaking popular `modules`_ to run
+on pypy.
 
 .. _`PyPy`: index.html
 .. _`RPython`: https://rpython.readthedocs.org
@@ -64,15 +63,13 @@ on pypy, or general `help`_ with making RPython's JIT even better.
 .. _`syntax errors`: https://morepypy.blogspot.com/2018/04/improving-syntaxerror-in-pypy.html
 .. _`hooks`: gc_info.html#gc-hooks
 .. _`cffi`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 
 What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -113,11 +110,5 @@ Changelog
 * Improve RPython support for half-floats
 * Added missing attributes to C-API ``instancemethod`` on pypy3
 * Store error state in thread-local storage for C-API.
-* Fix JIT bugs exposed in the sre module
 * Improve speed of Python parser, improve ParseError messages and SyntaxError
-* Handle JIT hooks more efficiently
 * Fix a rare GC bug exposed by intensive use of cpyext ``Buffer`` s
-
-We also refactored many parts of the JIT bridge optimizations, as well as cpyext
-internals, and together with new contributors fixed issues, added new
-documentation, and cleaned up the codebase.

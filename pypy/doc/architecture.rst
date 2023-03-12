@@ -111,20 +111,6 @@ simply written in pure Python; they are in the top-level ``lib_pypy``
 directory.  The standard library of Python (with a few changes to
 accomodate PyPy) is in ``lib-python``.
 
-JIT Compiler
-~~~~~~~~~~~~
-:ref:`Just-in-Time Compiler (JIT) <rpython:jit>`: we have a tracing JIT that traces the
-interpreter written in RPython, rather than the user program that it
-interprets.  As a result it applies to any interpreter, i.e. any
-language.  But getting it to work correctly is not trivial: it
-requires a small number of precise "hints" and possibly some small
-refactorings of the interpreter.  The JIT itself also has several
-almost-independent parts: the tracer itself in ``rpython/jit/metainterp``, the
-optimizer in ``rpython/jit/metainterp/optimizer`` that optimizes a list of
-residual operations, and the backend in ``rpython/jit/backend/<machine-name>``
-that turns it into machine code.  Writing a new backend is a
-traditional way to get into the project.
-
 Garbage Collectors
 ~~~~~~~~~~~~~~~~~~
 Garbage Collectors (GC): as you may notice if you are used to CPython's

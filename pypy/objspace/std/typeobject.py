@@ -8,8 +8,6 @@ from pypy.interpreter.typedef import (
 from pypy.interpreter.astcompiler.misc import mangle
 from pypy.module.__builtin__ import abstractinst
 
-from rpython.rlib.jit import (promote, elidable_promote, we_are_jitted,
-     elidable, dont_look_inside, unroll_safe)
 from rpython.rlib.objectmodel import current_object_addr_as_int, compute_hash
 from rpython.rlib.objectmodel import we_are_translated, not_rpython
 from rpython.rlib.rarithmetic import intmask, r_uint
@@ -167,7 +165,6 @@ class W_TypeObject(W_Root):
     # used to cache the type's __new__ function
     w_new_function = None
 
-    @dont_look_inside
     def __init__(self, space, name, bases_w, dict_w,
                  overridetypedef=None, force_new_layout=False,
                  is_heaptype=True):
@@ -244,12 +241,8 @@ class W_TypeObject(W_Root):
             w_subclass.mutated(key)
 
     def version_tag(self):
-        if not we_are_jitted() or self.is_heaptype():
-            return self._version_tag
-        # prebuilt objects cannot get their version_tag changed
-        return self._pure_version_tag()
+        return self._version_tag
 
-    @elidable_promote()
     def _pure_version_tag(self):
         return self._version_tag
 
@@ -257,23 +250,17 @@ class W_TypeObject(W_Root):
         """ this method returns the applevel __getattribute__ if that is not
         the one from object, in which case it returns None """
         from pypy.objspace.descroperation import object_getattribute
-        if not we_are_jitted():
-            if not self.uses_object_getattribute:
-                # slow path: look for a custom __getattribute__ on the class
-                w_descr = self.lookup('__getattribute__')
-                # if it was not actually overriden in the class, we remember this
-                # fact for the next time.
-                if w_descr is object_getattribute(self.space):
-                    if self.space._side_effects_ok():
-                        self.uses_object_getattribute = True
-                else:
-                    return w_descr
-            return None
-        # in the JIT case, just use a lookup, because it is folded away
-        # correctly using the version_tag
-        w_descr = self.lookup('__getattribute__')
-        if w_descr is not object_getattribute(self.space):
-            return w_descr
+        if not self.uses_object_getattribute:
+            # slow path: look for a custom __getattribute__ on the class
+            w_descr = self.lookup('__getattribute__')
+            # if it was not actually overriden in the class, we remember this
+            # fact for the next time.
+            if w_descr is object_getattribute(self.space):
+                if self.space._side_effects_ok():
+                    self.uses_object_getattribute = True
+            else:
+                return w_descr
+        return None
 
     def has_object_getattribute(self):
         return self.getattribute_if_not_from_object() is None
@@ -337,7 +324,6 @@ class W_TypeObject(W_Root):
                     return w_value
         return w_value
 
-    @elidable
     def _pure_getdictvalue_no_unwrapping(self, space, version_tag, attr):
         return self._getdictvalue_no_unwrapping(space, attr)
 
@@ -383,7 +369,6 @@ class W_TypeObject(W_Root):
         space = self.space
         return self.lookup_where_with_method_cache(name)
 
-    @unroll_safe
     def lookup_starting_at(self, w_starttype, name):
         space = self.space
         look = False
@@ -396,7 +381,6 @@ class W_TypeObject(W_Root):
                     return w_value
         return None
 
-    @unroll_safe
     def _lookup(self, key):
         # nowadays, only called from ../../tool/ann_override.py
         space = self.space
@@ -406,7 +390,6 @@ class W_TypeObject(W_Root):
                 return w_value
         return None
 
-    @unroll_safe
     def _lookup_where(self, key):
         # like _lookup() but also returns the parent class in which the
         # attribute was found
@@ -419,8 +402,7 @@ class W_TypeObject(W_Root):
 
     def _lookup_where_all_typeobjects(self, key):
         # like _lookup_where(), but when we know that self.mro_w only
-        # contains W_TypeObjects.  (It differs from _lookup_where() mostly
-        # from a JIT point of view: it cannot invoke arbitrary Python code.)
+        # contains W_TypeObjects.
         space = self.space
         for w_class in self.mro_w:
             assert isinstance(w_class, W_TypeObject)
@@ -431,8 +413,7 @@ class W_TypeObject(W_Root):
 
     def lookup_where_with_method_cache(self, name):
         space = self.space
-        promote(self)
-        version_tag = promote(self.version_tag())
+        version_tag = self.version_tag()
         if version_tag is None:
             tup = self._lookup_where(name)
             return tup
@@ -442,7 +423,6 @@ class W_TypeObject(W_Root):
             return w_class, w_value.unwrap_cell(space)
         return tup_w   # don't make a new tuple, reuse the old one
 
-    @elidable
     def _pure_lookup_where_with_method_cache(self, name, version_tag):
         space = self.space
         cache = space.fromcache(MethodCache)
@@ -526,14 +506,6 @@ class W_TypeObject(W_Root):
         self.flag_abstract = bool(abstract)
 
     def issubtype(self, w_type):
-        promote(self)
-        promote(w_type)
-        if we_are_jitted():
-            version_tag1 = self.version_tag()
-            version_tag2 = w_type.version_tag()
-            if version_tag1 is not None and version_tag2 is not None:
-                res = _pure_issubtype(self, w_type, version_tag1, version_tag2)
-                return res
         return _issubtype(self, w_type)
 
     def get_module(self):
@@ -614,17 +586,10 @@ class W_TypeObject(W_Root):
         self._lifeline_ = None
 
     def descr_call(self, space, __args__):
-        promote(self)
         # invoke the __new__ of the type
-        if not we_are_jitted():
-            # note that the annotator will figure out that self.w_new_function
-            # can only be None if the newshortcut config option is not set
-            w_newfunc = self.w_new_function
-        else:
-            # for the JIT it is better to take the slow path because normal lookup
-            # is nicely optimized, but the self.w_new_function attribute is not
-            # known to the JIT
-            w_newfunc = None
+        # note that the annotator will figure out that self.w_new_function
+        # can only be None if the newshortcut config option is not set
+        w_newfunc = self.w_new_function
         if w_newfunc is None:
             w_newtype, w_newdescr = self.lookup_where('__new__')
             if w_newdescr is None:    # see test_crash_mro_without_object_1
@@ -638,7 +603,7 @@ class W_TypeObject(W_Root):
             #
             w_newfunc = space.get(w_newdescr, space.w_None, w_type=self)
             if (space.config.objspace.std.newshortcut and
-                not we_are_jitted() and space._side_effects_ok() and
+                space._side_effects_ok() and
                 isinstance(w_newtype, W_TypeObject)):
                 self.w_new_function = w_newfunc
         w_newobject = space.call_obj_args(w_newfunc, self, __args__)
@@ -769,8 +734,6 @@ def _check_new_args(space, w_name, w_bases, w_dict):
 
 
 def _create_new_type(space, w_typetype, w_name, w_bases, w_dict):
-    # this is in its own function because we want the special case 'type(x)'
-    # above to be seen by the jit.
     _check_new_args(space, w_name, w_bases, w_dict)
     bases_w = space.fixedview(w_bases)
 
@@ -1302,7 +1265,6 @@ def is_mro_purely_of_types(mro_w):
 def _issubtype(w_sub, w_type):
     return w_type in w_sub.mro_w
 
-@elidable_promote()
 def _pure_issubtype(w_sub, w_type, version_tag1, version_tag2):
     return _issubtype(w_sub, w_type)
 

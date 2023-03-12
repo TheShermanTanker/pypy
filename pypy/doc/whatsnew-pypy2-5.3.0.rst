@@ -17,38 +17,6 @@ Reduce the size of generated C sources.
 Remove a number of options from the build process that were never tested and
 never set. Fix a performance bug in the method cache.
 
-.. branch: bitstring
-
-JIT: use bitstrings to compress the lists of read or written descrs
-that we attach to EffectInfo.  Fixes a problem we had in
-remove-objspace-options.
-
-.. branch: cpyext-for-merge
-
-Update cpyext C-API support After this branch, we are almost able to support 
-upstream numpy via cpyext, so we created (yet another) fork of numpy at 
-github.com/pypy/numpy with the needed changes. Among the significant changes 
-to cpyext:
-
-  - allow c-snippet tests to be run with -A so we can verify we are compatible
-  - fix many edge cases exposed by fixing tests to run with -A
-  - issequence() logic matches cpython
-  - make PyStringObject and PyUnicodeObject field names compatible with cpython
-  - add prelminary support for PyDateTime_*
-  - support PyComplexObject, PyFloatObject, PyDict_Merge, PyDictProxy,
-    PyMemoryView_*, _Py_HashDouble, PyFile_AsFile, PyFile_FromFile,
-  - PyAnySet_CheckExact, PyUnicode_Concat
-  - improve support for PyGILState_Ensure, PyGILState_Release, and thread
-    primitives, also find a case where CPython will allow thread creation
-    before PyEval_InitThreads is run, dissallow on PyPy 
-  - create a PyObject-specific list strategy
-  - rewrite slot assignment for typeobjects
-  - improve tracking of PyObject to rpython object mapping
-  - support tp_as_{number, sequence, mapping, buffer} slots
-
-(makes the pypy-c bigger; this was fixed subsequently by the
-share-cpyext-cpython-api branch)
-
 .. branch: share-mapdict-methods-2
 
 Reduce generated code for subclasses by using the same function objects in all
@@ -106,32 +74,6 @@ problems.
 Fix some warnings when compiling CPython C extension modules
 
 .. branch: syntax_fix
-
-.. branch: remove-raisingops
-
-Remove most of the _ovf, _zer and _val operations from RPython.  Kills
-quite some code internally, and allows the JIT to do better
-optimizations: for example, app-level code like ``x / 2`` or ``x % 2``
-can now be turned into ``x >> 1`` or ``x & 1``, even if x is possibly
-negative.
-
-.. branch: cpyext-old-buffers
-
-Generalize cpyext old-style buffers to more than just str/buffer, add support for mmap
-
-.. branch: numpy-includes
-
-Move _numpypy headers into a directory so they are not picked up by upstream numpy, scipy
-This allows building upstream numpy and scipy in pypy via cpyext
-
-.. branch: traceviewer-common-merge-point-formats
-
-Teach RPython JIT's off-line traceviewer the most common ``debug_merge_point`` formats.
-
-.. branch: cpyext-pickle
-
-Enable pickling of W_PyCFunctionObject by monkeypatching pickle.Pickler.dispatch
-at cpyext import time
 
 .. branch: nonmovable-list
 

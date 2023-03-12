@@ -200,25 +200,6 @@ def decode_long(space, string, byteorder='little', signed=1):
         raise oefmt(space.w_ValueError, "invalid byteorder argument")
     return space.newlong_from_rbigint(result)
 
-def _promote(space, w_obj):
-    """ Promote the first argument of the function and return it. Promote is by
-    value for ints, floats, strs, unicodes (but not subclasses thereof) and by
-    reference otherwise.  (Unicodes not supported right now.)
-
-    This function is experimental!"""
-    from rpython.rlib import jit
-    if space.is_w(space.type(w_obj), space.w_int):
-        jit.promote(space.int_w(w_obj))
-    elif space.is_w(space.type(w_obj), space.w_float):
-        jit.promote(space.float_w(w_obj))
-    elif space.is_w(space.type(w_obj), space.w_bytes):
-        jit.promote_string(space.bytes_w(w_obj))
-    elif space.is_w(space.type(w_obj), space.w_unicode):
-        raise oefmt(space.w_TypeError, "promoting unicode unsupported")
-    else:
-        jit.promote(w_obj)
-    return w_obj
-
 def stack_almost_full(space):
     """Return True if the stack is more than 15/16th full."""
     return space.newbool(rstack.stack_almost_full())

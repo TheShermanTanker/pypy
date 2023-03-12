@@ -1,5 +1,4 @@
 import weakref
-from rpython.rlib import jit
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import oefmt
 from pypy.interpreter.executioncontext import ExecutionContext
@@ -19,7 +18,6 @@ ExecutionContext._thread_local_objs = None
 class Local(W_Root):
     """Thread-local data"""
 
-    @jit.dont_look_inside
     def __init__(self, space, initargs):
         self.initargs = initargs
         self.dicts = {}   # mapping ExecutionContexts to the wraped dict
@@ -43,7 +41,6 @@ class Local(W_Root):
             ec._thread_local_objs = WRefShrinkList()
         ec._thread_local_objs.append(weakref.ref(self))
 
-    @jit.dont_look_inside
     def create_new_dict(self, ec):
         # create a new dict for this thread
         space = ec.space

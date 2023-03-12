@@ -39,9 +39,8 @@ so we can finish those projects! The three sub-projects are:
 
 We would also like to encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_ with making
-RPython's JIT even better. Nine new people contributed since the last release,
-you too could be one of them.
+improvements, or tweaking popular `modules`_ to run on pypy. Nine new people
+contributed since the last release, you too could be one of them.
 
 .. _`PyPy`: https://doc.pypy.org 
 .. _`RPython`: https://rpython.readthedocs.org
@@ -52,8 +51,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison).
 
 This release supports **x86** machines on most common operating systems
 (Linux 32/64, Mac OS X 64, Windows, OpenBSD_, freebsd_),
@@ -89,7 +87,7 @@ Highlights
 * New features:
 
   * Add preliminary support for a new lightweight statistical profiler
-    `vmprof`_, which has been designed to accomodate profiling JITted code
+    `vmprof`_
 
 * Numpy:
 
@@ -107,12 +105,7 @@ Highlights
 
   * Slight improvement in frame sizes, improving some benchmarks
 
-  * Internal refactoring and cleanups leading to improved JIT performance
-
   * Improved IO performance of ``zlib`` and ``bz2`` modules
-
-  * We continue to improve the JIT's optimizations. Our benchmark suite is now
-    over 7 times faster than cpython
 
 .. _`vmprof`: https://vmprof.readthedocs.org
 .. _resolved: https://doc.pypy.org/en/latest/whatsnew-2.6.0.html

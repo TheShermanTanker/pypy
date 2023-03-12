@@ -6,7 +6,6 @@ from pypy.interpreter.gateway import interp2app, unwrap_spec
 from pypy.interpreter.typedef import (TypeDef, GetSetProperty,
                                       interp_attrproperty, interp_attrproperty_w)
 from rpython.annotator.model import SomeChar
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import (
         specialize, we_are_translated, enforceargs, dict_to_switch)
 from rpython.rlib.rarithmetic import r_longlong, r_ulonglong, ovfcheck
@@ -25,7 +24,6 @@ def decode_w_dtype(space, w_dtype):
     return space.interp_w(
         W_Dtype, space.call_function(space.gettypefor(W_Dtype), w_dtype))
 
-@jit.unroll_safe
 def dtype_agreement(space, w_arr_list, shape, out=None):
     """ agree on dtype from a list of arrays. if out is allocated,
     use it's dtype, otherwise allocate a new one with agreed dtype
@@ -155,7 +153,6 @@ class W_Dtype(W_Root):
         return bool(self.fields)
 
     def is_native(self):
-        # Use ord() to ensure that self.byteorder is a char and JITs properly
         return ord(self.byteorder) in (ord(NPY.NATIVE), ord(NPY.NATBYTE))
 
     def as_signed(self, space):
@@ -1463,7 +1460,6 @@ class DtypeCache(object):
 def get_dtype_cache(space):
     return space.fromcache(DtypeCache)
 
-@jit.elidable
 def num2dtype(space, num):
     return get_dtype_cache(space).dtypes_by_num(num)
 

@@ -7,8 +7,6 @@ issubclass() follow and trust these attributes is they are present, in
 addition to checking for instances and subtypes in the normal way.
 """
 
-from rpython.rlib import jit
-
 from pypy.interpreter.baseobjspace import ObjSpace as BaseObjSpace
 from pypy.interpreter.error import OperationError
 from pypy.module.__builtin__.interp_classobj import W_ClassObject
@@ -88,7 +86,6 @@ def p_recursive_isinstance_type_w(space, w_inst, w_type):
     return False
 
 
-@jit.unroll_safe
 def abstract_isinstance_w(space, w_obj, w_klass_or_tuple, allow_override=False):
     """Implementation for the full 'isinstance(obj, klass_or_tuple)'."""
     # Copied from CPython 2.7's PyObject_Isinstance().  Additionally,
@@ -106,7 +103,6 @@ def abstract_isinstance_w(space, w_obj, w_klass_or_tuple, allow_override=False):
         return True
 
     # -- case (anything, tuple)
-    # XXX it might be risky that the JIT sees this
     if space.isinstance_w(w_klass_or_tuple, space.w_tuple):
         for w_klass in space.fixedview(w_klass_or_tuple):
             if abstract_isinstance_w(space, w_obj, w_klass, allow_override):
@@ -129,7 +125,6 @@ def abstract_isinstance_w(space, w_obj, w_klass_or_tuple, allow_override=False):
 # ---------- issubclass ----------
 
 
-@jit.unroll_safe
 def p_abstract_issubclass_w(space, w_derived, w_cls):
     # Copied straight from CPython 2.7, function abstract_issubclass().
     # Don't confuse this with the function abstract_issubclass_w() below.
@@ -169,7 +164,6 @@ def p_recursive_issubclass_w(space, w_derived, w_cls):
     return p_abstract_issubclass_w(space, w_derived, w_cls)
 
 
-@jit.unroll_safe
 def abstract_issubclass_w(space, w_derived, w_klass_or_tuple,
                           allow_override=False):
     """Implementation for the full 'issubclass(derived, klass_or_tuple)'."""

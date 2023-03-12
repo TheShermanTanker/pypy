@@ -4,7 +4,7 @@ from pypy.interpreter.gateway import unwrap_spec
 
 from rpython.rlib.objectmodel import specialize, r_dict, compute_identity_hash
 from rpython.rlib.rarithmetic import ovfcheck, intmask
-from rpython.rlib import jit, rweakref, clibffi
+from rpython.rlib import rweakref, clibffi
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rtyper.tool import rffi_platform
 
@@ -163,7 +163,6 @@ else:
 def new_primitive_type(space, name):
     return _new_primitive_type(space, name)
 
-@jit.elidable
 def _new_primitive_type(space, name):
     unique_cache = space.fromcache(UniqueCache)
     try:
@@ -190,7 +189,6 @@ def _setup_wref(has_weakref_support):
 def new_pointer_type(space, w_ctype):
     return _new_pointer_type(space, w_ctype)
 
-@jit.elidable
 def _new_pointer_type(space, w_ctype):
     _setup_wref(rweakref.has_weakref_support())
     ctptr = w_ctype._pointer_type()
@@ -211,7 +209,6 @@ def new_array_type(space, w_ctptr, w_length):
             raise oefmt(space.w_ValueError, "negative array length")
     return _new_array_type(space, w_ctptr, length)
 
-@jit.elidable
 def _new_array_type(space, w_ctptr, length):
     _setup_wref(rweakref.has_weakref_support())
     if not isinstance(w_ctptr, ctypeptr.W_CTypePointer):
@@ -612,21 +609,18 @@ def complete_struct_or_union(space, w_ctype, w_fields, w_ignored=None,
 def new_void_type(space):
     return _new_void_type(space)
 
-@jit.elidable
 def _new_void_type(space):
     unique_cache = space.fromcache(UniqueCache)
     if unique_cache.ctvoid is None:
         unique_cache.ctvoid = ctypevoid.W_CTypeVoid(space)
     return unique_cache.ctvoid
 
-@jit.elidable
 def _new_voidp_type(space):
     unique_cache = space.fromcache(UniqueCache)
     if unique_cache.ctvoidp is None:
         unique_cache.ctvoidp = new_pointer_type(space, new_void_type(space))
     return unique_cache.ctvoidp
 
-@jit.elidable
 def _new_chara_type(space):
     unique_cache = space.fromcache(UniqueCache)
     if unique_cache.ctchara is None:
@@ -696,15 +690,12 @@ def _func_key_hash(unique_cache, fargs, fresult, ellipsis, abi):
         x &= 3                      # but for test, keep only 2 bits of hash
     return x
 
-# can't use @jit.elidable here, because it might call back to random
-# space functions via force_lazy_struct()
 def _new_function_type(space, fargs, fresult, ellipsis, abi):
     try:
         return _get_function_type(space, fargs, fresult, ellipsis, abi)
     except KeyError:
         return _build_function_type(space, fargs, fresult, ellipsis, abi)
 
-@jit.elidable
 def _get_function_type(space, fargs, fresult, ellipsis, abi):
     # This function is elidable because if called again with exactly the
     # same arguments (and if it didn't raise KeyError), it would give
@@ -728,7 +719,6 @@ def _get_function_type(space, fargs, fresult, ellipsis, abi):
             return ctype
     raise KeyError
 
-@jit.dont_look_inside
 def _build_function_type(space, fargs, fresult, ellipsis, abi):
     from pypy.module._cffi_backend import ctypefunc
     #

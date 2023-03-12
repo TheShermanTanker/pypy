@@ -25,8 +25,7 @@ Until we can work with downstream providers to distribute builds with PyPy, we
 have made packages for some common packages `available as wheels`_.
 
 The `CFFI`_ backend has been updated to version 1.12.2. We recommend using CFFI
-rather than c-extensions to interact with C, and `cppyy`_ for interacting with
-C++ code.
+rather than c-extensions to interact with C.
 
 As always, this release is 100% compatible with the previous one and fixed
 several issues and bugs raised by the growing community of PyPy users.
@@ -45,14 +44,13 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy.
 
 .. _`PyPy`: index.html
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 
 What is PyPy?
@@ -60,7 +58,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.6. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -98,10 +96,7 @@ Changes shared across versions
   of the PyPy-specific ``__buffer__`` class method. This enables better
   buffer sharing between ctypes and NumPy.
 * Add copying to zlib
-* Improve register allocation in the JIT by using better heuristics
 * Include ``<sys/sysmacros.h>`` on Gnu/Hurd
-* Mostly for completeness sake: support for ``rlib.jit.promote_unicode``, which
-  behaves like ``promote_string``, but for rpython unicode objects
 * Correctly initialize the ``d_type`` and ``d_name`` members of builtin
   descriptors to fix a segfault related to classmethods in Cython
 * Expand documentation of ``__pypy_`` module
@@ -116,6 +111,5 @@ Python 3.6 only
 
 * Support for os.PathLike in the posix module
 * Update ``idellib`` for 3.6.1
-* Make ``BUILD_CONST_KEY_MAP`` JIT-friendly
 * Adapt code that optimizes ``sys.exc_info()`` to wordcode
 * Fix annotation bug found by ``attrs``

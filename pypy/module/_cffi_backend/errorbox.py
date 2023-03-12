@@ -1,6 +1,5 @@
 # for Windows only
 import sys
-from rpython.rlib import jit
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 
@@ -98,12 +97,10 @@ if MESSAGEBOX:
             cffi_errorbox(p)
 
 
-    @jit.dont_look_inside
     def start_error_capture(space):
         msg = space.fromcache(Message)
         return msg.start_error_capture()
 
-    @jit.dont_look_inside
     def stop_error_capture(space, x):
         msg = space.fromcache(Message)
         msg.stop_error_capture(x)

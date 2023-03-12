@@ -1,6 +1,6 @@
 from pypy.interpreter.buffer import BufferView
 from pypy.interpreter.error import oefmt
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.listsort import make_timsort_class
 from rpython.rlib.buffer import RawBuffer
@@ -44,21 +44,16 @@ class BaseConcreteArray(object):
     parent = None
     flags = 0
 
-    # JIT hints that length of all those arrays is a constant
-
     def get_shape(self):
         shape = self.shape
-        jit.hint(len(shape), promote=True)
         return shape
 
     def get_strides(self):
         strides = self.strides
-        jit.hint(len(strides), promote=True)
         return strides
 
     def get_backstrides(self):
         backstrides = self.backstrides
-        jit.hint(len(backstrides), promote=True)
         return backstrides
 
     def get_flags(self):
@@ -73,7 +68,6 @@ class BaseConcreteArray(object):
     def setitem(self, index, value):
         self.dtype.store(self, index, 0, value)
 
-    @jit.unroll_safe
     def setslice(self, space, arr):
         if arr.get_size() == 1:
             # we can always set self[:] = scalar
@@ -162,7 +156,6 @@ class BaseConcreteArray(object):
 
     # -------------------- applevel get/setitem -----------------------
 
-    @jit.unroll_safe
     def _lookup_by_index(self, space, view_w):
         item = self.start
         strides = self.get_strides()
@@ -179,7 +172,6 @@ class BaseConcreteArray(object):
             item += idx * strides[i]
         return item
 
-    @jit.unroll_safe
     def _lookup_by_unwrapped_index(self, space, lst):
         item = self.start
         shape = self.get_shape()
@@ -201,7 +193,6 @@ class BaseConcreteArray(object):
     def setitem_index(self, space, index, value):
         self.setitem(self._lookup_by_unwrapped_index(space, index), value)
 
-    @jit.unroll_safe
     def _single_item_index(self, space, w_idx):
         """ Return an index of single item if possible, otherwise raises
         IndexError
@@ -236,7 +227,6 @@ class BaseConcreteArray(object):
         idx = support.index_w(space, w_idx)
         return self._lookup_by_index(space, [space.newint(idx)])
 
-    @jit.unroll_safe
     def _prepare_slice_args(self, space, w_idx):
         from pypy.module.micronumpy import boxes
         if space.isinstance_w(w_idx, space.w_text):
@@ -457,10 +447,8 @@ lambda_customtrace = lambda: customtrace
 def _setup():
     rgc.register_custom_trace_hook(OBJECTSTORE, lambda_customtrace)
 
-@jit.dont_look_inside
 def _create_objectstore(storage, length, elsize):
     gcstruct = lltype.malloc(OBJECTSTORE)
-    # JIT does not support cast_ptr_to_adr
     gcstruct.storage = llmemory.cast_ptr_to_adr(storage)
     #print 'create gcstruct',gcstruct,'with storage',storage,'as',gcstruct.storage
     gcstruct.length = length

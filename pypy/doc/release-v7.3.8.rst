@@ -31,7 +31,6 @@ include:
 
   - PyPy3.9 uses an RPython version of the PEG parser which brought with it a
     cleanup of the lexer and parser in general
-  - Fixed a regression in PyPy3.8 when JITting empty list comprehensions
   - Tweaked some issues around changing the file layout after packaging to make
     the on-disk layout of PyPy3.8 more compatible with CPython. This requires
     ``setuptools>=58.1.0``
@@ -55,13 +54,12 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on PyPy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 6 new contributors,
-thanks for pitching in, and welcome to the project!
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on PyPy. Since the previous release, we have accepted contributions from 6 new
+contributors, thanks for pitching in, and welcome to the project!
 
 If you are a python library maintainer and use C-extensions, please consider
-making a HPy_ / CFFI_ / cppyy_ version of your library that would be performant
+making a HPy_ / CFFI_ version of your library that would be performant
 on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
@@ -70,7 +68,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _CFFI: https://cffi.readthedocs.io
-.. _cppyy: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _blog: https://pypy.org/blog
@@ -81,7 +78,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.7, 3.8 and
 3.9. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -148,10 +145,8 @@ Speedups and enhancements shared across versions
 - Prepare ``_ssl`` for OpenSSL3
 - Improve ``x << y`` where ``x`` and ``y`` are ``ints`` but the results doesn't fit
   into a machine word: don't convert ``y`` to ``rbigint`` and back to int
-- Avoid updating counter when using `--jit off`.
 - Speed up ``str`` -> ``float`` conversion for the fast path (ascii, no ``'_'``, no
-  ``INF``, no leading or trailing whitespace). PyPy with `--jit off`` is now
-  faster than CPython for this fastpath (issue 3682_).
+  ``INF``, no leading or trailing whitespace).
 
 C-API (cpyext) and C-extensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -258,10 +253,6 @@ Python 3.8+ speedups and enhancements
   iterator pickling
 - Add more auditing events, while skipping CPython-specific tracing and
   attribute-modification tracing
-- Fixed a speed regression when JITting empty list comprehensions (issue
-  3598_)
-- Make sure that all bytecodes that can close a loop go via ``jump_absolute``,
-  so the JIT can trace them
 
 Python 3.8 C-API
 ~~~~~~~~~~~~~~~~

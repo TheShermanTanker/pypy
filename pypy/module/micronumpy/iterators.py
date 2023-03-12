@@ -36,7 +36,6 @@ so if we precalculate the overflow backstride as
 we can do only addition while iterating
 All the calculations happen in next()
 """
-from rpython.rlib import jit
 from pypy.module.micronumpy import support, constants as NPY
 from pypy.module.micronumpy.base import W_NDimArray
 
@@ -55,7 +54,6 @@ class PureShapeIter(object):
     def done(self):
         return self._done
 
-    @jit.unroll_safe
     def next(self):
         for i, idx_w_i in enumerate(self.idx_w_i):
             if idx_w_i is not None:
@@ -69,7 +67,6 @@ class PureShapeIter(object):
         else:
             self._done = True
 
-    @jit.unroll_safe
     def get_index(self, space, shapelen):
         return [space.newint(self.indexes[i]) for i in range(shapelen)]
 
@@ -97,7 +94,6 @@ class ArrayIter(object):
 
     track_index = True
 
-    @jit.unroll_safe
     def __init__(self, array, size, shape, strides, backstrides):
         assert len(shape) == len(strides) == len(backstrides)
         self.contiguous = (array.flags & NPY.ARRAY_C_CONTIGUOUS and
@@ -131,7 +127,6 @@ class ArrayIter(object):
                 self.backstrides == other.backstrides and
                 self.factors == other.factors)
 
-    @jit.unroll_safe
     def reset(self, state=None, mutate=False):
         index = 0
         if state is None:
@@ -147,7 +142,6 @@ class ArrayIter(object):
         state.index = index
         state.offset = offset
 
-    @jit.unroll_safe
     def next(self, state, mutate=False):
         assert state.iterator is self
         index = state.index
@@ -157,11 +151,9 @@ class ArrayIter(object):
         offset = state.offset
         if self.contiguous:
             elsize = self.array.dtype.elsize
-            jit.promote(elsize)
             offset += elsize
         elif self.ndim_m1 == 0:
             stride = self.strides[0]
-            jit.promote(stride)
             offset += stride
         else:
             for i in xrange(self.ndim_m1, -1, -1):
@@ -178,7 +170,6 @@ class ArrayIter(object):
         state.index = index
         state.offset = offset
 
-    @jit.unroll_safe
     def goto(self, index):
         offset = self.array.start
         if self.contiguous:
@@ -192,7 +183,6 @@ class ArrayIter(object):
                 current %= self.factors[i]
         return IterState(self, index, None, offset)
 
-    @jit.unroll_safe
     def indices(self, state):
         assert state.iterator is self
         assert self.track_index

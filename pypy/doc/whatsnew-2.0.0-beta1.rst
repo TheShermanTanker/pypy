@@ -13,11 +13,6 @@ Fixed the performance of gc.get_referrers()
 
 .. branch: win-ordinal
 
-.. branch: reflex-support
-
-Provides cppyy module (disabled by default) for access to C++ through Reflex.
-See doc/cppyy.rst for full details and functionality.
-
 .. branch: nupypy-axis-arg-check
 
 Check that axis arg is valid in _numpypy
@@ -34,15 +29,9 @@ Check that axis arg is valid in _numpypy
 
 Remove numpy lazy evaluation and simplify everything
 
-.. branch: numpy-reintroduce-jit-drivers
-
 .. branch: numpy-fancy-indexing
 
 Support for array[array-of-ints] in numpy
-
-.. branch: even-more-jit-hooks
-
-Implement better JIT hooks
 
 .. branch: virtual-arguments
 
@@ -100,12 +89,6 @@ add dict/list/set strategies optimized for unicode items
 
 .. branch: rpython-unicode-formatting
 
-.. branch: jit-opaque-licm
-
 .. branch: rpython-utf8
 
 Support for utf-8 encoding in RPython
-
-.. branch: arm-backend-2
-
-Support ARM in the JIT.

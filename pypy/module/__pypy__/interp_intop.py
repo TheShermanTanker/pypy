@@ -3,7 +3,6 @@ from rpython.rtyper.lltypesystem import lltype
 from rpython.rtyper.lltypesystem.lloperation import llop
 from rpython.rlib.rarithmetic import r_uint, intmask
 from rpython.rlib.rarithmetic import int_c_div, int_c_mod, mulmod
-from rpython.rlib import jit
 
 
 @unwrap_spec(n=int, m=int)

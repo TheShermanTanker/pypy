@@ -26,9 +26,8 @@ GC by using a combination of ``gc.disable`` and ``gc.collect_step``. See the
 
 .. _`GC hooks`: https://doc.pypy.org/en/latest/gc_info.html#semi-manual-gc-management
 
-We updated the `cffi`_ module included in PyPy to version 1.12, and the
-`cppyy`_ backend to 1.4. Please use these to wrap your C and C++ code,
-respectively, for a JIT friendly experience.
+We updated the `cffi`_ module included in PyPy to version 1.12. Please use
+this to wrap your C code.
 
 As always, this release is 100% compatible with the previous one and fixed
 several issues and bugs raised by the growing community of PyPy users.
@@ -50,14 +49,13 @@ direct consulting work.
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on pypy, or general `help`_ with making RPython's JIT even better.
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on pypy.
 
 .. _`PyPy`: index.html
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`cffi`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`available as wheels`: https://github.com/antocuni/pypy-wheels
 .. _`GC blog post`: https://morepypy.blogspot.com/2019/01/pypy-for-low-latency-systems.html
 
@@ -67,7 +65,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7, 3.5 and 3.6. It's fast (`PyPy and CPython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -94,7 +92,6 @@ Changelog
 If not specified, the changes are shared across versions
 
 * Support ``__set_name__``, ``__init_subclass__`` (Py3.6)
-* Support ``cppyy`` in Py3.5 and Py3.6
 * Use implementation-specific site directories in ``sysconfig`` (Py3.5, Py3.6)
 * Adding detection of gcc to ``sysconfig`` (Py3.5, Py3.6)
 * Fix multiprocessing regression on newer glibcs
@@ -128,7 +125,7 @@ If not specified, the changes are shared across versions
 * Add deprecation warning if type of result of ``__float__`` is float inherited
   class (Py3.6)
 * Fix async generator bug when yielding a ``StopIteration`` (Py3.6)
-* Speed up ``max(list-of-int)`` from non-jitted code
+* Speed up ``max(list-of-int)``
 * Fix Windows ``os.listdir()`` for some cases (see CPython #32539)
 * Add ``select.PIPE_BUF``
 * Use ``subprocess`` to avoid shell injection in ``shutil`` module - backport
@@ -144,9 +141,5 @@ If not specified, the changes are shared across versions
 * Fix freezing builtin modules at translation
 * Tweak ``W_UnicodeDictionaryStrategy`` which speeds up dictionaries with only
   unicode keys
-
-We also refactored many parts of the JIT bridge optimizations, as well as cpyext
-internals, and together with new contributors fixed issues, added new
-documentation, and cleaned up the codebase.
 
 .. _contributing: https://doc.pypy.org/en/latest/contributing.html

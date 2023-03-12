@@ -1,4 +1,3 @@
-from rpython.rlib import jit
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, GetSetProperty
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
@@ -323,7 +322,6 @@ class IndexIterator(object):
         self.index = [0] * len(shape)
         self.backward = backward
 
-    @jit.unroll_safe
     def next(self):
         for i in range(len(self.shape) - 1, -1, -1):
             if self.index[i] < self.shape[i] - 1:
@@ -609,7 +607,6 @@ class W_NDIter(W_NumpyObject):
     def descr_len(self, space):
         space.newint(len(self.iters))
 
-    @jit.unroll_safe
     def descr_next(self, space):
         for it, st in self.iters:
             if not it.done(st):

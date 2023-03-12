@@ -1,4 +1,3 @@
-from rpython.rlib import jit
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rlib.rdynload import DLLHANDLE
 
@@ -68,11 +67,9 @@ class W_LibObject(W_Root):
                                  ptr, g.c_size_or_direct_fn,
                                  rawfunctype, fnname, self.libname)
 
-    @jit.elidable_promote()
     def _get_attr_elidable(self, attr):
         return self.dict_w[attr]     # KeyError if not found
 
-    @jit.dont_look_inside
     def _build_attr(self, attr):
         index = parse_c_type.search_in_globals(self.ctx, attr)
         if index < 0:

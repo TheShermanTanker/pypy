@@ -63,12 +63,6 @@ PyTuple_Type
 Use offsets from PyTypeObject to find actual c function to call rather than
 fixed functions, allows function override after PyType_Ready is called
 
-.. branch: issue2335
-
-Avoid exhausting the stack in the JIT due to successive guard
-failures in the same Python function ending up as successive levels of
-RPython functions, while at app-level the traceback is very short
-
 .. branch: use-madv-free
 
 Try harder to memory to the OS.  See e.g. issue #2336.  Note that it does
@@ -98,21 +92,9 @@ of ctypes. This avoids importing ctypes in many small programs and
 scripts, which in turn avoids enabling threads (because ctypes
 creates callbacks at import time, and callbacks need threads).
 
-.. branch: new-jit-log
-
-The new logging facility that integrates with and adds features to vmprof.com.
-
-.. branch: jitlog-32bit
-
-Resolve issues to use the new logging facility on a 32bit system
-
 .. branch: ep2016sprint
 
 Trying harder to make hash(-1) return -2, like it does on CPython
-
-.. branch: jitlog-exact-source-lines
-
-Log exact line positions in debug merge points.
 
 .. branch: null_byte_after_str
 
@@ -149,20 +131,9 @@ blackhole interp involved.  Also fix the stacklet (greenlet) support.
 Previously it returned what looked like a regular dict object (but it
 was already read-only).
 
-
-.. branch: const-fold-we-are-jitted
-
-Reduce the size of the generated C code by constant-folding ``we_are_jitted``
-in non-jitcode.
-
 .. branch: memoryview-attributes
 
 Support for memoryview attributes (format, itemsize, ...).
-Extends the cpyext emulation layer.
-
-.. branch: redirect-assembler-jitlog
-
-Log more information to properly rebuild the redirected traces in jitviewer.
 
 .. branch: cpyext-subclass
 

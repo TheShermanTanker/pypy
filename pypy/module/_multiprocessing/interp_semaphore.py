@@ -3,7 +3,7 @@ import os
 import sys
 import time
 
-from rpython.rlib import jit, rgc, rthread
+from rpython.rlib import rgc, rthread
 from rpython.rlib.rarithmetic import intmask, r_uint
 from rpython.rtyper.lltypesystem import rffi, lltype
 from rpython.rtyper.tool import rffi_platform as platform
@@ -110,7 +110,6 @@ else:
                                                           TIMEVALP], rffi.INT,
                        save_err=rffi.RFFI_SAVE_ERRNO)
 
-    @jit.dont_look_inside
     def sem_open(name, oflag, mode, value):
         res = _sem_open(name, oflag, mode, value)
         if res == rffi.cast(SEM_T, SEM_FAILED):

@@ -4,7 +4,7 @@ from pypy.interpreter.error import oefmt
 from pypy.interpreter.gateway import interp2app, ObjSpace
 from pypy.interpreter.typedef import TypeDef
 from pypy.interpreter.executioncontext import AsyncAction, report_error
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rlib.rshrinklist import AbstractShrinkList
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rweakref import dead_ref
@@ -57,7 +57,6 @@ class WeakrefLifeline(W_Root):
         # weakref callbacks are not invoked eagerly here.  They are
         # invoked by self.__del__() anyway.
 
-    @jit.dont_look_inside
     def get_or_make_weakref(self, w_subtype, w_obj):
         space = self.space
         w_weakreftype = space.gettypeobject(W_Weakref.typedef)
@@ -76,7 +75,6 @@ class WeakrefLifeline(W_Root):
             self.append_wref_to(w_ref)
         return w_ref
 
-    @jit.dont_look_inside
     def get_or_make_proxy(self, w_obj):
         space = self.space
         if self.cached_proxy is not None:
@@ -108,7 +106,6 @@ class WeakrefLifeline(W_Root):
             self.space.finalizer_queue.register_finalizer(self)
             self.has_callbacks = True
 
-    @jit.dont_look_inside
     def make_weakref_with_callback(self, w_subtype, w_obj, w_callable):
         space = self.space
         w_ref = space.allocate_instance(W_Weakref, w_subtype)
@@ -117,7 +114,6 @@ class WeakrefLifeline(W_Root):
         self.enable_callbacks()
         return w_ref
 
-    @jit.dont_look_inside
     def make_proxy_with_callback(self, w_obj, w_callable):
         space = self.space
         if space.is_true(space.callable(w_obj)):
@@ -165,7 +161,6 @@ class W_WeakrefBase(W_Root):
         self.w_obj_weak = weakref.ref(w_obj)
         self.w_callable = w_callable
 
-    @jit.dont_look_inside
     def dereference(self):
         w_obj = self.w_obj_weak()
         return w_obj

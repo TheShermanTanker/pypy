@@ -3,7 +3,7 @@
 Somewhat similar to MapDictStrategy, also uses a map.
 """
 
-from rpython.rlib import jit, rerased, objectmodel, debug
+from rpython.rlib import rerased, objectmodel, debug
 
 from pypy.objspace.std.dictmultiobject import (
     UnicodeDictStrategy, DictStrategy,
@@ -72,8 +72,6 @@ class JsonDictStrategy(DictStrategy):
 
     def getitem_unicode(self, w_dict, w_key):
         storage_w = self.unerase(w_dict.dstorage)
-        if jit.isconstant(w_key):
-            jit.promote(self)
         index = self.jsonmap.get_index(w_key)
         if index == -1:
             return None

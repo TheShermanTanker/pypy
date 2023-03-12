@@ -3,8 +3,7 @@ PyPy 2.1 - Considered ARMful
 ============================
 
 We're pleased to announce PyPy 2.1, which targets version 2.7.3 of the Python
-language. This is the first release with official support for ARM processors in the JIT.
-This release also contains several bugfixes and performance improvements. 
+language. This release also contains several bugfixes and performance improvements. 
 
 You can download the PyPy 2.1 release here:
 
@@ -24,8 +23,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 2.1 and cpython 2.7.2`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 2.1 and cpython 2.7.2`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or Windows
 32. This release also supports ARM machines running Linux 32bit - anything with
@@ -46,8 +44,6 @@ to handle that.
 
 Highlights
 ==========
-
-* JIT support for ARM, architecture versions 6 and 7, hard- and soft-float ABI
 
 * Stacklet support for ARM
 

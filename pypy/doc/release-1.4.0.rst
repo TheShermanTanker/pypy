@@ -16,9 +16,9 @@ PyPy is a very compliant Python interpreter, almost a drop-in replacement
 for CPython. It's fast (`pypy 1.4 and cpython 2.6`_ comparison)
 
 Among its new features, this release includes numerous performance improvements
-(which made fast self-hosting possible), a 64-bit JIT backend, as well
-as serious stabilization. As of now, we can consider the 32-bit and 64-bit
-linux versions of PyPy stable enough to run `in production`_.
+(which made fast self-hosting possible), as well as serious stabilization. As
+of now, we can consider the 32-bit and 64-bit linux versions of PyPy stable
+enough to run `in production`_.
 
 Numerous speed achievements are described on `our blog`_. Normalized speed
 charts comparing `pypy 1.4 and pypy 1.3`_ as well as `pypy 1.4 and cpython 2.6`_
@@ -40,11 +40,6 @@ More highlights
 
 * `Virtualenv support`_: now PyPy is fully compatible with virtualenv_: note that
   to use it, you need a recent version of virtualenv (>= 1.5).
-
-* Faster (and JITted) regular expressions - huge boost in speeding up
-  the `re` module.
-
-* Other speed improvements, like JITted calls to functions like map().
 
 .. _virtualenv: https://pypi.python.org/pypi/virtualenv
 .. _`Virtualenv support`: https://morepypy.blogspot.com/2010/08/using-virtualenv-with-pypy.html

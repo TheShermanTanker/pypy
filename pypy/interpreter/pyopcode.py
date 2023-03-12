@@ -4,7 +4,7 @@ Implementation of a part of the standard Python opcodes.
 The rest, dealing with variables in optimized ways, is in nestedscope.py.
 """
 
-from rpython.rlib import jit, rstackovf
+from rpython.rlib import rstackovf
 from rpython.rlib.debug import check_nonneg
 from rpython.rlib.objectmodel import (we_are_translated, always_inline,
         dont_inline, not_rpython)
@@ -142,17 +142,11 @@ class __extend__(pyframe.PyFrame):
     def call_contextmanager_exit_function(self, w_func, w_typ, w_val, w_tb):
         return self.space.call_function(w_func, w_typ, w_val, w_tb)
 
-    @jit.unroll_safe
     def dispatch_bytecode(self, co_code, next_instr, ec):
         while True:
             self.last_instr = intmask(next_instr)
-            if jit.we_are_jitted():
-                if self.debugdata:
-                    ec.bytecode_only_trace(self)
-                    next_instr = r_uint(self.last_instr)
-            else:
-                ec.bytecode_trace(self)
-                next_instr = r_uint(self.last_instr)
+            ec.bytecode_trace(self)
+            next_instr = r_uint(self.last_instr)
             opcode = ord(co_code[next_instr])
             next_instr += 1
 
@@ -447,10 +441,6 @@ class __extend__(pyframe.PyFrame):
             else:
                 self.MISSING_OPCODE(oparg, next_instr)
 
-            if jit.we_are_jitted():
-                return next_instr
-
-    @jit.unroll_safe
     def unrollstack(self, unroller_kind):
         while self.blockstack_non_empty():
             block = self.pop_block()
@@ -968,15 +958,10 @@ class __extend__(pyframe.PyFrame):
     def LOAD_ATTR(self, nameindex, next_instr):
         "obj.attributename"
         w_obj = self.popvalue()
-        if not jit.we_are_jitted():
-            from pypy.objspace.std.mapdict import LOAD_ATTR_caching
-            w_value = LOAD_ATTR_caching(self.getcode(), w_obj, nameindex)
-        else:
-            w_attributename = self.getname_w(nameindex)
-            w_value = self.space.getattr(w_obj, w_attributename)
+        from pypy.objspace.std.mapdict import LOAD_ATTR_caching
+        w_value = LOAD_ATTR_caching(self.getcode(), w_obj, nameindex)
         self.pushvalue(w_value)
 
-    @jit.unroll_safe
     def cmp_exc_match(self, w_1, w_2):
         space = self.space
         if space.isinstance_w(w_2, space.w_tuple):
@@ -1078,7 +1063,6 @@ class __extend__(pyframe.PyFrame):
         jump_backward(self, jumpto)
 
     def jump_absolute(self, jumpto, ec):
-        # this function is overridden by pypy.module.pypyjit.interp_jit
         check_nonneg(jumpto)
         if self.space.reverse_debugging:
             self._revdb_jump_backward(jumpto)
@@ -1190,7 +1174,6 @@ class __extend__(pyframe.PyFrame):
                 self.space.w_None,
                 self.space.w_None)
 
-    @jit.unroll_safe
     def call_function(self, oparg, w_star=None, w_starstar=None):
         n_arguments = oparg & 0xff
         n_keywords = (oparg>>8) & 0xff
@@ -1257,7 +1240,6 @@ class __extend__(pyframe.PyFrame):
                                defaultarguments)
         self.pushvalue(fn)
 
-    @jit.unroll_safe
     def MAKE_CLOSURE(self, numdefaults, next_instr):
         w_codeobj = self.popvalue()
         codeobj = self.space.interp_w(pycode.PyCode, w_codeobj)
@@ -1317,7 +1299,6 @@ class __extend__(pyframe.PyFrame):
         w_dict = self.space.newdict()
         self.pushvalue(w_dict)
 
-    @jit.unroll_safe
     def BUILD_SET(self, itemcount, next_instr):
         w_set = self.space.newset()
         for i in range(itemcount-1, -1, -1):

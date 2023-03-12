@@ -1,7 +1,6 @@
 import os
 from rpython.rlib.objectmodel import specialize, instantiate
 from rpython.rlib.rarithmetic import intmask
-from rpython.rlib import jit
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rtyper.lltypesystem.lloperation import llop
 from rpython.rtyper.annlowlevel import llhelper
@@ -80,7 +79,6 @@ class KeepaliveCache:
         self.cache_dict = {}
 
 
-@jit.dont_look_inside
 def externpy_deco(space, w_ffi, w_python_callable, w_name, w_error, w_onerror):
     from pypy.module._cffi_backend.ffi_obj import W_FFIObject
     from pypy.module._cffi_backend.ccallback import W_ExternPython

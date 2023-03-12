@@ -6,7 +6,6 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.typedef import GetSetProperty, TypeDef
 from rpython.rlib.objectmodel import specialize
-from rpython.rlib import jit
 
 
 class W_SliceObject(W_Root):
@@ -245,19 +244,12 @@ def normalize_simple_slice(space, length, w_start, w_stop):
     assert length >= 0
     if start < 0:
         start = 0
-    # hack for the JIT, for slices with no end specified:
-    # this avoids the two comparisons that follow
-    if jit.isconstant(stop) and stop == sys.maxint:
-        pass
-    else:
-        if stop < start:
-            stop = start
-        if stop <= length:
-            return start, stop
+    if stop < start:
+        stop = start
+    if stop <= length:
+        return start, stop
     # here is the case where 'stop' is larger than the list
     stop = length
-    if jit.isconstant(start) and start == 0:
-        pass    # no need to do the following check here
-    elif start > stop:
+    if start > stop:
         start = stop
     return start, stop

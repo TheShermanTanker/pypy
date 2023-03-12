@@ -75,7 +75,7 @@ def main_(argv=None):
     parser.add_option(
         '--opt', type=str, action="callback",
         callback=set_family_of_options,
-        help="Set the family of options based on -opt=0,1,2,jit...")
+        help="Set the family of options based on -opt=0,1,2...")
     args = option.process_options(parser, argv[1:])
     if interactiveconfig.verbose:
         error.RECORD_INTERPLEVEL_TRACEBACK = True

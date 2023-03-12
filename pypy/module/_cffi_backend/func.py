@@ -2,7 +2,6 @@ from rpython.rtyper.annlowlevel import llstr
 from rpython.rtyper.lltypesystem import lltype, rffi
 from rpython.rtyper.lltypesystem.rstr import copy_string_to_raw
 from rpython.rlib.objectmodel import keepalive_until_here, we_are_translated
-from rpython.rlib import jit
 
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.gateway import unwrap_spec, WrappedDefault
@@ -186,7 +185,6 @@ class RawBytesCache(object):
         from rpython.rlib import rweakref
         self.wdict = rweakref.RWeakKeyDictionary(W_Root, RawBytes)
 
-@jit.dont_look_inside
 def get_raw_address_of_string(space, w_x):
     """Special case for ffi.from_buffer(string).  Returns a 'char *' that
     is valid as long as the string object is alive.  Two calls to

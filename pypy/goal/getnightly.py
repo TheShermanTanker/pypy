@@ -34,12 +34,9 @@ branch = subprocess.check_output(['hg', 'branch']).strip().decode('utf-8')
 if branch == 'default':
     branch = 'trunk'
 
-if '--nojit' in sys.argv:
-    kind = 'nojit'
-else:
-    kind = 'jit'
+kind = 'interpreter'
 
-filename = 'pypy-c-%s-latest-%s.tar.bz2' % (kind, arch)
+filename = 'pypy-llvm-%s-latest-%s.tar.bz2' % (kind, arch)
 url = 'http://buildbot.pypy.org/nightly/%s/%s' % (branch, filename)
 tmp = tempfile.mkdtemp()
 pypy_latest = os.path.join(tmp, filename)

@@ -6,7 +6,6 @@ from pypy.interpreter.error import OperationError, oefmt
 from pypy.interpreter.gateway import (interp2app, BuiltinCode, unwrap_spec,
      WrappedDefault)
 
-from rpython.rlib.jit import promote
 from rpython.rlib.objectmodel import compute_identity_hash, specialize
 from rpython.rlib.objectmodel import instantiate, not_rpython, try_inline, dont_inline
 from rpython.tool.sourcetools import compile2, func_with_new_name

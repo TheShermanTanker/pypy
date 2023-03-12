@@ -1,6 +1,5 @@
 """Functionality shared between bytes/bytearray/unicode"""
 
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import specialize, newlist_hint
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rlib.rstring import (
@@ -423,8 +422,6 @@ class StringMethods(object):
 
         return self._str_join_many_items(space, list_w, size)
 
-    @jit.look_inside_iff(lambda self, space, list_w, size:
-                         jit.loop_unrolling_heuristic(list_w, size))
     def _str_join_many_items(self, space, list_w, size):
         value = self._val(space)
 
@@ -727,7 +724,6 @@ class StringMethods(object):
             return self
         return self._new(self.title(selfval))
 
-    @jit.elidable
     def title(self, value):
         builder = self._builder(len(value))
         previous_is_cased = False

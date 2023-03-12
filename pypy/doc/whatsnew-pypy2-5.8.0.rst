@@ -22,13 +22,6 @@ Fix missing tp_new on w_object called through multiple inheritance
 
 PyPy support to profile native frames in vmprof.
 
-.. branch: reusing-r11
-.. branch: branch-prediction
-
-Performance tweaks in the x86 JIT-generated machine code: rarely taken
-blocks are moved off-line.  Also, the temporary register used to contain
-large constants is reused across instructions.
-
 .. branch: vmprof-0.4.4
 
 .. branch: controller-refactor

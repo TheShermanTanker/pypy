@@ -3215,7 +3215,6 @@ class TestAnnotateTestCase:
         assert isinstance(s, annmodel.SomeInteger)
 
     def test_instance_with_flags(self):
-        from rpython.rlib.jit import hint
 
         class A:
             _virtualizable_ = []
@@ -3228,7 +3227,6 @@ class TestAnnotateTestCase:
 
         def f(n):
             x = B()
-            x = hint(x, access_directly=True)
             m = x.meth
             for i in range(n):
                 x = C()
@@ -3256,7 +3254,6 @@ class TestAnnotateTestCase:
 
     @py.test.mark.xfail
     def test_no_access_directly_on_heap(self):
-        from rpython.rlib.jit import hint
 
         class A:
             _virtualizable_ = []
@@ -3266,7 +3263,6 @@ class TestAnnotateTestCase:
 
         def f():
             x = A()
-            x = hint(x, access_directly=True)
             i = I()
             i.x = x
 
@@ -3315,14 +3311,13 @@ class TestAnnotateTestCase:
         py.test.raises(AnnotatorError, a.build_types, f, [])
 
     def test_access_direct_eq_False(self):
-        from rpython.rlib import jit, debug
+        from rpython.rlib import debug
         class Root:
             def f(self):
                 debug.check_not_access_directly(self)
         class Frame(Root):
             _virtualizable_ = []
             def meth(self):
-                self = jit.hint(self, access_directly=False)
                 return self.f()
         class C(Root):
             def meth(self):
@@ -3331,7 +3326,6 @@ class TestAnnotateTestCase:
         def f(n):
             if n == 0:
                 x = Frame()
-                x = jit.hint(x, access_directly=True)
             else:
                 x = C()
             x.meth()
@@ -3339,7 +3333,7 @@ class TestAnnotateTestCase:
         a.build_types(f, [int])
 
     def test_access_direct_no_virtualizable(self):
-        from rpython.rlib import jit, debug
+        from rpython.rlib import debug
         class Root:
             def f(self):
                 debug.check_not_access_directly(self)
@@ -3354,7 +3348,6 @@ class TestAnnotateTestCase:
         def f(n):
             if n == 0:
                 x = Frame()
-                x = jit.hint(x, access_directly=True, fresh_virtualizable=True)
                 x.foo = 1
             else:
                 x = C()

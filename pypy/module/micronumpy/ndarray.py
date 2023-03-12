@@ -4,7 +4,6 @@ from pypy.interpreter.gateway import interp2app, unwrap_spec, applevel, \
 from pypy.interpreter.typedef import TypeDef, GetSetProperty, \
     make_weakref_descr
 from pypy.interpreter.buffer import SimpleView
-from rpython.rlib import jit
 from rpython.rlib.rstring import StringBuilder
 from rpython.rlib.rawstorage import RAW_STORAGE_PTR
 from rpython.rlib.rarithmetic import ovfcheck
@@ -52,7 +51,6 @@ def _match_dot_shapes(space, left, right):
     return out_shape, right_critical_dim
 
 class __extend__(W_NDimArray):
-    @jit.unroll_safe
     def descr_get_shape(self, space):
         shape = self.get_shape()
         return space.newtuple([space.newint(i) for i in shape])

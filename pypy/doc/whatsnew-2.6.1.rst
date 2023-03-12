@@ -15,10 +15,6 @@ Update stdlib to version 2.7.10
 
 .. branch: issue2062
 
-.. branch: disable-unroll-for-short-loops
-
-The JIT no longer performs loop unrolling if the loop compiles to too much code.
-
 .. branch: run-create_cffi_imports
 
 Build cffi import libraries as part of translation by monkey-patching an 

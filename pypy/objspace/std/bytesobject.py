@@ -1,6 +1,6 @@
 """The builtin str implementation"""
 
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.objectmodel import (
     compute_hash, compute_unique_id, import_from_mixin)
 from rpython.rlib.buffer import StringBuffer
@@ -849,8 +849,6 @@ class W_BytesObject(W_AbstractBytesObject):
 
 
 def _create_list_from_bytes(value):
-    # need this helper function to allow the jit to look inside and inline
-    # listview_bytes
     return [s for s in value]
 
 W_BytesObject.EMPTY = W_BytesObject('')
@@ -938,7 +936,6 @@ W_BytesObject.typedef = TypeDef(
 W_BytesObject.typedef.flag_sequence_bug_compat = True
 
 
-@jit.elidable
 def string_escape_encode(s, quote):
     buf = StringBuilder(len(s) + 2)
 

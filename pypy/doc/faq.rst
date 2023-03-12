@@ -104,8 +104,8 @@ they run without modifications.  This has been a part of PyPy since
 the 1.4 release, and support is almost complete.  CPython
 extension modules in PyPy are often much slower than in CPython due to
 the need to emulate refcounting.  It is often faster to take out your
-c-extension and replace it with a pure python or CFFI version that the
-JIT can optimize.  If trying to install module xyz, and the module has both
+c-extension and replace it with a pure python or CFFI version.
+If trying to install module xyz, and the module has both
 a C and a Python version of the same code, try first to disable the C
 version; this is usually easily done by changing some line in ``setup.py``.
 
@@ -218,7 +218,7 @@ is infamously slow, and thus it has worse performance compared to
 ``numpypy``. However, we are actively working on improving it, as we expect to
 reach the same speed when HPy_ can be used.
 
-On the other hand, ``numpypy`` is more JIT-friendly and very fast to call,
+On the other hand, ``numpypy`` is very fast to call,
 since it is written in RPython: but it is a reimplementation, and it's hard to
 be completely compatible: over the years the project slowly matured and
 eventually it was able to call out to the LAPACK and BLAS libraries to speed
@@ -236,8 +236,8 @@ Is PyPy more clever than CPython about Tail Calls?
 
 No.  PyPy follows the Python language design, including the built-in
 debugger features.  This prevents tail calls, as summarized by Guido
-van Rossum in two__ blog__ posts.  Moreover, neither the JIT nor
-Stackless__ change anything to that.
+van Rossum in two__ blog__ posts.  Moreover, Stackless__ does not
+change anything to that.
 
 .. __: https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html
 .. __: https://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html
@@ -257,17 +257,11 @@ How fast is PyPy?
 This really depends on your code.
 For pure Python algorithmic code, it is very fast.  For more typical
 Python programs we generally are 3 times the speed of CPython 2.7.
-You might be interested in our `benchmarking site`_ and our
-:ref:`jit documentation <rpython:jit>`.
+You might be interested in our `benchmarking site`_
 
 `Your tests are not a benchmark`_: tests tend to be slow under PyPy
 because they run exactly once; if they are good tests, they exercise
-various corner cases in your code.  This is a bad case for JIT
-compilers.  Note also that our JIT has a very high warm-up cost, meaning
-that any program is slow at the beginning.  If you want to compare the
-timings with CPython, even relatively simple programs need to run *at
-least* one second, preferrably at least a few seconds.  Large,
-complicated programs need even more time to warm-up the JIT.
+various corner cases in your code.
 
 .. _benchmarking site: https://speed.pypy.org
 
@@ -287,22 +281,6 @@ performant the long integer library is.  This library is written in C for
 CPython, and in RPython for PyPy, but that boils down to the same thing.
 
 PyPy speeds up the code written *in Python*.
-
-
-Couldn't the JIT dump and reload already-compiled machine code?
----------------------------------------------------------------
-
-No, we found no way of doing that.  The JIT generates machine code
-containing a large number of constant addresses --- constant at the time
-the machine code is generated.  The vast majority is probably not at all
-constants that you find in the executable, with a nice link name.  E.g.
-the addresses of Python classes are used all the time, but Python
-classes don't come statically from the executable; they are created anew
-every time you restart your program.  This makes saving and reloading
-machine code completely impossible without some very advanced way of
-mapping addresses in the old (now-dead) process to addresses in the new
-process, including checking that all the previous assumptions about the
-(now-dead) object are still true about the new object.
 
 
 
@@ -339,18 +317,11 @@ even worse, an "int" annotation allows arbitrary int subclasses).
 Another is that a lot more information is needed to produce good code
 (e.g. "this ``f()`` called here really means this function there, and
 will never be monkey-patched" -- same with ``len()`` or ``list()``,
-btw).  The third reason is that some "guards" in PyPy's JIT traces
-don't really have an obvious corresponding type (e.g. "this dict is so
-far using keys which don't override ``__hash__`` so a more efficient
-implementation was used").  Many guards don't even have any correspondence
-with types at all ("this class attribute was not modified"; "the loop
-counter did not reach zero so we don't need to release the GIL"; and
-so on).
+btw).
 
 As PyPy works right now, it is able to derive far more useful
 information than can ever be given by PEP 484, and it works
-automatically.  As far as we know, this is true even if we would add
-other techniques to PyPy, like a fast first-pass JIT.
+automatically.
 
 
 
@@ -451,11 +422,6 @@ In more details:
 
 * First, please give the exact PyPy version, and the OS.
 
-* It might help focus our search if we know if the bug can be
-  reproduced on a "``pypy --jit off``" or not.  If "``pypy --jit
-  off``" always works, then the problem might be in the JIT.
-  Otherwise, we know we can ignore that part.
-
 * If you got the bug using only Open Source components, please give a
   step-by-step guide that we can follow to reproduce the problem
   ourselves.  Don't assume we know anything about any program other
@@ -482,7 +448,7 @@ you get started if you ask on the #pypy IRC channel, but be prepared:
 debugging an annoying PyPy problem usually involves quite a lot of gdb
 in auto-generated C code, and at least some knowledge about the
 various components involved, from PyPy's own RPython source code to
-the GC and possibly the JIT.
+the GC.
 
 
 .. _git:

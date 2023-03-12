@@ -39,7 +39,7 @@ What pypy-stm is for
 version supports Python 2.7; see below for `Python 3, CPython,
 and others`_.)  With caveats_
 listed below, it should be in theory within 20%-50% slower than a
-regular PyPy, comparing the JIT version in both cases (but see below!).
+regular PyPy.
 It is called
 STM for Software Transactional Memory, which is the internal technique
 used (see `Reference to implementation details`_).
@@ -104,7 +104,7 @@ that future versions of gcc will not need to be patched any more.)
 Then get the branch `stmgc-c8`_ of PyPy and run::
 
    cd pypy/goal
-   ../../rpython/bin/rpython -Ojit --stm
+   ../../rpython/bin/rpython --stm
 
 At the end, this will try to compile the generated C code by calling
 ``gcc-seg-gs``, which must be the script you installed in the
@@ -148,14 +148,6 @@ Current status (stmgc-c7)
   clang crashes again).  Memory overflows are not correctly handled;
   they cause segfaults.
 
-* **NEW:** The JIT warm-up time improved again, but is still
-  relatively large.  In order to produce machine code, the JIT needs
-  to enter "inevitable" mode.  This means that you will get bad
-  performance results if your program doesn't run for several seconds,
-  where *several* can mean *many.* When trying benchmarks, be sure to
-  check that you have reached the warmed state, i.e. the performance
-  is not improving any more.
-
 * The GC is new; although clearly inspired by PyPy's regular GC, it
   misses a number of optimizations for now.  Programs allocating large
   numbers of small objects that don't immediately die (surely a common
@@ -172,8 +164,7 @@ Current status (stmgc-c7)
   ``weakref.getweakrefcount()`` might give wrong answers.
 
 * The STM system is based on very efficient read/write barriers, which
-  are mostly done (their placement could be improved a bit in
-  JIT-generated machine code).
+  are mostly done.
 
 * Forking the process is slow because the complete memory needs to be
   copied manually.  A warning is printed to this effect.
@@ -328,12 +319,8 @@ A typical usage of ``TransactionQueue`` goes like that: at first,
 the performance does not increase.
 In fact, it is likely to be worse.  Typically, this is
 indicated by the total CPU usage, which remains low (closer to 1 than
-N cores).  First note that it is expected that the CPU usage should
-not go much higher than 1 in the JIT warm-up phase: you must run a
-program for several seconds, or for larger programs at least one
-minute, to give the JIT a chance to warm up enough.  But if CPU usage
-remains low even afterwards, then the ``PYPYSTM`` environment variable
-can be used to track what is going on.
+N cores). But if CPU usage remains low even afterwards, then the
+``PYPYSTM`` environment variable can be used to track what is going on.
 
 Run your program with ``PYPYSTM=logfile`` to produce a log file called
 ``logfile``.  Afterwards, use the ``pypy/stm/print_stm_log.py``
@@ -719,18 +706,13 @@ segment is discussed there.
 PyPy itself adds on top of it the automatic placement of read__ and write__
 barriers and of `"becomes-inevitable-now" barriers`__, the logic to
 `start/stop transactions as an RPython transformation`__ and as
-`supporting`__ `C code`__, and the support in the JIT (mostly as a
-`transformation step on the trace`__ and generation of custom assembler
-in `assembler.py`__).
+`supporting`__ `C code`__.
 
 .. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/translator/stm/readbarrier.py
 .. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/memory/gctransform/stmframework.py
 .. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/translator/stm/inevitable.py
-.. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/translator/stm/jitdriver.py
 .. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/translator/stm/src_stm/stmgcintf.h
 .. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/translator/stm/src_stm/stmgcintf.c
-.. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/jit/backend/llsupport/stmrewrite.py
-.. __: https://bitbucket.org/pypy/pypy/raw/stmgc-c7/rpython/jit/backend/x86/assembler.py
 
 
 

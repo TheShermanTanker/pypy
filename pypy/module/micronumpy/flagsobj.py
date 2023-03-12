@@ -1,4 +1,3 @@
-from rpython.rlib import jit
 from rpython.rlib.rstring import StringBuilder
 
 from pypy.interpreter.baseobjspace import W_Root

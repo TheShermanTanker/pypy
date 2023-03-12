@@ -5,11 +5,10 @@ from pypy.interpreter.baseobjspace import W_Root
 from pypy.module._cffi_backend import ctypeobj, ctypeptr, cdataobj
 from pypy.module._cffi_backend.hide_reveal import hide_reveal2
 from rpython.rtyper.lltypesystem import lltype, llmemory, rffi
-from rpython.rlib import objectmodel, jit
+from rpython.rlib import objectmodel
 
 # ____________________________________________________________
 
-@jit.dont_look_inside
 def _newp_handle(space, w_ctype, w_x):
     # Allocate a handle as a nonmovable W_CDataHandle instance, which
     # we can cast to a plain CCHARP.  As long as the object is not freed,
@@ -39,7 +38,6 @@ def from_handle(space, w_cdata):
     with w_cdata as ptr:
         return _reveal(space, ptr)
 
-@jit.dont_look_inside
 def _reveal(space, ptr):
     addr = rffi.cast(llmemory.Address, ptr)
     if not addr:

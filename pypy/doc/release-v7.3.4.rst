@@ -73,9 +73,8 @@ Development of PyPy takes place on https://foss.heptapod.net/pypy/pypy.
 We have seen an increase in the number of drive-by contributors who are able to
 use gitlab + mercurial to create merge requests.
 
-The `CFFI`_ backend has been updated to version 1.14.5 and the cppyy_ backend
-to 1.14.2. We recommend using CFFI rather than C-extensions to interact with C,
-and using cppyy for performant wrapping of C++ code for Python.
+The `CFFI`_ backend has been updated to version 1.14.5. We recommend using CFFI
+rather than C-extensions to interact with C.
 
 As always, we strongly recommend updating to the latest versions. Many fixes
 are the direct result of end-user bug reports, so please continue reporting
@@ -93,13 +92,12 @@ to https://github.com/pypy/pypy.org
 
 We would also like to thank our contributors and encourage new people to join
 the project. PyPy has many layers and we need help with all of them: `PyPy`_
-and `RPython`_ documentation improvements, tweaking popular modules to run
-on PyPy, or general `help`_ with making RPython's JIT even better. Since the
-previous release, we have accepted contributions from 10 new contributors,
-thanks for pitching in, and welcome to the project!
+and `RPython`_ documentation improvements, or tweaking popular modules to run
+on PyPy. Since the previous release, we have accepted contributions from 10
+new contributors, thanks for pitching in, and welcome to the project!
 
 If you are a python library maintainer and use C-extensions, please consider
-making a cffi / cppyy version of your library that would be performant on PyPy.
+making a cffi version of your library that would be performant on PyPy.
 In any case both `cibuildwheel`_ and the `multibuild system`_ support
 building wheels for PyPy.
 
@@ -107,7 +105,6 @@ building wheels for PyPy.
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`help`: project-ideas.html
 .. _`CFFI`: https://cffi.readthedocs.io
-.. _`cppyy`: https://cppyy.readthedocs.io
 .. _`multibuild system`: https://github.com/matthew-brett/multibuild
 .. _`cibuildwheel`: https://github.com/joerick/cibuildwheel
 .. _`blog post`: https://pypy.org/blog/2020/02/pypy-and-cffi-have-moved-to-heptapod.html
@@ -129,7 +126,7 @@ What is PyPy?
 
 PyPy is a Python interpreter, a drop-in replacement for CPython 2.7, 3.7, and
 soon 3.8. It's fast (`PyPy and CPython 3.7.4`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -175,9 +172,6 @@ Speedups and enhancements shared across versions
   is **never** instantiated at runtime. Useful for objects that are required to
   be constant-folded away
 - Upstream internal ``cparser`` tool from ``pypy/`` to ``rpython/``
-- Make ``set.update(<non-set>)`` more jit-friendly by
-  - unrolling it if the number of args is small (usually 1)
-  - jitting the adding of new elements
   which fixes ``test_unpack_ex`` on PyPy3.7 as a side-effect
 - Fix position of ``elif`` clauses in the AST
 - Make the ``exe`` stack larger on windows
@@ -202,14 +196,10 @@ Speedups and enhancements shared across versions
   type-specializing this class and revert all instances once we touch them the
   next time to the default representation.
 - Update the version of Tk/Tcl on windows to 8.6
-- Updated ``cppyy`` API to ``cppyy_backend 1.14.2``: consistent types for
-  Win64, support for new builtin types
-- Refactor the intbound analysis in the JIT
 - Faster ``str.replace`` and ``bytes.replace`` implementations.
 - Implement ``vmprof`` support for aarch64
 - Fast path for ``unicode.upper/lower``, ``unicodedb.toupper/lower`` for ascii,
   latin-1
-- Add a JIT driver for ``re.split``
 - Expose ``os.memfd_create`` on Linux for glibc>2.27 (not on portable builds)
 - Add a shortcut for ``re.sub`` doing zero replacements
   for things like escaping characters)
@@ -242,8 +232,6 @@ Python 3.7+
   3378_)
 - Fixes ``utf_8_decode`` for ``final=False`` (issue 3348_)
 - Test, fix for ``time.strftime(u'%y\ud800%m', time.localtime(192039127))``
-- ``CALL_FUNCTION_KW`` with keyword arguments is now much faster, because the
-  data structure storing the arguments can be removed by the JIT
 - Fix the ``repr`` of subclasses
 - Better error message for ``object.__init__`` with too many parameters
 - Fix bug in ``codecs`` where using a function from the parser turns warnings

@@ -102,7 +102,6 @@ Example call looks like that::
        in arenas:            763.7kB
        rawmalloced:          383.1kB
        nursery:              3.1MB
-    raw assembler used: 0.0kB
     memory pressure:    0.0kB
     -----------------------------
     Total:              4.2MB
@@ -112,7 +111,6 @@ Example call looks like that::
        in arenas:            763.7kB
        rawmalloced:          383.1kB
        nursery:              3.1MB
-    raw assembler allocated: 0.0kB
     memory pressure:    0.0kB
     -----------------------------
     Total:                   4.5MB
@@ -148,9 +146,6 @@ The details of various fields:
 
 * nursery - amount of memory allocated for nursery, fixed at startup,
   controlled via an environment variable
-
-* raw assembler allocated - amount of assembler memory that JIT feels
-  responsible for
 
 * memory pressure, if asked for - amount of memory we think got allocated
   via external malloc (eg loading cert store in SSL contexts) that is kept

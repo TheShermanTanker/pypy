@@ -6,7 +6,7 @@ from pypy.interpreter.typedef import make_weakref_descr
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
 from pypy.interpreter.error import OperationError, oefmt
 from rpython.rlib.rarithmetic import intmask
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.rstring import StringBuilder
 
 # ____________________________________________________________
@@ -59,7 +59,6 @@ def slice_w(space, ctx, start, end, w_default):
     return w_default
 
 
-@jit.look_inside_iff(lambda ctx, num_groups: jit.isconstant(num_groups))
 def do_flatten_marks(ctx, num_groups):
     # Returns a list of RPython-level integers.
     # Unlike the app-level groups() method, groups are numbered from 0
@@ -70,14 +69,13 @@ def do_flatten_marks(ctx, num_groups):
     result = [-1] * (2 * num_groups)
     mark = ctx.match_marks
     while mark is not None:
-        index = jit.promote(mark.gid)
+        index = mark.gid
         if result[index] == -1:
             result[index] = mark.position
         mark = mark.prev
     return result
 
 
-@jit.look_inside_iff(lambda space, ctx, fmarks, num_groups, w_default: jit.isconstant(num_groups))
 def allgroups_w(space, ctx, fmarks, num_groups, w_default):
     grps = [slice_w(space, ctx, fmarks[i * 2], fmarks[i * 2 + 1], w_default)
             for i in range(num_groups)]
@@ -250,8 +248,6 @@ class W_SRE_Pattern(W_Root):
         while not maxsplit or n < maxsplit:
             pattern = self.code
             num_groups = self.num_groups
-            split_jitdriver.jit_merge_point(
-                pattern=pattern, num_groups=num_groups, ctx_type=type(ctx))
             if not searchcontext(space, ctx, pattern):
                 break
             if ctx.match_start == ctx.match_end:     # zero-width match
@@ -386,12 +382,6 @@ class W_SRE_Pattern(W_Root):
                 start = ctx.next_indirect(start)
             ctx.reset(start)
 
-            sub_jitdriver.jit_merge_point(
-                use_builder=use_builder,
-                filter_is_callable=filter_is_callable,
-                filter_type=type(w_filter),
-                pattern=pattern,
-                )
             if not searchcontext(space, ctx, pattern):
                 break
 
@@ -419,37 +409,6 @@ class W_SRE_Pattern(W_Root):
             w_item = space.call_method(w_emptystr, 'join',
                                        space.newlist(sublist_w))
             return w_item, n
-
-def sub_get_printable_location(filter_is_callable, use_builder, filter_type, pattern):
-    s = str(pattern.pattern)
-    if len(s) > 120:
-        s = s[:110] + '...'
-    if use_builder == '\x00':
-        use_builder = 'list'
-    else:
-        use_builder = "%sBuilder" % use_builder
-
-    return "re.sub %s %s %s %s" % (s, filter_is_callable, use_builder, filter_type)
-
-sub_jitdriver = jit.JitDriver(
-    reds="auto",
-    greens=["filter_is_callable", "use_builder", "filter_type", "pattern"],
-    get_printable_location=sub_get_printable_location,
-    )
-
-
-def split_get_printable_location(num_groups, ctx_type, pattern):
-    s = str(pattern.pattern)
-    if len(s) > 120:
-        s = s[:110] + '...'
-
-    return "re.split %s %s %s" % (s, num_groups, ctx_type)
-
-split_jitdriver = jit.JitDriver(
-    reds="auto",
-    greens=["num_groups", "ctx_type", "pattern"],
-    get_printable_location=split_get_printable_location,
-)
 
 def _sub_append_slice(ctx, space, use_builder, sublist_w,
                       strbuilder, start, end):
@@ -487,9 +446,7 @@ def SRE_Pattern__new__(space, w_subtype, w_pattern, flags, w_code,
     srepat.w_pattern = w_pattern      # the original uncompiled pattern
     srepat.flags = flags
     # note: we assume that the app-level is caching SRE_Pattern objects,
-    # so that we don't need to do it here.  Creating new SRE_Pattern
-    # objects all the time would be bad for the JIT, which relies on the
-    # identity of the CompiledPattern() object.
+    # so that we don't need to do it here.
     srepat.code = rsre_core.CompiledPattern(code, flags)
     srepat.num_groups = groups
     srepat.w_groupindex = w_groupindex
@@ -536,7 +493,6 @@ class W_SRE_Match(W_Root):
         space = self.space
         raise oefmt(space.w_TypeError, "cannot copy this match object")
 
-    @jit.look_inside_iff(lambda self, args_w: jit.isconstant(len(args_w)))
     def group_w(self, args_w):
         space = self.space
         ctx = self.ctx

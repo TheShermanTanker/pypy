@@ -73,7 +73,6 @@ A good summary of the progress over the years.....enjoy!
 .. _Düsseldorf (August 2008): https://morepypy.blogspot.com/2008_10_01_archive.html
 .. _Wroclaw (February 2009): https://morepypy.blogspot.com/2009/02/wroclaw-2009-sprint-progress-report.html
 .. _Leysin (April 2009): https://morepypy.blogspot.com/2009/04/leysin-sprint-report.html
-.. _Göteborg (August 2009): https://morepypy.blogspot.com/2009/08/gothenburg-jit-sprint-report.html
 .. _Düsseldorf (November 2009): https://morepypy.blogspot.com/2009/11/dusseldorf-sprint-report.html
 .. _CERN (July 2010): https://morepypy.blogspot.com/2010/07/cern-sprint-report-wrapping-c-libraries.html
 .. _Düsseldorf (October 2010): https://morepypy.blogspot.com/2010/10/dusseldorf-sprint-report-2010.html

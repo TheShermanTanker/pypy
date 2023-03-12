@@ -6,7 +6,6 @@ from pypy.interpreter.function import Method, Function
 from pypy.interpreter.gateway import interp2app, unwrap_spec
 from pypy.interpreter.typedef import (TypeDef, GetSetProperty,
                                       interp_attrproperty)
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import we_are_translated, always_inline
 from rpython.rlib.rtimer import read_timestamp, _is_64_bit
 from rpython.rtyper.lltypesystem import rffi, lltype
@@ -158,7 +157,6 @@ class ProfilerEntry(ProfilerSubEntry):
                             factor * float(self.ll_it), w_sublist)
         return w_se
 
-    @jit.elidable
     def _get_or_make_subentry(self, entry, make=True):
         try:
             return self.calls[entry]
@@ -176,7 +174,7 @@ class ProfilerContext(object):
         self.previous = profobj.current_context
         entry.recursionLevel += 1
         if profobj.subcalls and self.previous:
-            caller = jit.promote(self.previous.entry)
+            caller = self.previous.entry
             subentry = caller._get_or_make_subentry(entry)
             subentry.recursionLevel += 1
         self.ll_t0 = profobj.ll_timer()
@@ -188,7 +186,7 @@ class ProfilerContext(object):
             self.previous.ll_subt += tt
         entry._stop(tt, it)
         if profobj.subcalls and self.previous:
-            caller = jit.promote(self.previous.entry)
+            caller = self.previous.entry
             try:
                 subentry = caller._get_or_make_subentry(entry, False)
             except KeyError:
@@ -338,7 +336,6 @@ class W_Profiler(W_Root):
         c_setup_profiling()
         space.getexecutioncontext().setllprofile(lsprof_call, self)
 
-    @jit.elidable
     def _get_or_make_entry(self, f_code, make=True):
         try:
             return self.data[f_code]
@@ -349,7 +346,6 @@ class W_Profiler(W_Root):
                 return entry
             raise
 
-    @jit.elidable_promote()
     def _get_or_make_builtin_entry(self, w_func, w_type, make):
         key = (w_func, w_type)
         try:
@@ -363,7 +359,6 @@ class W_Profiler(W_Root):
 
     def _enter_call(self, f_code):
         # we have a superb gc, no point in freelist :)
-        self = jit.promote(self)
         entry = self._get_or_make_entry(f_code)
         self.current_context = ProfilerContext(self, entry)
 
@@ -371,7 +366,6 @@ class W_Profiler(W_Root):
         context = self.current_context
         if context is None:
             return
-        self = jit.promote(self)
         try:
             entry = self._get_or_make_entry(f_code, False)
         except KeyError:

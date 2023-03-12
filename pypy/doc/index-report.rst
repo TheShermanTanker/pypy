@@ -31,13 +31,6 @@ tie semantic web technologies and PyPy together. *(2007-05-11)*
 summarizes research & technical results of the PyPy-1.0 release and discusses
 related development process and community aspects. *(2007-05-01)*
 
-`D08.2 JIT Compiler Architecture`_ is a report about the Architecture and
-working of our JIT compiler generator. *(2007-05-01)*
-
-`D08.1 JIT Compiler Release`_ reports on our successfully including a
-JIT compiler for Python and the novel framework we used to
-automatically generate it in PyPy 1.0. *(2007-04-30)*
-
 `D06.1 Core Object Optimization Results`_ documents the optimizations
 we implemented in the interpreter and object space: dictionary
 implementations, method call optimizations, etc. The report is still not final
@@ -155,8 +148,6 @@ project during the first year of EU funding (December 2004 - December 2005)
 .. _D05.4 Encapsulating Low Level Aspects: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D05.4_Publish_on_encapsulating_low_level_language_aspects.pdf
 .. _D06.1 Core Object Optimization Results: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D06.1_Core_Optimizations-2007-04-30.pdf
 .. _D07.1 Massive Parallelism and Translation Aspects: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D07.1_Massive_Parallelism_and_Translation_Aspects-2007-02-28.pdf
-.. _D08.2 JIT Compiler Architecture: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D08.2_JIT_Compiler_Architecture-2007-05-01.pdf
-.. _D08.1 JIT Compiler Release: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D08.1_JIT_Compiler_Release-2007-04-30.pdf
 .. _D09.1 Constraint Solving and Semantic Web: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D09.1_Constraint_Solving_and_Semantic_Web-2007-05-11.pdf
 .. _D10.1 Aspect-Oriented, Design-by-Contract Programming and RPython static checking: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D10.1_Aspect_Oriented_Programming_in_PyPy-2007-03-22.pdf
 .. _D11.1 PyPy for Embedded Devices: https://foss.heptapod.net/pypy/extradoc/-/blob/branch/extradoc/eu-report/D11.1_PyPy_for_Embedded_Devices-2007-03-26.pdf

@@ -1,4 +1,4 @@
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.objectmodel import we_are_translated, not_rpython
 from rpython.rlib.rstring import StringBuilder, UnicodeBuilder
 from rpython.rlib.rutf8 import MAXUNICODE
@@ -100,7 +100,6 @@ class CodecState(object):
     def get_codec_from_cache(self, key):
         return self._get_codec_with_version(key, self.version)
 
-    @jit.elidable
     def _get_codec_with_version(self, key, version):
         return self.codec_search_cache.get(key, None)
 

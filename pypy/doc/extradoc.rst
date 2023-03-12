@@ -9,27 +9,6 @@ Papers
 * `A Way Forward in Parallelising Dynamic Languages`_,
   R. Meier, A. Rigo
 
-* `Runtime Feedback in a Meta-Tracing JIT for Efficient Dynamic Languages`_,
-  C.F. Bolz, A. Cuni, M. Fijalkowski, M. Leuschel, S. Pedroni, A. Rigo
-
-* `Allocation Removal by Partial Evaluation in a Tracing JIT`_,
-  C.F. Bolz, A. Cuni, M. Fijalkowski, M. Leuschel, S. Pedroni, A. Rigo
-
-* `Towards a Jitting VM for Prolog Execution`_,
-  C.F. Bolz, M. Leuschel, D, Schneider
-
-* `High performance implementation of Python for CLI/.NET with JIT compiler generation for dynamic languages`_,
-  A. Cuni, Ph.D. thesis
-
-* `Tracing the Meta-Level: PyPy's Tracing JIT Compiler`_,
-  C.F. Bolz, A. Cuni, M. Fijalkowski, A. Rigo
-
-* `Faster than C#: Efficient Implementation of Dynamic Languages on .NET`_,
-  A. Cuni, D. Ancona and A. Rigo
-
-* `Automatic JIT Compiler Generation with Runtime Partial Evaluation`_
-  (Master Thesis), C.F. Bolz
-
 * `RPython: A Step towards Reconciling Dynamically and Statically Typed
   OO Languages`_, D. Ancona, M. Ancona, A. Cuni and N.D. Matsakis
 
@@ -40,9 +19,6 @@ Papers
 
 
 *Non-published articles (only submitted so far, or technical reports):*
-
-* `Automatic generation of JIT compilers for dynamic languages in .NET`_,
-  D. Ancona, C.F. Bolz, A. Cuni and A. Rigo
 
 * :doc:`EU Reports <index-report>`: a list of all the reports we produced until 2007 for the
   European Union sponsored part of PyPy.  Notably, it includes:
@@ -73,21 +49,13 @@ Papers
 
 .. _bibtex: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/bibtex.bib
 .. _A Way Forward in Parallelising Dynamic Languages: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/icooolps2014/position-paper.pdf
-.. _Runtime Feedback in a Meta-Tracing JIT for Efficient Dynamic Languages: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/icooolps2011/jit-hints.pdf
-.. _Allocation Removal by Partial Evaluation in a Tracing JIT: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/pepm2011/bolz-allocation-removal.pdf
-.. _Towards a Jitting VM for Prolog Execution: https://stups.hhu.de/mediawiki/images/a/a7/Pub-BoLeSch2010.pdf
-.. _High performance implementation of Python for CLI/.NET with JIT compiler generation for dynamic languages: https://buildbot.pypy.org/misc/antocuni-thesis.pdf
 .. _How to *not* write Virtual Machines for Dynamic Languages: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/dyla2007/dyla.pdf
-.. _`Tracing the Meta-Level: PyPy's Tracing JIT Compiler`: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/icooolps2009/bolz-tracing-jit.pdf
-.. _`Faster than C#: Efficient Implementation of Dynamic Languages on .NET`: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/icooolps2009-dotnet/cli-jit.pdf
-.. _Automatic JIT Compiler Generation with Runtime Partial Evaluation: https://www.researchgate.net/profile/Davide_Ancona/publication/252023163_Automatic_generation_of_JIT_compilers_for_dynamic_languages_in_NET/links/53f2098e0cf2bc0c40e70023/Automatic-generation-of-JIT-compilers-for-dynamic-languages-in-NET.pdf
 .. _`RPython: A Step towards Reconciling Dynamically and Statically Typed OO Languages`: https://www.disi.unige.it/person/AnconaD/papers/DynamicLanguages_abstracts.html#AACM-DLS07
 .. _EU Reports: index-report.html
 .. _Hardware Transactional Memory Support for Lightweight Dynamic Language Evolution: https://sabi.net/nriley/pubs/dls6-riley.pdf
 .. _`PyGirl: Generating Whole-System VMs from High-Level Prototypes using PyPy`: https://scg.unibe.ch/archive/papers/Brun09cPyGirl.pdf
 .. _Representation-Based Just-in-Time Specialization and the Psyco Prototype for Python: https://psyco.sourceforge.net/psyco-pepm-a.ps.gz
 .. _Back to the Future in One Week -- Implementing a Smalltalk VM in PyPy: https://dx.doi.org/10.1007/978-3-540-89275-5_7
-.. _Automatic generation of JIT compilers for dynamic languages in .NET: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/ecoop2009/main.pdf
 .. _Core Object Optimization Results: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/eu-report/D06.1_Core_Optimizations-2007-04-30.pdf
 .. _Compiling Dynamic Language Implementations: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/eu-report/D05.1_Publish_on_translating_a_very-high-level_description.pdf
 
@@ -115,8 +83,7 @@ Talks in 2009
 
 * `PyCon talks 2009`_.
 
-* `Wroclaw (Poland) presentation`_ by Maciej Fijalkowski.  Introduction,
-  including about the current JIT.
+* `Wroclaw (Poland) presentation`_ by Maciej Fijalkowski.
 
 * `PyPy talk at OpenBossa 09`_ (blog post).
 
@@ -134,8 +101,6 @@ Talks in 2008
 * `EuroPython talks 2008`_.
 
 * PyPy at the `Maemo summit`_.
-
-* `PyCon UK 2008 - JIT`_ and `PyCon UK 2008 - Status`_.
 
 * `PyCon Italy 2008`_.
 
@@ -296,7 +261,6 @@ Talks in 2003
 .. _The PyPy Project and You: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/osdc2008/osdc08.pdf
 .. _EuroPython talks 2008: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/ep2008/
 .. _Maemo summit: https://www.pypy.org/posts/2008/09/pypypython-at-maemo-summit-6115106472056714072.html
-.. _PyCon UK 2008 - JIT: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/pycon-uk-2008/jit/pypy-vm.pdf
 .. _PyCon UK 2008 - Status: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/pycon-uk-2008/status/status.pdf
 .. _PyCon Italy 2008: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/pycon-italy-2008/pypy-vm.pdf
 .. _RuPy 2008: https://foss.heptapod.net/pypy/extradoc/raw/branch/default/talk/rupy2008/
@@ -319,9 +283,6 @@ Talks in 2003
 Related projects
 ----------------
 
-* TraceMonkey_ is using a tracing JIT, similar to the tracing
-  JITs generated by our (in-progress) JIT generator.
-
 * Dynamo_ showcased `transparent dynamic optimization`_
   generating an optimized version of a binary program at runtime.
 
@@ -340,10 +301,6 @@ Related projects
   distributed multi-user/multi-programmer virtual world.
 
 * `LLVM`_ the low level virtual machine project.
-
-* `CLR under the hood`_ (powerpoint, works with open office) gives
-  a good introduction to the underlying models of Microsoft's Common
-  Language Runtime, the Intermediate Language, JIT and GC issues.
 
 * spyweb translates Python programs to Scheme. (site unavailable)
 

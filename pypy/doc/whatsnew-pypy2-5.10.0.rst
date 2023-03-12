@@ -6,10 +6,6 @@ What's new in PyPy2.7 5.10
 .. startrev:d56dadcef996
 
 
-.. branch: cppyy-packaging
-
-Cleanup and improve cppyy packaging
-
 .. branch: docs-osx-brew-openssl
 
 .. branch: keep-debug-symbols

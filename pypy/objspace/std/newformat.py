@@ -5,17 +5,13 @@ import sys
 import string
 
 from pypy.interpreter.error import OperationError, oefmt
-from rpython.rlib import rstring, rlocale, rfloat, jit, rutf8
+from rpython.rlib import rstring, rlocale, rfloat, rutf8
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rfloat import formatd
 from rpython.rlib.rarithmetic import r_uint, intmask
 from pypy.interpreter.signature import Signature
 
 @specialize.argtype(1)
-@jit.look_inside_iff(lambda space, s, start, end:
-       jit.isconstant(s) and
-       jit.isconstant(start) and
-       jit.isconstant(end))
 def _parse_int(space, s, start, end):
     """Parse a number and check for overflows"""
     result = 0
@@ -87,7 +83,6 @@ def make_template_formatting_class(for_unicode):
             s = self.template
             return self._do_build_string(start, end, level, out, s)
 
-        @jit.look_inside_iff(lambda self, start, end, level, out, s: jit.isconstant(s))
         def _do_build_string(self, start, end, level, out, s):
             space = self.space
             last_literal = i = start
@@ -146,8 +141,6 @@ def make_template_formatting_class(for_unicode):
             out.append_slice(s, last_literal, end)
             return out.build()
 
-        # This is only ever called if we're already unrolling _do_build_string
-        @jit.unroll_safe
         def _parse_field(self, start, end):
             s = self.template
             # Find ":" or "!"
@@ -176,7 +169,6 @@ def make_template_formatting_class(for_unicode):
                 i += 1
             return s[start:end], None, end
 
-        @jit.unroll_safe
         def _get_argument(self, name):
             # First, find the argument.
             space = self.space
@@ -229,7 +221,6 @@ def make_template_formatting_class(for_unicode):
                     raise oefmt(space.w_IndexError, "out of range")
             return self._resolve_lookups(w_arg, name, i, end)
 
-        @jit.unroll_safe
         def _resolve_lookups(self, w_obj, name, start, end):
             # Resolve attribute and item lookups.
             space = self.space

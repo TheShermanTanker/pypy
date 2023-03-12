@@ -1,5 +1,5 @@
 ==========================================
-PyPy 1.0: JIT compilers for free and more
+PyPy 1.0
 ==========================================
 
 Welcome to the PyPy 1.0 release - a milestone integrating the results 
@@ -22,23 +22,7 @@ for the first time the full extent of our original vision:
   - Can weave in threading, memory and target platform aspects.
   - Has low level (C, LLVM) and high level (CLI, Java, JavaScript) backends.
 
-- A **Just-In-Time Compiler generator** able to **automatically**
-  enhance the low level versions of our Python interpreter, leading to
-  run-time machine code that runs algorithmic examples at speeds typical
-  of JITs!
-
-Previous releases, particularly the 0.99.0 release from February,
-already highlighted features of our Python implementation and the
-abilities of our translation approach but the **new JIT generator**
-clearly marks a major research result and gives weight to our vision
-that one can generate efficient interpreter implementations, starting
-from a description in a high level language.
-
 We have prepared several entry points to help you get started:
-
-* The main entry point for JIT documentation and status:
-
-   https://codespeak.net/pypy/dist/pypy/doc/jit.html
 
 * The main documentation and getting-started PyPy entry point:
 
@@ -85,12 +69,6 @@ including micro-threads aka "Stackless".  The inherent complexity that
 arises from this ambitious approach is mostly kept away from the Python
 interpreter implementation, our main frontend.
 
-PyPy is now also a Just-In-Time compiler generator.  The translation
-framework contains the now-integrated JIT generation technology.  This
-depends only on a few hints added to the interpreter source and should
-be able to cope with the changes to the interpreter and be generally
-applicable to other interpreters written using the framework.
-
 Socially, PyPy is a collaborative effort of many individuals working
 together in a distributed and sprint-driven way since 2003.  PyPy would
 not have gotten as far as it has without the coding, feedback and
@@ -117,14 +95,9 @@ developments. See here for results of the discussion so far:
 
 Here is a summary list of key features included in PyPy 1.0:
 
-- The Just-In-Time compiler generator, now capable of generating the
-  first JIT compiler versions of our Python interpreter:
-
-   https://codespeak.net/pypy/dist/pypy/doc/jit.html
-
 - More Python interpreter optimizations (a CALL_METHOD bytecode, a method
   cache, rope-based strings), now running benchmarks at around half of
-  CPython's speed (without the JIT):
+  CPython's speed:
 
    https://codespeak.net/pypy/dist/pypy/doc/interpreter-optimizations.html
 

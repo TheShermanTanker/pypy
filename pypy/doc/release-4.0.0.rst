@@ -19,8 +19,7 @@ project.
 We would also like to thank our contributors (7 new ones since PyPy 2.6.0) and 
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_ 
-with making RPython's JIT even better. 
+improvements, or tweaking popular `modules`_ to run on pypy. 
 
 New Version Numbering
 =====================
@@ -30,34 +29,10 @@ versioning directly to PyPy 4.x.x, to avoid confusion with CPython 2.7
 and 3.5. Note that this version of PyPy uses the stdlib and implements the
 syntax of CPython 2.7.10. 
 
-Vectorization
-=============
-
-Richard Plangger began work in March and continued over a Google Summer of Code
-to add a `vectorization` step to the trace optimizer. The step recognizes common
-constructs and emits SIMD code where possible, much as any modern compiler does.
-This vectorization happens while tracing running code,  so it is actually easier
-at run-time to determine the
-availability of possible vectorization than it is for ahead-of-time compilers.
-
-Availability of SIMD hardware is detected at run time, without needing to
-precompile various code paths into the executable.
-
-The first version of the vectorization has been merged in this release, since
-it is so new it is off by default. To enable the vectorization in built-in JIT
-drivers (like numpy ufuncs), add `--jit vec=1`, to enable all implemented
-vectorization add `--jit vec_all=1`
-
 Benchmarks and a summary of this work appear `here`_
 
 Internal Refactoring: Warmup Time Improvement and Reduced Memory Usage
 ======================================================================
-
-Maciej Fijalkowski and Armin Rigo refactored internals of rpython that now allow
-PyPy to more efficiently use `guards`_ in jitted code. They also rewrote 
-unrolling, leading to a warmup time improvement of 20% or so. The reduction in
-guards also means a reduction in the use of memory, also a savings of around
-20%.
 
 Numpy
 =====
@@ -66,8 +41,7 @@ Our implementation of `numpy`_ continues to improve. ndarray and the numeric dty
 are very close to feature-complete; record, string and unicode dtypes are mostly
 supported.  We have reimplemented numpy linalg, random and fft as cffi-1.0
 modules that call out to the same underlying libraries that upstream numpy uses.
-Please try it out, especially using the new vectorization (via `--jit vec=1` on the
-command line) and let us know what is missing for your code.
+Please try it out, and let us know what is missing for your code.
 
 CFFI
 ====
@@ -93,8 +67,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy and cpython 2.7.x`_ performance comparison).
 
 We also welcome developers of other
 `dynamic languages`_ to see what RPython can do for them.
@@ -110,7 +83,6 @@ Linux running the big- and little-endian variants of ppc64.
 .. _OpenBSD: https://cvsweb.openbsd.org/cgi-bin/cvsweb/ports/lang/pypy
 .. _freebsd: https://svnweb.freebsd.org/ports/head/lang/pypy/
 .. _`dynamic languages`: https://pypyjs.org
-.. _`support for the 64 bit PowerPC`: https://morepypy.blogspot.com/2015/10/powerpc-backend-for-jit.html
 .. _`here`: https://morepypy.blogspot.com/2015/10/automatic-simd-vectorization-support-in.html
 
 Other Highlights (since 2.6.1 release two months ago)
@@ -175,20 +147,11 @@ Other Highlights (since 2.6.1 release two months ago)
 
   * Reuse hashed keys across dictionaries and sets
 
-  * Refactor JIT interals to improve warmup time by 20% or so at the cost of a
-    minor regression in JIT speed
-
-  * Recognize patterns of common sequences in the JIT backends and optimize them
-
   * Make the garbage collecter more incremental over external_malloc() calls
 
   * Share guard resume data where possible which reduces memory usage
 
   * Fast path for zip(list, list)
-
-  * Reduce the number of checks in the JIT for lst[a:]
-
-  * Move the non-optimizable part of callbacks outside the JIT
 
   * Factor in field immutability when invalidating heap information
 

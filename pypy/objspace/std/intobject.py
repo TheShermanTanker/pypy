@@ -7,7 +7,6 @@ for overflows, something CPython does not do anymore.
 import operator
 import sys
 
-from rpython.rlib import jit
 from rpython.rlib.objectmodel import instantiate
 from rpython.rlib.rarithmetic import (
     LONG_BIT, is_valid_int, ovfcheck, r_longlong, r_uint, string_to_int)
@@ -240,7 +239,6 @@ def _pow(space, iv, iw, iz):
     else:
         return _pow_mod(space, iv, iw, iz)
 
-@jit.look_inside_iff(lambda iv, iw: jit.isconstant(iw))
 def _pow_nomod(iv, iw):
     if iw <= 0:
         if iw == 0:
@@ -264,8 +262,6 @@ def _pow_nomod(iv, iw):
             raise
     return ix
 
-@jit.look_inside_iff(lambda space, iv, iw, iz:
-                     jit.isconstant(iw) and jit.isconstant(iz))
 def _pow_mod(space, iv, iw, iz):
     from rpython.rlib.rarithmetic import mulmod
 
@@ -343,7 +339,6 @@ def _make_ovf2long(opname, ovf2small=None):
 
     return ovf2long
 
-@jit.elidable
 def _bit_length(val):
     bits = 0
     if val < 0:
@@ -961,4 +956,6 @@ def _hash_int(a):
     # same result as hash(integer) does on app-level, and not merely to
     # adjust some unrelated hash result from -1 to -2.
     #
-    return a - (a == -1)  # No explicit condition, to avoid JIT bridges
+    if a == -1:
+        a = -2
+    return a

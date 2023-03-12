@@ -34,18 +34,12 @@ CPyext PyListObject.pop must return the value
 
 If ``tp_hash`` is ``PyObject_HashNotImplemented``, set ``obj.__dict__['__hash__']`` to None
 
-.. branch: cppyy-packaging
-
-Renaming of ``cppyy`` to ``_cppyy``.
-The former is now an external package installable with ``pip install cppyy``.
-
 .. branch: Enable_PGO_for_clang
 
 .. branch: nopax
 
 At the end of translation, run ``attr -q -s pax.flags -V m`` on
-PAX-enabled systems on the produced binary.  This seems necessary
-because PyPy uses a JIT.
+PAX-enabled systems on the produced binary.
 
 .. branch: pypy_bytearray
 
@@ -85,12 +79,3 @@ Convert many Py*_Check cpyext functions into macros, like CPython.
 .. branch: py_ssize_t
 
 Explicitly use Py_ssize_t as the Signed type in pypy c-api
-
-.. branch: cpyext-jit
-
-Differentiate the code to call METH_NOARGS, METH_O and METH_VARARGS in cpyext:
-this allows to write specialized code which is much faster than previous
-completely generic version. Moreover, let the JIT to look inside the cpyext
-module: the net result is that cpyext calls are up to 7x faster. However, this
-is true only for very simple situations: in all real life code, we are still
-much slower than CPython (more optimizations to come)

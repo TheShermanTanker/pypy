@@ -12,8 +12,7 @@ dynamic languages - is able to automatically generate a Just-in-Time compiler
 for any dynamic language.  It also allows a mix-and-match approach to
 implementation decisions, including many that have historically been outside of
 a user's control, such as target platform, memory and threading models, garbage
-collection strategies, and optimizations applied, including whether or not to
-have a JIT in the first place.
+collection strategies, and optimizations applied.
 
 
 General
@@ -60,7 +59,6 @@ RPython internals
    glossary
    getting-started
    dir-reference
-   jit/index
    arch/index
    translation
    rtyper

@@ -11,7 +11,7 @@ import math
 import operator
 import sys
 
-from rpython.rlib import debug, jit, rerased, rutf8
+from rpython.rlib import debug, rerased, rutf8
 from rpython.rlib.listsort import make_timsort_class
 from rpython.rlib.objectmodel import (
     import_from_mixin, instantiate, newlist_hint, resizelist_hint, specialize)
@@ -69,8 +69,6 @@ def make_empty_list_with_size(space, hint):
     return W_ListObject.from_storage_and_strategy(space, storage, strategy)
 
 
-@jit.look_inside_iff(lambda space, list_w, sizehint:
-        jit.loop_unrolling_heuristic(list_w, len(list_w), UNROLL_CUTOFF))
 def get_strategy_from_list_objects(space, list_w, sizehint):
     if not list_w:
         if sizehint != -1:
@@ -131,27 +129,11 @@ def get_strategy_from_list_objects(space, list_w, sizehint):
 
     return space.fromcache(ObjectListStrategy)
 
-
-def _get_printable_location(strategy_type, greenkey):
-    return 'list__do_extend_from_iterable [%s, %s]' % (
-        strategy_type,
-        greenkey.iterator_greenkey_printable())
-
-
-_do_extend_jitdriver = jit.JitDriver(
-    name='list__do_extend_from_iterable',
-    greens=['strategy_type', 'greenkey'],
-    reds='auto',
-    get_printable_location=_get_printable_location)
-
 def _do_extend_from_iterable(space, w_list, w_iterable):
     w_iterator = space.iter(w_iterable)
     greenkey = space.iterator_greenkey(w_iterator)
     i = 0
     while True:
-        _do_extend_jitdriver.jit_merge_point(
-                greenkey=greenkey,
-                strategy_type=type(w_list.strategy))
         try:
             w_list.append(space.next(w_iterator))
         except OperationError as e:
@@ -160,17 +142,6 @@ def _do_extend_from_iterable(space, w_list, w_iterable):
             break
         i += 1
     return i
-
-def _get_printable_location(strategy_type, typ):
-    return 'list.repr [%s, %s]' % (
-        strategy_type,
-        typ)
-
-listrepr_jitdriver = jit.JitDriver(
-    name='list.repr',
-    greens=['strategy_type', 'typ'],
-    reds='auto',
-    get_printable_location=_get_printable_location)
 
 def listrepr(space, w_currently_in_repr, w_list):
     length = w_list.length()
@@ -185,9 +156,6 @@ def listrepr(space, w_currently_in_repr, w_list):
         builder.append(space.text_w(space.repr(w_first)))
         typ = type(w_first)
         for i in range(1, length):
-            listrepr_jitdriver.jit_merge_point(
-                typ=typ,
-                strategy_type=type(w_list.strategy))
             builder.append(', ')
             w_item = w_list.getitem(i)
             builder.append(space.text_w(space.repr(w_item)))
@@ -363,8 +331,7 @@ class W_ListObject(W_Root):
         return l
 
     def getitems_unroll(self):
-        """Returns a fixed-size list of all items after wrapping them. The JIT
-        will fully unroll this function."""
+        """Returns a fixed-size list of all items after wrapping them."""
         l = self.strategy.getitems_unroll(self)
         debug.make_sure_not_resized(l)
         return l
@@ -483,7 +450,6 @@ class W_ListObject(W_Root):
             return space.w_NotImplemented
         return self._descr_eq(space, w_other)
 
-    @jit.look_inside_iff(list_unroll_condition)
     def _descr_eq(self, space, w_other):
         # needs to be safe against eq_w() mutating the w_lists behind our back
         if self.length() != w_other.length():
@@ -508,7 +474,6 @@ class W_ListObject(W_Root):
                 return space.w_NotImplemented
             return _compare_unwrappeditems(self, space, w_list2)
 
-        @jit.look_inside_iff(list_unroll_condition)
         def _compare_unwrappeditems(self, space, w_list2):
             # needs to be safe against eq_w() mutating the w_lists behind our
             # back
@@ -810,15 +775,6 @@ class W_ListObject(W_Root):
         if mucked:
             raise oefmt(space.w_ValueError, "list modified during sort")
 
-def get_printable_location_sortkey(strategy_type, tp):
-    return "_compute_keys_for_sorting [%s, %s]" % (strategy_type, tp.getname(tp.space), )
-
-sortkey_jmp = jit.JitDriver(
-    greens=['strategy_type', 'tp'],
-    reds='auto',
-    name='_compute_keys_for_sorting',
-    get_printable_location=get_printable_location_sortkey)
-
 def _compute_keys_for_sorting(strategy, list_w, w_callable):
     space = strategy.space
     i = 0
@@ -828,24 +784,10 @@ def _compute_keys_for_sorting(strategy, list_w, w_callable):
     while i < len(list_w):
         # bit weird: we have a list_w at this point, but we still specialize on
         # the strategy to distinguish the cases better
-        sortkey_jmp.jit_merge_point(tp=tp, strategy_type=type(strategy))
         w_item = list_w[i]
         w_keyitem = space.call_function(w_callable, w_item)
         list_w[i] = KeyContainer(w_keyitem, w_item)
         i += 1
-
-def get_printable_location_find(count, strategy_type, tp):
-    if count:
-        start = "list.count"
-    else:
-        start = "list.find"
-    return "%s [%s, %s]" % (start, strategy_type, tp.getname(tp.space), )
-
-find_or_count_jmp = jit.JitDriver(
-    greens=['count', 'strategy_type', 'tp'],
-    reds='auto',
-    name='list.find_or_count',
-    get_printable_location=get_printable_location_find)
 
 class ListStrategy(object):
 
@@ -874,7 +816,6 @@ class ListStrategy(object):
         # needs to be safe against eq_w mutating stuff
         tp = space.type(w_item)
         while i < stop and i < w_list.length():
-            find_or_count_jmp.jit_merge_point(tp=tp, strategy_type=type(self), count=count)
             if space.eq_w(w_item, w_list.getitem(i)):
                 if count:
                     result += 1
@@ -964,8 +905,6 @@ class ListStrategy(object):
     def _extend_from_list(self, w_list, w_other):
         raise NotImplementedError
 
-    @jit.look_inside_iff(lambda self, w_list, tup_w:
-            jit.loop_unrolling_heuristic(tup_w, len(tup_w), UNROLL_CUTOFF))
     def _extend_from_tuple(self, w_list, tup_w):
         try:
             newsize_hint = ovfcheck(w_list.length() + len(tup_w))
@@ -1010,12 +949,6 @@ class ListStrategy(object):
         if self.length(w_list) == 0:
             return space.newtext('[]')
         return listrepr(space, space.get_objects_in_repr(), w_list)
-
-    def _unrolling_heuristic(self, w_list):
-        # default implementation: we will only go by size, not whether the list
-        # is virtual
-        size = self.length(w_list)
-        return size == 0 or (jit.isconstant(size) and size <= UNROLL_CUTOFF)
 
 
 class EmptyListStrategy(ListStrategy):
@@ -1246,7 +1179,6 @@ class BaseRangeListStrategy(ListStrategy):
         # tuple is immutable
         return w_list.lstorage
 
-    @jit.dont_look_inside
     def getitems_fixedsize(self, w_list):
         return self._getitems_range_unroll(w_list, True)
 
@@ -1358,8 +1290,7 @@ class SimpleRangeListStrategy(BaseRangeListStrategy):
 
         return r
 
-    _getitems_range_unroll = jit.unroll_safe(
-            func_with_new_name(_getitems_range, "_getitems_range_unroll"))
+    _getitems_range_unroll = func_with_new_name(_getitems_range, "_getitems_range_unroll")
 
     def pop_end(self, w_list):
         new_length = self.unerase(w_list.lstorage)[0] - 1
@@ -1451,8 +1382,7 @@ class RangeListStrategy(BaseRangeListStrategy):
 
         return r
 
-    _getitems_range_unroll = jit.unroll_safe(
-            func_with_new_name(_getitems_range, "_getitems_range_unroll"))
+    _getitems_range_unroll = func_with_new_name(_getitems_range, "_getitems_range_unroll")
 
     def pop_end(self, w_list):
         start, step, length = self.unerase(w_list.lstorage)
@@ -1504,8 +1434,6 @@ class AbstractUnwrappedStrategy(object):
     def list_is_correct_type(self, w_list):
         raise NotImplementedError("abstract base class")
 
-    @jit.look_inside_iff(lambda space, w_list, list_w:
-            jit.loop_unrolling_heuristic(list_w, len(list_w), UNROLL_CUTOFF))
     def init_from_list_w(self, w_list, list_w):
         l = [self.unwrap(w_item) for w_item in list_w]
         w_list.lstorage = self.erase(l)
@@ -1572,21 +1500,17 @@ class AbstractUnwrappedStrategy(object):
         res[0] = w_item
         for index in range(1, len(storage)):
             item = storage[index]
-            if jit.we_are_jitted() or not self._quick_cmp(item, prevvalue):
+            if not self._quick_cmp(item, prevvalue):
                 prevvalue = item
                 w_item = self.wrap(item)
             res[index] = w_item
         return res
 
-    getitems_unroll = jit.unroll_safe(
-            func_with_new_name(getitems_copy, "getitems_unroll"))
+    getitems_unroll = func_with_new_name(getitems_copy, "getitems_unroll")
 
-    getitems_copy = jit.look_inside_iff(lambda self, w_list:
-            w_list._unrolling_heuristic())(getitems_copy)
+    getitems_copy = (getitems_copy)
 
 
-    @jit.look_inside_iff(lambda self, w_list:
-            w_list._unrolling_heuristic())
     def getitems_fixedsize(self, w_list):
         return self.getitems_unroll(w_list)
 
@@ -1799,10 +1723,6 @@ class AbstractUnwrappedStrategy(object):
         l = self.unerase(w_list.lstorage)
         return list_get_physical_size(l)
 
-    def _unrolling_heuristic(self, w_list):
-        storage = self.unerase(w_list.lstorage)
-        return jit.loop_unrolling_heuristic(storage, len(storage), UNROLL_CUTOFF)
-
 
 class ObjectListStrategy(ListStrategy):
     import_from_mixin(AbstractUnwrappedStrategy)
@@ -1822,13 +1742,10 @@ class ObjectListStrategy(ListStrategy):
     erase = staticmethod(erase)
     unerase = staticmethod(unerase)
 
-    @jit.look_inside_iff(lambda self, w_list:
-            w_list._unrolling_heuristic())
     def getitems_copy(self, w_list):
         storage = self.unerase(w_list.lstorage)
         return storage[:]
 
-    @jit.unroll_safe
     def getitems_unroll(self, w_list):
         storage = self.unerase(w_list.lstorage)
         return storage[:]

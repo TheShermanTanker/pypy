@@ -3,7 +3,7 @@ from pypy.interpreter.error import oefmt
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, GetSetProperty, ClassAttr
 from pypy.interpreter.gateway import interp2app, unwrap_spec, WrappedDefault
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rtyper.lltypesystem import lltype, rffi
 
 from pypy.module._cffi_backend.moduledef import get_dict_rtld_constants
@@ -50,9 +50,8 @@ class W_FFIObject(W_Root):
 
     w_gc_wref_remove = None
     w_init_once_cache = None
-    jit_init_once_cache = None
+    init_once_cache = None
 
-    @jit.dont_look_inside
     def __init__(self, space, src_ctx):
         self.space = space
         self.types_dict = {}
@@ -89,7 +88,6 @@ class W_FFIObject(W_Root):
                 return w_result
         return None
 
-    @jit.elidable_promote()
     def get_string_to_type(self, string, consider_fn_as_fnptr):
         x = self.types_dict[string]     # KeyError if not found
         if isinstance(x, W_CType):
@@ -118,7 +116,6 @@ class W_FFIObject(W_Root):
                     ''.join(printable_text),
                     " " * num_spaces)
 
-    @jit.dont_look_inside
     def parse_string_to_type(self, string, consider_fn_as_fnptr):
         # This cannot be made @elidable because it calls general space
         # functions (indirectly, e.g. via the new_xxx_type() functions).
@@ -154,11 +151,6 @@ class W_FFIObject(W_Root):
                 space.isinstance_w(w_x, space.w_basestring)):
             string = space.text_w(w_x)
             consider_fn_as_fnptr = (accept & CONSIDER_FN_AS_FNPTR) != 0
-            if jit.isconstant(string):
-                try:
-                    return self.get_string_to_type(string, consider_fn_as_fnptr)
-                except KeyError:
-                    pass
             return self.parse_string_to_type(string, consider_fn_as_fnptr)
         if (accept & ACCEPT_CTYPE) and isinstance(w_x, W_CType):
             return w_x
@@ -201,7 +193,6 @@ class W_FFIObject(W_Root):
 
 
     def _more_addressof(self, args_w, w_ctype):
-        # contains a loop, the JIT doesn't look inside this helper
         offset = 0
         for i in range(len(args_w)):
             w_ctype, ofs1 = w_ctype.direct_typeoffsetof(args_w[i], i > 0)
@@ -490,7 +481,6 @@ the cdata object returned by new_handle()!"""
 
 
     def _more_offsetof(self, w_ctype, w_arg0, args_w):
-        # contains a loop, the JIT doesn't look inside this helper
         w_ctype, offset = w_ctype.direct_typeoffsetof(w_arg0, False)
         for i in range(len(args_w)):
             w_ctype, ofs1 = w_ctype.direct_typeoffsetof(args_w[i], True)
@@ -665,30 +655,28 @@ from multiple threads in parallel, all calls block until the execution
 of function() is done.  If function() raises an exception, it is
 propagated and nothing is cached."""
         #
-        # first, a fast-path for the JIT which only works if the very
-        # same w_tag object is passed; then it turns into no code at all
+        # first, a fast-path which only works if the very ame w_tag object
+        # is passed
         try:
             return self._init_once_elidable(w_tag)
         except KeyError:
             return self._init_once_slowpath(w_func, w_tag)
 
-    @jit.elidable
     def _init_once_elidable(self, w_tag):
-        jit_cache = self.jit_init_once_cache
-        if jit_cache is not None:
-            return jit_cache[w_tag]
+        cache = self.init_once_cache
+        if cache is not None:
+            return cache[w_tag]
         else:
             raise KeyError
 
-    @jit.dont_look_inside
     def _init_once_slowpath(self, w_func, w_tag):
         space = self.space
         w_cache = self.w_init_once_cache
         if w_cache is None:
             w_cache = self.space.newdict()
-            jit_cache = {}
+            cache = {}
             self.w_init_once_cache = w_cache
-            self.jit_init_once_cache = jit_cache
+            self.init_once_cache = cache
         #
         # get the lock or result from cache[tag]
         w_res = space.finditem(w_cache, w_tag)
@@ -701,7 +689,7 @@ propagated and nothing is cached."""
             w_res = space.finditem(w_cache, w_tag)
             if w_res is None or isinstance(w_res, W_InitOnceLock):
                 w_res = space.call_function(w_func)
-                self.jit_init_once_cache[w_tag] = w_res
+                self.init_once_cache[w_tag] = w_res
                 space.setitem(w_cache, w_tag, w_res)
             else:
                 # the real result was put in the dict while we were
@@ -725,7 +713,6 @@ class W_InitOnceLock(W_Root):
         self.lock = space.allocate_lock()
 
 
-@jit.dont_look_inside
 def make_plain_ffi_object(space, w_ffitype=None):
     if w_ffitype is None:
         w_ffitype = space.gettypefor(W_FFIObject)

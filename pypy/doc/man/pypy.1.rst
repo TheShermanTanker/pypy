@@ -61,10 +61,6 @@ OPTIONS
 --info
     Print translation information about this PyPy executable.
 
---jit ARG
-    Low level JIT parameters.  Mostly internal.  Run ``--jit help``
-    for more information.
-
 ENVIRONMENT
 ===========
 
@@ -119,16 +115,9 @@ ENVIRONMENT
         Multiple prefixes can be specified, comma-separated.
         Only sections whose name match the prefix will be logged.
 
-    ``PYPYLOG=jit-log-opt,jit-backend:logfile`` will
-    generate a log suitable for *jitviewer*, a tool for debugging
-    performance issues under PyPy.
-
 ``PYPY_IRC_TOPIC``
     If set to a non-empty value, print a random #pypy IRC
     topic at startup of interactive mode.
-
-``PYPY_DISABLE_JIT``
-    If set to a non-empty value, disable JIT.
 
 .. include:: ../gc_info.rst
    :start-line: 305

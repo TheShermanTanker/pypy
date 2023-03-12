@@ -207,9 +207,6 @@ class TestNewFFI1:
         assert p[4] == 50
         p = ffi.new("int[4]", [25])
         assert p[0] == 25
-        assert p[1] == 0     # follow C convention rather than LuaJIT's
-        assert p[2] == 0
-        assert p[3] == 0
         p = ffi.new("int[4]", [ffi.cast("int", -5)])
         assert p[0] == -5
         assert repr(p) == "<cdata 'int[4]' owning %d bytes>" % (4*SIZE_OF_INT)

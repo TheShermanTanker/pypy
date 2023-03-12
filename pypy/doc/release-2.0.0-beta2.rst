@@ -10,11 +10,6 @@ regression of about 5% compared to 2.0 beta 1 that we hope to fix before
 2.0 final. The ARM support is not working yet and we're working hard to
 make it happen before the 2.0 final. The new major features are:
 
-* JIT now supports stackless features, that is greenlets and stacklets. This
-  means that JIT can now optimize the code that switches the context. It enables
-  running `eventlet`_ and `gevent`_ on PyPy (although gevent requires some
-  special support that's not quite finished, read below).
-
 * This is the first PyPy release that includes `cffi`_ as a core library.
   Version 0.6 comes included in the PyPy library. cffi has seen a lot of
   adoption among library authors and we believe it's the best way to wrap
@@ -30,7 +25,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7.3. It's fast (`pypy 2.0 beta 2 and cpython 2.7.3`_
-performance comparison) due to its integrated tracing JIT compiler.
+performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or
 Windows 32. It also supports ARM machines running Linux, however this is
@@ -71,9 +66,6 @@ Highlights
 Improvements since 1.9
 ======================
 
-* `JIT hooks`_ are now a powerful tool to introspect the JITting process that
-  PyPy performs
-
 * various performance improvements compared to 1.9 and 2.0 beta 1
 
 * operations on ``long`` objects are now as fast as in CPython (from
@@ -86,7 +78,6 @@ Improvements since 1.9
 .. _`eventlet`: https://eventlet.net/
 .. _`gevent`: https://www.gevent.org/
 .. _`cffi`: https://cffi.readthedocs.org/en/release-0.6/
-.. _`JIT hooks`: https://doc.pypy.org/en/latest/jit-hooks.html
 .. _`pypycore`: https://github.com/gevent-on-pypy/pypycore
 .. _`pypy-hacks`: https://github.com/schmir/gevent/tree/pypy-hacks
 .. _`_curses.py`: https://bitbucket.org/pypy/pypy/src/aefddd47f224e3c12e2ea74f5c796d76f4355bdb/lib_pypy/_curses.py?at=default

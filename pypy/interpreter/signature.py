@@ -1,5 +1,3 @@
-from rpython.rlib import jit
-
 class Signature(object):
     _immutable_ = True
     _immutable_fields_ = ["argnames[*]"]
@@ -10,7 +8,6 @@ class Signature(object):
         self.varargname = varargname
         self.kwargname = kwargname
 
-    @jit.elidable
     def find_argname(self, name):
         try:
             return self.argnames.index(name)

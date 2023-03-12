@@ -81,7 +81,6 @@ form of the following interesting but yet not completed sub projects:
 - The OOtyper, a RTyper variation for higher-level backends 
   (Squeak, ...)
 - A JavaScript backend
-- A limited (PPC) assembler backend (this related to the JIT)
 - some bits for a socket module
 
 PyPy has been developed during approximately 16 coding sprints across

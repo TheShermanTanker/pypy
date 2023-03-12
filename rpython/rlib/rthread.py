@@ -2,7 +2,7 @@ from rpython.rtyper.lltypesystem import rffi, lltype, llmemory
 from rpython.translator.tool.cbuild import ExternalCompilationInfo
 from rpython.translator import cdir
 import py, sys
-from rpython.rlib import jit, rgc
+from rpython.rlib import rgc
 from rpython.rlib.debug import ll_assert
 from rpython.rlib.objectmodel import we_are_translated, specialize
 from rpython.rlib.objectmodel import CDefinedIntSymbolic, not_rpython
@@ -276,7 +276,6 @@ def release_NOAUTO(ll_lock):
 # Thread integration.
 # These are five completely ad-hoc operations at the moment.
 
-@jit.dont_look_inside
 def gc_thread_run():
     """To call whenever the current thread (re-)acquired the GIL.
     """
@@ -284,14 +283,12 @@ def gc_thread_run():
         llop.gc_thread_run(lltype.Void)
 gc_thread_run._always_inline_ = True
 
-@jit.dont_look_inside
 def gc_thread_start():
     """To call at the beginning of a new thread.
     """
     if we_are_translated():
         llop.gc_thread_start(lltype.Void)
 
-@jit.dont_look_inside
 def gc_thread_die():
     """To call just before the final GIL release done by a dying
     thread.  After a thread_die(), no more gc operation should
@@ -301,7 +298,6 @@ def gc_thread_die():
         llop.gc_thread_die(lltype.Void)
 gc_thread_die._always_inline_ = True
 
-@jit.dont_look_inside
 def gc_thread_before_fork():
     """To call just before fork().  Prepares for forking, after
     which only the current thread will be alive.
@@ -311,7 +307,6 @@ def gc_thread_before_fork():
     else:
         return llmemory.NULL
 
-@jit.dont_look_inside
 def gc_thread_after_fork(result_of_fork, opaqueaddr):
     """To call just after fork().
     """
@@ -350,7 +345,6 @@ class ThreadLocalField(object):
             else:
                 return getattr(self.local, 'rawvalue', zero)
 
-        @jit.dont_look_inside
         def get_or_make_raw():
             if we_are_translated():
                 _threadlocalref_seeme(self)
@@ -358,7 +352,6 @@ class ThreadLocalField(object):
             else:
                 return getattr(self.local, 'rawvalue', zero)
 
-        @jit.dont_look_inside
         def setraw(value):
             if we_are_translated():
                 _threadlocalref_seeme(self)
@@ -407,7 +400,6 @@ class ThreadLocalReference(ThreadLocalField):
             else:
                 return getattr(self.local, 'value', None)
 
-        @jit.dont_look_inside
         def set(value):
             assert isinstance(value, Cls) or value is None
             if we_are_translated():

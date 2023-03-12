@@ -1,6 +1,6 @@
 """The builtin dict implementation"""
 
-from rpython.rlib import jit, rerased, objectmodel, rutf8
+from rpython.rlib import rerased, objectmodel, rutf8
 from rpython.rlib.debug import mark_dict_non_null
 from rpython.rlib.objectmodel import newlist_hint, r_dict, specialize
 from rpython.tool.sourcetools import func_renamer, func_with_new_name
@@ -558,8 +558,6 @@ class DictStrategy(object):
     def iteritems(self, w_dict):
         raise NotImplementedError
 
-    @jit.look_inside_iff(lambda self, w_dict:
-                         w_dict._unrolling_heuristic())
     def w_keys(self, w_dict):
         iterator = self.iterkeys(w_dict)
         result = newlist_hint(self.length(w_dict))
@@ -693,12 +691,6 @@ class DictStrategy(object):
         # fall-back if getiterreversed is not present
         w_keys = self.w_keys(w_dict)
         return self.space.call_method(w_keys, '__reversed__')
-
-    def _unrolling_heuristic(self, w_list):
-        # default implementation: we will only go by size, not whether the dict
-        # is virtual
-        size = self.length(w_list)
-        return size == 0 or (jit.isconstant(size) and size <= UNROLL_CUTOFF)
 
 _add_indirections()
 
@@ -973,8 +965,6 @@ def create_iterator_classes(dictimpl):
                     IterClassReversed(self.space, self, w_dict))
         dictimpl.iterreversed = iterreversed
 
-    @jit.look_inside_iff(lambda self, w_dict, w_updatedict:
-                         w_dict._unrolling_heuristic())
     def rev_update1_dict_dict(self, w_dict, w_updatedict):
         # the logic is to call prepare_dict_update() after the first setitem():
         # it gives the w_updatedict a chance to switch its strategy.
@@ -1178,10 +1168,6 @@ class AbstractTypedStrategy(object):
         d = self.unerase(dstorage)
         objectmodel.setitem_with_hash(d, key, keyhash, w_value)
 
-    def _unrolling_heuristic(self, w_dict):
-        storage = self.unerase(w_dict.dstorage)
-        return jit.loop_unrolling_heuristic(storage, len(storage), UNROLL_CUTOFF)
-
 
 class ObjectDictStrategy(AbstractTypedStrategy, DictStrategy):
     erase, unerase = rerased.new_erasing_pair("object")
@@ -1265,8 +1251,6 @@ class BytesDictStrategy(AbstractTypedStrategy, DictStrategy):
     def wrapkey(space, key):
         return space.newbytes(key)
 
-    @jit.look_inside_iff(lambda self, w_dict:
-                         w_dict._unrolling_heuristic())
     def view_as_kwargs(self, w_dict):
         d = self.unerase(w_dict.dstorage)
         l = len(d)
@@ -1337,8 +1321,6 @@ class UnicodeDictStrategy(AbstractTypedStrategy, DictStrategy):
     def wrapkey(space, key):
         return key
 
-    ## @jit.look_inside_iff(lambda self, w_dict:
-    ##                      w_dict._unrolling_heuristic())
     ## def view_as_kwargs(self, w_dict):
     ##     d = self.unerase(w_dict.dstorage)
     ##     l = len(d)

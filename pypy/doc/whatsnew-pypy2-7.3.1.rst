@@ -21,12 +21,6 @@ Fixes incorrect error text for ``int('1', base=1000)``
 
 adapt contributing documentation to heptapod
 
-.. branch: pypy-jitdriver-greenkeys
-
-Improve code generation for generators (and generator expressions in
-particular) when passing them to builtin functions that consume iterators, such
-as ``sum``, ``map``, ``max``, etc.
-
 .. branch: warmup-improvements-various
 
 Improves warmup time by up to 20%.
@@ -38,12 +32,3 @@ common use cases.
 
 .. branch: rgil-track-thread
 .. branch: hpy-rpython-backports
-
-.. branch: nested-scopes-jit
-
-Improve the code generation for inner functions that use outer variables that
-are constant.
-
-.. branch win32-cppyy
-
-Enable _cppyy for win32, prefer newer msvc compilers

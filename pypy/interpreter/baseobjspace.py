@@ -3,7 +3,7 @@ import py
 
 from rpython.rlib.cache import Cache
 from rpython.tool.uid import HUGEVAL_BYTES
-from rpython.rlib import jit, types, rutf8
+from rpython.rlib import types, rutf8
 from rpython.rlib.debug import make_sure_not_resized, check_not_access_directly
 from rpython.rlib.objectmodel import (we_are_translated, newlist_hint,
      compute_unique_id, specialize, not_rpython)
@@ -21,14 +21,6 @@ from pypy.interpreter.miscutils import ThreadLocals, make_weak_value_dictionary
 
 
 __all__ = ['ObjSpace', 'OperationError', 'W_Root']
-
-def get_printable_location(greenkey):
-    return "unpackiterable [%s]" % (greenkey.iterator_greenkey_printable(), )
-
-unpackiterable_driver = jit.JitDriver(name='unpackiterable',
-                                      greens=['greenkey'],
-                                      reds='auto',
-                                      get_printable_location=get_printable_location)
 
 
 class W_Root(object):
@@ -376,15 +368,6 @@ class W_Root(object):
         if lst:
             return lst[:]
         return None
-
-    def iterator_greenkey(self, space):
-        """ Return something that can be used as a green key in jit drivers
-        that iterate over self. by default, it's just the type of self, but
-        custom iterators should override it. """
-        return space.type(self)
-
-    def iterator_greenkey_printable(self):
-        return "?"
 
 
 class InternalSpaceCache(Cache):
@@ -967,9 +950,7 @@ class ObjSpace(object):
         except MemoryError:
             items = [] # it might have lied
 
-        greenkey = self.iterator_greenkey(w_iterator)
         while True:
-            unpackiterable_driver.jit_merge_point(greenkey=greenkey)
             try:
                 w_item = self.next(w_iterator)
             except OperationError as e:
@@ -980,16 +961,12 @@ class ObjSpace(object):
         #
         return items
 
-    @jit.dont_look_inside
     def _unpackiterable_known_length(self, w_iterator, expected_length):
-        # Unpack a known length list, without letting the JIT look inside.
-        # Implemented by just calling the @jit.unroll_safe version, but
-        # the JIT stopped looking inside already.
-        return self._unpackiterable_known_length_jitlook(w_iterator,
-                                                         expected_length)
+        # Unpack a known length list.
+        return self._unpackiterable_known_length_look(w_iterator,
+                                                      expected_length)
 
-    @jit.unroll_safe
-    def _unpackiterable_known_length_jitlook(self, w_iterator,
+    def _unpackiterable_known_length_look(self, w_iterator,
                                              expected_length):
         items = [None] * expected_length
         idx = 0
@@ -1011,12 +988,10 @@ class ObjSpace(object):
         return items
 
     def unpackiterable_unroll(self, w_iterable, expected_length):
-        # Like unpackiterable(), but for the cases where we have
-        # an expected_length and want to unroll when JITted.
         # Returns a fixed-size list.
         w_iterator = self.iter(w_iterable)
         assert expected_length != -1
-        return self._unpackiterable_known_length_jitlook(w_iterator,
+        return self._unpackiterable_known_length_look(w_iterator,
                                                          expected_length)
 
 
@@ -1143,7 +1118,6 @@ class ObjSpace(object):
         from pypy.objspace.std.listobject import make_empty_list_with_size
         return make_empty_list_with_size(self, sizehint)
 
-    @jit.unroll_safe
     def exception_match(self, w_exc_type, w_check_class):
         """Checks if the given exception type matches 'w_check_class'."""
         if self.is_w(w_exc_type, w_check_class):
@@ -2071,12 +2045,6 @@ class ObjSpace(object):
             """)
         finally:
             self.sys.track_resources = flag
-
-    def iterator_greenkey(self, w_iterable):
-        """ Return something that can be used as a green key in jit drivers
-        that iterate over self. by default, it's just the type of self, but
-        custom iterators should override it. """
-        return w_iterable.iterator_greenkey(self)
 
 
 class AppExecCache(SpaceCache):

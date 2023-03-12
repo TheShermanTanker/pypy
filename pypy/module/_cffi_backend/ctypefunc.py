@@ -4,9 +4,7 @@ Function pointers.
 
 import sys
 
-from rpython.rlib import jit, clibffi, jit_libffi, rgc
-from rpython.rlib.jit_libffi import (CIF_DESCRIPTION, CIF_DESCRIPTION_P,
-    FFI_TYPE, FFI_TYPE_P, FFI_TYPE_PP, SIZE_OF_FFI_ARG)
+from rpython.rlib import clibffi, rgc
 from rpython.rlib.objectmodel import we_are_translated, instantiate
 from rpython.rlib.objectmodel import keepalive_until_here
 from rpython.rtyper.lltypesystem import lltype, llmemory, rffi
@@ -25,12 +23,27 @@ from pypy.module._cffi_backend.ctypeprim import (W_CTypePrimitiveSigned,
     W_CTypePrimitiveFloat, W_CTypePrimitiveLongDouble, W_CTypePrimitiveComplex)
 
 
+cif_description = lltype.Struct(
+    'CIF_DESCRIPTION',
+    ('cif', FFI_CIF),
+    ('abi', lltype.Signed),    # these 4 fields could also be read directly
+    ('nargs', lltype.Signed),  # from 'cif', but doing so adds a dependency
+    ('rtype', FFI_TYPE_P),     # on the exact fields available from ffi_cif.
+    ('atypes', FFI_TYPE_PP),   #
+    ('exchange_size', lltype.Signed),
+    ('exchange_result', lltype.Signed),
+    ('exchange_args', lltype.Array(lltype.Signed,
+                          hints={'nolength': True, 'immutable': True})),
+    hints={'immutable': True})
+
+cif_description_p = lltype.Ptr(cif_description)
+
 class W_CTypeFunc(W_CTypePtrBase):
     _attrs_            = ['fargs', 'ellipsis', 'abi', 'cif_descr']
     _immutable_fields_ = ['fargs[*]', 'ellipsis', 'abi', 'cif_descr']
     kind = "function"
 
-    cif_descr = lltype.nullptr(CIF_DESCRIPTION)
+    cif_descr = lltype.nullptr(cif_description)
 
     def __init__(self, space, fargs, fresult, ellipsis,
                  abi=FFI_DEFAULT_ABI):
@@ -58,7 +71,7 @@ class W_CTypeFunc(W_CTypePtrBase):
                 # exception if we see an actual call
                 if self.cif_descr:   # should not be True, but you never know
                     lltype.free(self.cif_descr, flavor='raw')
-                    self.cif_descr = lltype.nullptr(CIF_DESCRIPTION)
+                    self.cif_descr = lltype.nullptr(cif_description)
 
     def is_unichar_ptr_or_array(self):
         return False
@@ -134,7 +147,6 @@ class W_CTypeFunc(W_CTypePtrBase):
                         self.name)
         if self.cif_descr:
             # regular case: this function does not take '...' arguments
-            self = jit.promote(self)
             nargs_declared = len(self.fargs)
             if len(args_w) != nargs_declared:
                 space = self.space
@@ -146,7 +158,6 @@ class W_CTypeFunc(W_CTypePtrBase):
             # call of a variadic function
             return self.call_varargs(funcaddr, args_w)
 
-    @jit.dont_look_inside
     def call_varargs(self, funcaddr, args_w):
         nargs_declared = len(self.fargs)
         if len(args_w) < nargs_declared:
@@ -157,12 +168,7 @@ class W_CTypeFunc(W_CTypePtrBase):
         completed = self.new_ctypefunc_completing_argtypes(args_w)
         return completed._call(funcaddr, args_w)
 
-    # The following is the core of function calls.  It is @unroll_safe,
-    # which means that the JIT is free to unroll the argument handling.
-    # But in case the function takes variable arguments, we don't unroll
-    # this (yet) for better safety: this is handled by @dont_look_inside
-    # in call_varargs.
-    @jit.unroll_safe
+    # The following is the core of function calls.  
     def _call(self, funcaddr, args_w):
         space = self.space
         cif_descr = self.cif_descr   # 'self' should have been promoted here
@@ -180,9 +186,14 @@ class W_CTypeFunc(W_CTypePtrBase):
                     # argtype is a pointer type, and w_obj a list/tuple/str
                     mustfree_max_plus_1 = i + 1
 
-            jit_libffi.jit_ffi_call(cif_descr,
-                                    rffi.cast(rffi.VOIDP, funcaddr),
-                                    buffer)
+            buffer_array = rffi.cast(rffi.VOIDPP, buffer)
+            for i in range(cif_descr.nargs):
+                data = rffi.ptradd(buffer, cif_descr.exchange_args[i])
+                buffer_array[i] = data
+            resultdata = rffi.ptradd(buffer, cif_descr.exchange_result)
+            clibffi.c_ffi_call(cif_descr.cif, rffi.cast(rffi.VOIDP, funcaddr),
+                               rffi.cast(rffi.VOIDP, resultdata),
+                               buffer_array)
 
             resultdata = rffi.ptradd(buffer, cif_descr.exchange_result)
             w_res = self.ctitem.copy_and_convert_to_object(resultdata)
@@ -385,8 +396,8 @@ class CifDescrBuilder(object):
             nflat += flat
 
         # allocate an array of (nflat + 1) ffi_types
-        elements = self.fb_alloc(rffi.sizeof(FFI_TYPE_P) * (nflat + 1))
-        elements = rffi.cast(FFI_TYPE_PP, elements)
+        elements = self.fb_alloc(rffi.sizeof(clibffi.FFI_TYPE_P) * (nflat + 1))
+        elements = rffi.cast(clibffi.FFI_TYPE_PP, elements)
 
         # fill it with the ffi types of the fields
         nflat = 0
@@ -404,11 +415,11 @@ class CifDescrBuilder(object):
 
         # zero-terminate the array
         if elements:
-            elements[nflat] = lltype.nullptr(FFI_TYPE_P.TO)
+            elements[nflat] = lltype.nullptr(clibffi.FFI_TYPE_P.TO)
 
         # allocate and fill an ffi_type for the struct itself
-        ffistruct = self.fb_alloc(rffi.sizeof(FFI_TYPE))
-        ffistruct = rffi.cast(FFI_TYPE_P, ffistruct)
+        ffistruct = self.fb_alloc(rffi.sizeof(clibffi.FFI_TYPE_P.TO))
+        ffistruct = rffi.cast(clibffi.FFI_TYPE_P, ffistruct)
         if ffistruct:
             rffi.setintfield(ffistruct, 'c_size', ctype.size)
             rffi.setintfield(ffistruct, 'c_alignment', ctype.alignof())
@@ -431,11 +442,11 @@ class CifDescrBuilder(object):
         nargs = len(self.fargs)
 
         # start with a cif_description (cif and exchange_* fields)
-        self.fb_alloc(llmemory.sizeof(CIF_DESCRIPTION, nargs))
+        self.fb_alloc(llmemory.sizeof(cif_description, nargs))
 
         # next comes an array of 'ffi_type*', one per argument
-        atypes = self.fb_alloc(rffi.sizeof(FFI_TYPE_P) * nargs)
-        self.atypes = rffi.cast(FFI_TYPE_PP, atypes)
+        atypes = self.fb_alloc(rffi.sizeof(clibffi.FFI_TYPE_P) * nargs)
+        self.atypes = rffi.cast(clibffi.FFI_TYPE_PP, atypes)
 
         # next comes the result type data
         self.rtype = self.fb_fill_type(self.fresult, True)
@@ -466,7 +477,7 @@ class CifDescrBuilder(object):
         exchange_offset = self.align_arg(exchange_offset)
         cif_descr.exchange_result = exchange_offset
         exchange_offset += max(rffi.getintfield(self.rtype, 'c_size'),
-                               SIZE_OF_FFI_ARG)
+                               rffi.sizeof(clibffi.ffi_arg))
 
         # loop over args
         for i, farg in enumerate(self.fargs):
@@ -489,7 +500,6 @@ class CifDescrBuilder(object):
         cif_descr.rtype = self.rtype
         cif_descr.atypes = self.atypes
 
-    @jit.dont_look_inside
     def rawallocate(self, ctypefunc):
         space = ctypefunc.space
         self.space = space
@@ -503,10 +513,10 @@ class CifDescrBuilder(object):
         if we_are_translated():
             rawmem = lltype.malloc(rffi.CCHARP.TO, self.nb_bytes,
                                    flavor='raw')
-            rawmem = rffi.cast(CIF_DESCRIPTION_P, rawmem)
+            rawmem = rffi.cast(cif_description_p, rawmem)
         else:
             # gross overestimation of the length below, but too bad
-            rawmem = lltype.malloc(CIF_DESCRIPTION_P.TO, self.nb_bytes,
+            rawmem = lltype.malloc(cif_description_p.TO, self.nb_bytes,
                                    flavor='raw')
 
         # the buffer is automatically managed from the W_CTypeFunc instance
@@ -525,7 +535,12 @@ class CifDescrBuilder(object):
         self.fb_extra_fields(rawmem)
 
         # call libffi's ffi_prep_cif() function
-        res = jit_libffi.jit_ffi_prep_cif(rawmem)
+        res = clibffi.c_ffi_prep_cif(rawmem.cif,
+                                     rawmem.abi,
+                                     rawmem.nargs,
+                                     rawmem.rtype,
+                                     rawmem.atypes)
+        res = rffi.cast(lltype.Signed, res)
         if res != clibffi.FFI_OK:
             raise oefmt(space.w_SystemError,
                         "libffi failed to build this function type")

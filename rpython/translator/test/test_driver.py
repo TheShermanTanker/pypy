@@ -7,7 +7,7 @@ from rpython.translator.platform import windows, darwin, linux
 def test_ctr():
     td = TranslationDriver()
     expected = ['annotate', 'backendopt', 'llinterpret', 'rtype', 'source',
-                'compile', 'pyjitpl']
+                'compile']
     assert set(td.exposed) == set(expected)
 
     assert td.backend_select_goals(['compile_c']) == ['compile_c']
@@ -29,7 +29,7 @@ def test_ctr():
         'backendopt_lltype']
 
     expected = ['annotate', 'backendopt_lltype', 'llinterpret_lltype',
-                'rtype_lltype', 'source_c', 'compile_c', 'pyjitpl_lltype', ]
+                'rtype_lltype', 'source_c', 'compile_c', ]
     assert set(td.exposed) == set(expected)
 
     td = TranslationDriver({'backend': None, 'type_system': 'lltype'})
@@ -43,7 +43,7 @@ def test_ctr():
         'backendopt_lltype']
 
     expected = ['annotate', 'backendopt', 'llinterpret', 'rtype', 'source_c',
-                'compile_c', 'pyjitpl']
+                'compile_c']
 
     assert set(td.exposed) == set(expected)
 

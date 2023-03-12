@@ -5,7 +5,6 @@ from pypy.interpreter.gateway import interp2app
 from pypy.interpreter.typedef import TypeDef, GetSetProperty
 from pypy.module.micronumpy import support
 from pypy.module.micronumpy.base import W_NDimArray, convert_to_array, W_NumpyObject
-from rpython.rlib import jit
 from strides import calculate_broadcast_strides, shape_agreement_multiple
 
 def descr_new_broadcast(space, w_subtype, __args__):
@@ -81,7 +80,6 @@ class W_Broadcast(W_NumpyObject):
     def descr_get_numiter(self, space):
         return space.newint(len(self.iters))
 
-    @jit.unroll_safe
     def descr_next(self, space):
         if self.index >= self.size:
             self.done = True

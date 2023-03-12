@@ -25,8 +25,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _`PyPy`: https://doc.pypy.org
 .. _`RPython`: https://rpython.readthedocs.org
@@ -41,8 +40,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other
 `dynamic languages`_ to see what RPython can do for them.
@@ -66,9 +64,6 @@ Other Highlights (since 5.0 released in March 2015)
 
 * New features:
 
-  * A new jit backend for the IBM s390x, which was a large effort over the past
-    few months.
-
   * Add better support for PyUnicodeObject in the C-API compatibility layer
 
   * Support GNU/kFreeBSD Debian ports in vmprof
@@ -80,8 +75,6 @@ Other Highlights (since 5.0 released in March 2015)
 * Bug Fixes
 
   * Catch exceptions raised in an exit function
-
-  * Fix a corner case in the JIT
 
   * Fix edge cases in the cpyext refcounting-compatible semantics
     (more work on cpyext compatibility is coming in the ``cpyext-ext``
@@ -99,8 +92,6 @@ Other Highlights (since 5.0 released in March 2015)
     point of conversion to W_TupleObjects
 
   * In ctypes, fix _anonymous_ fields of instances
-
-  * Fix JIT issue with unpack() on a Trace which contains half-written operations
 
   * Fix sandbox startup (a regression in 5.0)
 
@@ -130,14 +121,9 @@ Other Highlights (since 5.0 released in March 2015)
 
 * Performance improvements:
 
-  * Improve str.endswith([tuple]) and str.startswith([tuple]) to allow JITting
+  * Improve str.endswith([tuple]) and str.startswith([tuple])
 
   * Merge another round of improvements to the warmup performance
-
-  * Cleanup history rewriting in pyjitpl
-
-  * Remove the forced minor collection that occurs when rewriting the
-    assembler at the start of the JIT backend
 
   * Port the resource module to cffi
 

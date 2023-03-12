@@ -15,8 +15,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`pypy 1.7 and cpython 2.7.1`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`pypy 1.7 and cpython 2.7.1`_ performance comparison).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 32/64 or
 Windows 32. Windows 64 work is ongoing, but not yet natively supported.
@@ -39,10 +38,7 @@ Highlights
 
 * Windows fixes.
 
-* PyPy now comes with stackless features enabled by default. However,
-  any loop using stackless features will interrupt the JIT for now, so no real
-  performance improvement for stackless-based programs. Contact pypy-dev for
-  info how to help on removing this restriction.
+* PyPy now comes with stackless features enabled by default.
 
 * NumPy effort in PyPy was renamed numpypy. In order to try using it, simply
   write::
@@ -76,9 +72,6 @@ probably worth mentioning here. This is what you should probably expect in
 
 * NumPy effort is progressing forward, with multi-dimensional arrays coming
   soon.
-
-* There are two brand new JIT assembler backends, notably for the PowerPC and
-  ARM processors.
 
 Fundraising
 ===========

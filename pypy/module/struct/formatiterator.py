@@ -1,6 +1,6 @@
 from rpython.rlib.rarithmetic import (r_uint, r_ulonglong, r_longlong,
                                       maxint, intmask)
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 from rpython.rlib.objectmodel import specialize
 from rpython.rlib.rstruct.error import StructError
 from rpython.rlib.rstruct.formatiterator import FormatIterator
@@ -22,7 +22,6 @@ class PackFormatIterator(FormatIterator):
     # This *should* be always unroll safe, the only way to get here is by
     # unroll the interpret function, which means the fmt is const, and thus
     # this should be const (in theory ;)
-    @jit.unroll_safe
     @specialize.arg(1)
     def operate(self, fmtdesc, repetitions):
         if fmtdesc.needcount:
@@ -32,7 +31,6 @@ class PackFormatIterator(FormatIterator):
                 fmtdesc.pack(self)
     _operate_is_specialized_ = True
 
-    @jit.unroll_safe
     def align(self, mask):
         pad = (-self.pos) & mask
         for i in range(self.pos, self.pos+pad):
@@ -128,7 +126,6 @@ class UnpackFormatIterator(FormatIterator):
         self.result_w = []     # list of wrapped objects
 
     # See above comment on operate.
-    @jit.unroll_safe
     @specialize.arg(1)
     def operate(self, fmtdesc, repetitions):
         if fmtdesc.needcount:

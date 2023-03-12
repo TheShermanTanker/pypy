@@ -31,19 +31,6 @@ OWN_BUILDERS = [
 #    'own-macosx-x86-32',
     'own-linux-aarch64',
 ]
-JIT_BUILDERS = [
-    'pypy-c-jit-linux-x86-32',
-    'pypy-c-jit-linux-x86-64',
-#    'pypy-c-jit-freebsd-9-x86-64',
-    'pypy-c-jit-macos-x86-64',
-    'pypy-c-jit-macos-arm64',
-#    'pypy-c-jit-win-x86-32',
-    'pypy-c-jit-win-x86-64',
-    'pypy-c-jit-linux-s390x',
-#    'build-pypy-c-jit-linux-armhf-raspbian',
-#    'build-pypy-c-jit-linux-armel',
-    'pypy-c-jit-linux-aarch64',
-]
 RPYTHON_BUILDERS = [
     'rpython-linux-x86-32',
     'rpython-linux-x86-64',
@@ -69,11 +56,11 @@ def main(options):
         log.err(err, "Build force failure")
 
     if options.minimal:
-        builders = JIT_BUILDERS
+        builders = []
     elif options.branch.startswith('release'):
-        builders = OWN_BUILDERS + JIT_BUILDERS
+        builders = OWN_BUILDERS
     else:
-        builders = RPYTHON_BUILDERS + OWN_BUILDERS + JIT_BUILDERS
+        builders = RPYTHON_BUILDERS + OWN_BUILDERS
 
     for builder in builders:
         print('Forcing', builder, '...')
@@ -101,8 +88,7 @@ if __name__ == '__main__':
     parser.add_option("-b", "--branch", help="branch to build", default='')
     parser.add_option("-s", "--server", help="buildbot server", default="buildbot.pypy.org")
     parser.add_option("-u", "--user", help="user name to report", default=get_user())
-    parser.add_option("-m", "--minimal", action="store_true", default=False,
-                      help="minimal: trigger pypy-c-jit only")
+    parser.add_option("-m", "--minimal", action="store_true", default=False)
     parser.add_option("-r", "--reason", help="reason for force",
                       default='Forced by command line script')
     (options, args) = parser.parse_args()

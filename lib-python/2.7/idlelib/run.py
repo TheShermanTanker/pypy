@@ -348,8 +348,8 @@ class Executive(object):
             if quitting:
                 exit()
             print_exception()
-            jit = self.rpchandler.console.getvar("<<toggle-jit-stack-viewer>>")
-            if jit:
+            open = self.rpchandler.console.getvar("<<toggle-open-stack-viewer>>")
+            if open:
                 self.rpchandler.interp.open_remote_stack_viewer()
         else:
             flush_stdout()

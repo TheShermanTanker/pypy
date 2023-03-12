@@ -9,8 +9,7 @@ numpy test suite. We updated built-in cffi_ support to version 1.8,
 which now supports the "limited API" mode for c-extensions on 
 CPython >=3.2.
 
-We improved tooling for the PyPy JIT_, and expanded VMProf
-support to OpenBSD and Dragon Fly BSD
+We expanded VMProf support to OpenBSD and Dragon Fly BSD
 
 As always, this release fixed many issues and bugs raised by the
 growing community of PyPy users. We strongly recommend updating.
@@ -25,11 +24,9 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _cffi: https://cffi.readthedocs.org
-.. _JIT: https://morepypy.blogspot.com.au/2016/08/pypy-tooling-upgrade-jitviewer-and.html
 .. _`PyPy`: https://doc.pypy.org
 .. _`RPython`: https://rpython.readthedocs.org
 .. _`modules`: https://doc.pypy.org/en/latest/project-ideas.html#make-more-python-modules-pypy-friendly
@@ -39,8 +36,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -83,8 +79,6 @@ Other Highlights (since 5.3 released in June 2016)
 
   * Rewrite the win32 dependencies of `subprocess` to use cffi
     instead of ctypes
-
-  * Improve the `JIT logging`_ facitilities
 
   * (RPython) make int * string work
 
@@ -157,9 +151,6 @@ Other Highlights (since 5.3 released in June 2016)
     captured stacks, even if there is metainterp or blackhole interp
     involved.  Also fix the stacklet (greenlet) support
 
-  * Fix a critical JIT bug where `raw_malloc` -equivalent functions
-    lost the additional flags
-
   * Fix the mapdict cache for subclasses of builtin types that
     provide a dict
 
@@ -175,11 +166,6 @@ Other Highlights (since 5.3 released in June 2016)
 
   * More tightly pack the stack when calling with `release gil`
 
-  * Support `int_floordiv()`, `int_mod()` in the JIT more efficiently
-    and add `rarithmetic.int_c_div()`, `rarithmetic.int_c_mod()` as
-    explicit interfaces. Clarify that `int_floordiv()` does python-style
-    rounding, unlike `llop.int_floordiv()`.
-
   * Use `ll_assert` (more often) in incminimark
 
   * (Testing) Simplify handling of interp-level tests and make it
@@ -189,11 +175,6 @@ Other Highlights (since 5.3 released in June 2016)
   * Constant-fold `ffi.offsetof("structname", "fieldname")` in cffi
     backend
 
-  * Avoid a case in the JIT, where successive guard failures in
-    the same Python function end up as successive levels of
-    RPython functions, eventually exhausting the stack, while at
-    app-level the traceback is very short
-
   * Check for NULL returns from calls to the raw-malloc and raise,
     rather than a guard
 
@@ -202,14 +183,9 @@ Other Highlights (since 5.3 released in June 2016)
   * When generating C code, inline `goto` to blocks with only one
     predecessor, generating less lines of code
 
-  * When running the final backend-optimization phase before emitting
-    C code, constant-fold calls to we_are_jitted to return False. This
-    makes the generated C code a few percent smaller
-
   * Refactor the `uid_t/gid_t` handling in `rlib.rposix` and in
     `interp_posix.py`, based on the clean-up of CPython 2.7.x 
 
-.. _`JIT logging`: https://morepypy.blogspot.com/2016/08/pypy-tooling-upgrade-jitviewer-and.html
 .. _resolved: https://doc.pypy.org/en/latest/whatsnew-5.4.0.html
 
 Please update, and continue to help us make PyPy better.

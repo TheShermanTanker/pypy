@@ -10,6 +10,7 @@
 /libs/
 /Scripts/
 
+.settings/
 .project
 .pydevproject
 

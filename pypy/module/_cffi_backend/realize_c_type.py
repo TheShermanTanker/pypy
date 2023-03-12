@@ -1,5 +1,4 @@
 import sys
-from rpython.rlib import jit
 from rpython.rlib.rarithmetic import intmask
 from rpython.rlib.objectmodel import specialize
 from rpython.rtyper.lltypesystem import lltype, rffi
@@ -237,7 +236,6 @@ class W_RawFuncType(W_Root):
         assert self._ctfuncptr is not None
         return self._ctfuncptr
 
-    @jit.dont_look_inside
     def prepare_nostruct_fnptr(self, ffi):
         # tweaked version: instead of returning the ctfuncptr
         # corresponding exactly to the OP_FUNCTION ... OP_FUNCTION_END

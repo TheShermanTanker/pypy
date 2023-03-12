@@ -1,4 +1,4 @@
-from rpython.rlib import rgc, jit_hooks
+from rpython.rlib import rgc
 from pypy.interpreter.baseobjspace import W_Root
 from pypy.interpreter.typedef import TypeDef, interp_attrproperty
 from pypy.interpreter.gateway import unwrap_spec, interp2app
@@ -183,8 +183,6 @@ class W_GcStats(W_Root):
         self.total_allocated_memory = rgc.get_stats(rgc.TOTAL_ALLOCATED_MEMORY)
         self.peak_memory = rgc.get_stats(rgc.PEAK_MEMORY)
         self.peak_allocated_memory = rgc.get_stats(rgc.PEAK_ALLOCATED_MEMORY)
-        self.jit_backend_allocated = jit_hooks.stats_asmmemmgr_allocated(None)
-        self.jit_backend_used = jit_hooks.stats_asmmemmgr_used(None)
         self.total_arena_memory = rgc.get_stats(rgc.TOTAL_ARENA_MEMORY)
         self.total_rawmalloced_memory = rgc.get_stats(
             rgc.TOTAL_RAWMALLOCED_MEMORY)
@@ -203,10 +201,6 @@ W_GcStats.typedef = TypeDef("GcStats",
     peak_memory=interp_attrproperty("peak_memory",
         cls=W_GcStats, wrapfn="newint"),
     total_allocated_memory=interp_attrproperty("total_allocated_memory",
-        cls=W_GcStats, wrapfn="newint"),
-    jit_backend_allocated=interp_attrproperty("jit_backend_allocated",
-        cls=W_GcStats, wrapfn="newint"),
-    jit_backend_used=interp_attrproperty("jit_backend_used",
         cls=W_GcStats, wrapfn="newint"),
     total_arena_memory=interp_attrproperty("total_arena_memory",
         cls=W_GcStats, wrapfn="newint"),

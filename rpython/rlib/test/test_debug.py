@@ -179,7 +179,6 @@ def test_debug_print_traceback():
     assert stderr.count('recovery') == 0
 
 def test_check_not_access_directly():
-    from rpython.rlib import jit
     class Frame(object):
         _virtualizable_ = []
         def meth(self):
@@ -187,7 +186,6 @@ def test_check_not_access_directly():
 
     def f(n):
         x = Frame()
-        x = jit.hint(x, access_directly=True)
         x.meth()
     with pytest.raises(AssertionError):
         interpret(f, [9])

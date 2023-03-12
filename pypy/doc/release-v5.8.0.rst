@@ -21,11 +21,6 @@ The ``struct`` module functions ``pack*`` and ``unpack*`` are now much faster,
 especially on raw buffers and bytearrays. Microbenchmarks show a 2x to 10x
 speedup. Thanks to `Gambit Research`_ for sponsoring this work.
 
-This release adds (but disables by default) link-time optimization and
-`profile guided optimization`_ of the base interpreter, which may make
-unjitted code run faster. To use these, translate with appropriate
-`options`_.  Be aware of `issues with gcc toolchains`_, though.
-
 Please let us know if your use case is slow, we have ideas how to make things
 faster but need real-world examples (not micro-benchmarks) of problematic code.
 
@@ -50,8 +45,7 @@ project.
 We would also like to thank our contributors and
 encourage new people to join the project. PyPy has many
 layers and we need help with all of them: `PyPy`_ and `RPython`_ documentation
-improvements, tweaking popular `modules`_ to run on pypy, or general `help`_
-with making RPython's JIT even better.
+improvements, or tweaking popular `modules`_ to run on pypy.
 
 .. _`profile guided optimization`: https://pythonfiles.wordpress.com/2017/05/12/enabling-profile-guided-optimizations-for-pypy
 .. _shadowstack: config/translation.gcrootfinder.html
@@ -71,8 +65,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison)
-due to its integrated tracing JIT compiler.
+CPython 2.7 and CPython 3.5. It's fast (`PyPy and CPython 2.7.x`_ performance comparison).
 
 We also welcome developers of other `dynamic languages`_ to see what RPython
 can do for them.
@@ -136,8 +129,6 @@ Note that these are also merged into PyPy 3.5
 
 * Performance improvements:
 
-  * Tweaks made to improve performance by reducing the number of guards
-    inserted in jitted code, based on feedback from users
   * Add garbage collector memory pressure to some c-level allocations
   * Speed up struck.pack, struck.pack_into
   * Performance tweaks to round(x, n) for the case n == 0
@@ -154,10 +145,6 @@ Note that these are also merged into PyPy 3.5
     r11 across intructions.  This lets us avoid reloading r11 with another
     (apparently slowish) "movabs" instruction, replacing it with either
     nothing or a cheaper variant.
-  * Performance tweaks in the x86 JIT-generated machine code: rarely taken
-    blocks are moved off-line.  Also, the temporary register used to contain
-    large constants is reused across instructions. This helps CPUs branch
-    predictor
   * Refactor rpython.rtyper.controllerentry to use use ``@specialize`` instead
     of ``._annspecialcase_``
   * Refactor handling of buffers and memoryviews. Memoryviews will now be

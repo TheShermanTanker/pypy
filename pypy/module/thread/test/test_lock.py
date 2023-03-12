@@ -109,7 +109,7 @@ class AppTestLock(GenericTestThread):
             lock2.acquire()
             lock1.release()
         stop = time.time()
-        assert stop - start < 30.0    # ~0.6 sec on pypy-c-jit
+        assert stop - start < 30.0    # ~0.6 sec
 
 
 def test_compile_lock():

@@ -9,7 +9,7 @@ from rpython.rlib.objectmodel import instantiate, specialize, is_annotation_cons
 from rpython.rlib.debug import make_sure_not_resized
 from rpython.rlib.rarithmetic import base_int, widen, is_valid_int
 from rpython.rlib.objectmodel import import_from_mixin, enforceargs, not_rpython
-from rpython.rlib import jit, rutf8
+from rpython.rlib import rutf8
 
 # Object imports
 from pypy.objspace.std.basestringtype import basestring_typedef
@@ -397,7 +397,6 @@ class StdObjSpace(ObjSpace):
         return W_BytesObject(s)   # with the filesystem encoding
 
     def type(self, w_obj):
-        jit.promote(w_obj.__class__)
         return w_obj.getclass(self)
 
     def lookup(self, w_obj, name):
@@ -477,8 +476,6 @@ class StdObjSpace(ObjSpace):
             if expected_length >= 0:
                 if length != expected_length:
                     raise self._wrap_expected_length(expected_length, length)
-                if jit.isconstant(expected_length):
-                    jit.promote(length)
             if unroll:
                 t = w_obj.getitems_unroll()
             else:

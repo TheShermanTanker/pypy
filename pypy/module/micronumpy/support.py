@@ -1,4 +1,3 @@
-from rpython.rlib import jit
 from rpython.rlib.rarithmetic import ovfcheck
 from rpython.rtyper.lltypesystem import rffi, lltype
 
@@ -40,14 +39,12 @@ def index_w(space, w_obj):
                 "boolean arrays are valid indices")
 
 
-@jit.unroll_safe
 def product(s):
     i = 1
     for x in s:
         i *= x
     return i
 
-@jit.unroll_safe
 def product_check(s):
     i = 1
     for x in s:

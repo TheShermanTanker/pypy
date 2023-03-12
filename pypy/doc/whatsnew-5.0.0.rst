@@ -39,11 +39,6 @@ for integer types it's up to ~50% faster for 64bit integers.
 
 Remove unnecessary special handling of space.wrap().
 
-.. branch: compress-numbering
-
-Improve the memory signature of numbering instances in the JIT. This should massively
-decrease the amount of memory consumed by the JIT, which is significant for most programs.
-
 .. branch: fix-trace-too-long-heuristic
 
 Improve the heuristic when disable trace-too-long
@@ -85,7 +80,7 @@ functions are now directly accessible as `rpython.rposix.*`.
 
 .. branch: always-enable-gil
 
-Simplify a bit the GIL handling in non-jitted code.  Fixes issue #2205.
+Simplify a bit the GIL handling.  Fixes issue #2205.
 
 .. branch: flowspace-cleanups
 
@@ -129,15 +124,6 @@ Deprecates https://pypy.readthedocs.org/en/latest/embedding.html.
 Fix SSL tests by importing cpython's patch
 
 
-.. branch: remove-getfield-pure
-
-Remove pure variants of ``getfield_gc_*`` operations from the JIT. Relevant
-optimizations instead consult the field descriptor to determine the purity of
-the operation. Additionally, pure ``getfield`` operations are now handled
-entirely by `rpython/jit/metainterp/optimizeopt/heap.py` rather than
-`rpython/jit/metainterp/optimizeopt/pure.py`, which can result in better codegen
-for traces containing a large number of pure getfield operations.
-
 .. branch: exctrans
 
 Try to ensure that no new functions get annotated during the 'source_c' phase.
@@ -166,12 +152,6 @@ apply sandbox transform on externals at the end of annotation.
 vmprof should work on Windows.
 
 
-.. branch: reorder-map-attributes
-
-When creating instances and adding attributes in several different orders
-depending on some condition, the JIT would create too much code. This is now
-fixed.
-
 .. branch: cpyext-gc-support-2
 
 Improve CPython C API support, which means lxml now runs unmodified
@@ -180,10 +160,6 @@ Improve CPython C API support, which means lxml now runs unmodified
 .. branch: look-inside-tuple-hash
 
 Look inside tuple hash, improving mdp benchmark
-
-.. branch: vlen-resume
-
-Compress resume data, saving 10-20% of memory consumed by the JIT
 
 .. branch: issue-2248
 

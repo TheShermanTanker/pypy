@@ -32,8 +32,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7. It's fast (`pypy 2.3 and cpython 2.7.x`_ performance comparison;
-note that cpython's speed has not changed since 2.7.2)
-due to its integrated tracing JIT compiler.
+note that cpython's speed has not changed since 2.7.2).
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64, Windows,
 and OpenBSD,

@@ -39,7 +39,7 @@ What is PyPy?
 =============
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
-CPython 2.7.3. It's fast due to its integrated tracing JIT compiler.
+CPython 2.7.3.
 
 This release supports x86 machines running Linux 32/64, Mac OS X 64 or Windows
 32. Also this release supports ARM machines running Linux 32bit - anything with

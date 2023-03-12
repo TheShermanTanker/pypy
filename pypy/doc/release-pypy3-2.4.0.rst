@@ -35,7 +35,7 @@ What is PyPy?
 
 PyPy is a very compliant Python interpreter, almost a drop-in replacement for
 CPython 2.7 or 3.2.5. It's fast (`pypy 2.4 and cpython 2.7.x`_ performance
-comparison) due to its integrated tracing JIT compiler.
+comparison).
 
 This release supports **x86** machines on most common operating systems
 (Linux 32/64, Mac OS X 64, Windows, and OpenBSD),
@@ -89,12 +89,10 @@ directly related to Summer of Code.
   handling, which becomes advantageous on large programs at the cost of slightly
   slower small *benchmark* type programs.
 
-* Boost performance of thread-local variables in both unjitted and jitted code,
-  this mostly affects errno handling on linux, which makes external calls
-  faster.
+* Boost performance of thread-local variables, this mostly affects errno
+  handling on linux, which makes external calls faster.
 
-* Move to a mixed polling and mutex GIL model that make mutlithreaded jitted
-  code run *much* faster
+* Move to a mixed polling and mutex GIL model
 
 * Optimize errno handling in linux (x86 and x86-64 only)
 
