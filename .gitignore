@@ -42,6 +42,7 @@
 /pypy/goal/*.exe
 /pypy/goal/*.dll
 /pypy/goal/*.lib
+/pypy/goal/*.pdb
 
 *.pyc
 *.pyo
