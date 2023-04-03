@@ -1627,8 +1627,6 @@ def set_strategy_and_setdata(space, w_set, w_iterable):
 
 
 def _update_from_iterable(space, w_set, w_iterable):
-    tp = space.iterator_greenkey(w_iterable)
-
     w_iter = space.iter(w_iterable)
     while True:
         try:

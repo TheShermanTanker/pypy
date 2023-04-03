@@ -25,11 +25,11 @@ from pypy.module._cffi_backend.ctypeprim import (W_CTypePrimitiveSigned,
 
 cif_description = lltype.Struct(
     'CIF_DESCRIPTION',
-    ('cif', FFI_CIF),
-    ('abi', lltype.Signed),    # these 4 fields could also be read directly
-    ('nargs', lltype.Signed),  # from 'cif', but doing so adds a dependency
-    ('rtype', FFI_TYPE_P),     # on the exact fields available from ffi_cif.
-    ('atypes', FFI_TYPE_PP),   #
+    ('cif', clibffi.FFI_CIFP.TO),
+    ('abi', lltype.Signed),            # these 4 fields could also be read directly
+    ('nargs', lltype.Signed),          # from 'cif', but doing so adds a dependency
+    ('rtype', clibffi.FFI_TYPE_P),     # on the exact fields available from ffi_cif.
+    ('atypes', clibffi.FFI_TYPE_PP),   #
     ('exchange_size', lltype.Signed),
     ('exchange_result', lltype.Signed),
     ('exchange_args', lltype.Array(lltype.Signed,

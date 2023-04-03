@@ -131,7 +131,6 @@ def get_strategy_from_list_objects(space, list_w, sizehint):
 
 def _do_extend_from_iterable(space, w_list, w_iterable):
     w_iterator = space.iter(w_iterable)
-    greenkey = space.iterator_greenkey(w_iterator)
     i = 0
     while True:
         try:

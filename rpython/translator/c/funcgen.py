@@ -1015,16 +1015,7 @@ class FunctionCodeGenerator(object):
             self.getdebugfunctionname(), gottype, ' || '.join(exprs))
 
     def OP_INT_BETWEEN(self, op):
-        if (isinstance(op.args[0], Constant) and
-            isinstance(op.args[2], Constant) and
-            op.args[2].value - op.args[0].value == 1):
-            # (a <= b < a+1) ----> (b == a)
-            return '%s = (%s == %s);  /* was INT_BETWEEN */' % (
-                self.expr(op.result),
-                self.expr(op.args[1]),
-                self.expr(op.args[0]))
-        else:
-            return None    # use the default
+        return None    # use the default
 
     def OP_THREADLOCALREF_GET(self, op):
         if isinstance(op.args[0], Constant):

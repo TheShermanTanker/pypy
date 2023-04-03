@@ -411,7 +411,6 @@ class W_ISlice(W_Root):
         if w_iterator is None:
             raise OperationError(self.space.w_StopIteration, self.space.w_None)
 
-        greenkey = self.space.iterator_greenkey(w_iterator)
         while True:
             try:
                 self.space.next(w_iterator)

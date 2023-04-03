@@ -10,7 +10,7 @@ from rpython.rtyper.lltypesystem import lltype, rffi
 from pypy.interpreter.error import OperationError, oefmt
 from pypy.module._cffi_backend import cerrno, misc, parse_c_type
 from pypy.module._cffi_backend.cdataobj import W_CData
-from pypy.module._cffi_backend.ctypefunc import SIZE_OF_FFI_ARG, W_CTypeFunc
+from pypy.module._cffi_backend.ctypefunc import W_CTypeFunc
 from pypy.module._cffi_backend.ctypeprim import W_CTypePrimitiveSigned
 from pypy.module._cffi_backend.ctypevoid import W_CTypeVoid
 from pypy.module._cffi_backend.hide_reveal import hide_reveal1
@@ -69,8 +69,8 @@ class W_ExternPython(W_CData):
         size = fresult.size
         if size < 0:
             size = 0
-        elif fresult.is_primitive_integer and size < SIZE_OF_FFI_ARG:
-            size = SIZE_OF_FFI_ARG
+        elif fresult.is_primitive_integer and size < rffi.sizeof(clibffi.ffi_arg):
+            size = rffi.sizeof(clibffi.ffi_arg)
         with lltype.scoped_alloc(rffi.CCHARP.TO, size, zero=True) as ll_error:
             if not space.is_none(w_error):
                 convert_from_object_fficallback(fresult, ll_error, w_error,
@@ -235,7 +235,7 @@ def convert_from_object_fficallback(fresult, ll_res, w_res,
                         "None")
         return
     #
-    small_result = encode_result_for_libffi and fresult.size < SIZE_OF_FFI_ARG
+    small_result = encode_result_for_libffi and fresult.size < rffi.sizeof(clibffi.ffi_arg)
     if small_result and fresult.is_primitive_integer:
         # work work work around a libffi irregularity: for integer return
         # types we have to fill at least a complete 'ffi_arg'-sized result
@@ -255,14 +255,14 @@ def convert_from_object_fficallback(fresult, ll_res, w_res,
             # W_CTypePrimitiveSigned.convert_from_object() in order
             # to write a whole 'ffi_arg'.
             value = misc.as_long(space, w_res)
-            misc.write_raw_signed_data(ll_res, value, SIZE_OF_FFI_ARG)
+            misc.write_raw_signed_data(ll_res, value, rffi.sizeof(clibffi.ffi_arg))
             return
         else:
             # zero extension: fill the '*result' with zeros, and (on big-
             # endian machines) correct the 'result' pointer to write to
-            misc._raw_memclear(ll_res, SIZE_OF_FFI_ARG)
+            misc._raw_memclear(ll_res, rffi.sizeof(clibffi.ffi_arg))
             if BIG_ENDIAN:
-                diff = SIZE_OF_FFI_ARG - fresult.size
+                diff = rffi.sizeof(clibffi.ffi_arg) - fresult.size
                 ll_res = rffi.ptradd(ll_res, diff)
     #
     fresult.convert_from_object(ll_res, w_res)
@@ -293,7 +293,7 @@ def invoke_callback(ffi_cif, ll_res, ll_args, ll_userdata):
             pass
         # In this case, we don't even know how big ll_res is.  Let's assume
         # it is just a 'ffi_arg', and store 0 there.
-        misc._raw_memclear(ll_res, SIZE_OF_FFI_ARG)
+        misc._raw_memclear(ll_res, rffi.sizeof(clibffi.ffi_arg))
     else:
         callback.invoke(ll_res, rffi.cast(rffi.CCHARP, ll_args))
     cerrno._errno_before(rffi.RFFI_ERR_ALL | rffi.RFFI_ALT_ERRNO)

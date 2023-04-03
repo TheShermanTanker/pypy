@@ -135,11 +135,6 @@ class Object(object):
     def descr__init__(space, w_obj, __args__):
         pass
 
-def get_printable_location(itergreenkey, w_itemtype):
-    return "DescrOperation.contains [%s, %s]" % (
-            itergreenkey.iterator_greenkey_printable(),
-            w_itemtype.getname(w_itemtype.space))
-
 class DescrOperation(object):
     # This is meant to be a *mixin*.
 
@@ -443,7 +438,6 @@ class DescrOperation(object):
 
     def _contains(space, w_container, w_item):
         w_iter = space.iter(w_container)
-        itergreenkey = space.iterator_greenkey(w_iter)
         w_itemtype = space.type(w_item)
         while 1:
             try:

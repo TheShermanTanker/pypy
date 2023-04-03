@@ -224,9 +224,6 @@ return next yielded value or raise StopIteration."""
         self.frame = None
         rgc.may_ignore_finalizer(self)
 
-    def iterator_greenkey(self, space):
-        return self.pycode
-
 GeneratorIterator.typedef = TypeDef("generator",
     __repr__   = interp2app(GeneratorIterator.descr__repr__),
     __reduce__   = interp2app(GeneratorIterator.descr__reduce__),

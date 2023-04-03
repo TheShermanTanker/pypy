@@ -366,7 +366,7 @@ def _do_combine_starstarargs_wrapped(space, keys_w, w_starstararg, keywords,
         i += 1
 
 def _match_keywords(signature, blindargs, input_argcount,
-                    keywords, kwds_mapping, _):
+                    keywords, kwds_mapping):
     num_kwds = num_remainingkwds = len(keywords)
     for i in range(num_kwds):
         name = keywords[i]
@@ -391,7 +391,7 @@ def _match_keywords(signature, blindargs, input_argcount,
     return num_remainingkwds
 
 def _collect_keyword_args(space, keywords, keywords_w, w_kwds, kwds_mapping,
-                          keyword_names_w, _):
+                          keyword_names_w):
     limit = len(keywords)
     if keyword_names_w is not None:
         limit -= len(keyword_names_w)

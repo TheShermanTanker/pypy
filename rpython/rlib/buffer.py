@@ -237,6 +237,7 @@ class GCBuffer(Buffer):
         base_ofs = targetcls._get_gc_data_offset()
         scale_factor = llmemory.sizeof(lltype.Char)
 
+        @specialize.ll_and_arg(1)
         def typed_read(self, TP, byte_offset):
             if not is_alignment_correct(TP, byte_offset):
                 raise CannotRead
@@ -245,6 +246,7 @@ class GCBuffer(Buffer):
             return llop.gc_load_indexed(TP, lldata, byte_offset,
                                         scale_factor, base_ofs)
 
+        @specialize.ll_and_arg(1)
         def typed_write(self, TP, byte_offset, value):
             if self.readonly or not is_alignment_correct(TP, byte_offset):
                 raise CannotWrite

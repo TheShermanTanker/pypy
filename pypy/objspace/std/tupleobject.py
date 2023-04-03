@@ -125,16 +125,7 @@ class W_AbstractTupleObject(W_Root):
     descr_ge = _make_tuple_comparison('ge')
 
     def descr_contains(self, space, w_obj):
-        if self._unroll_condition():
-            return self._descr_contains_unroll_safe(space, w_obj)
-        else:
-            return self._descr_contains_jmp(space, w_obj)
-
-    def _descr_contains_unroll_safe(self, space, w_obj):
-        for w_item in self.tolist():
-            if space.eq_w(w_obj, w_item):
-                return space.w_True
-        return space.w_False
+        return self._descr_contains_jmp(space, w_obj)
 
     def _descr_contains_jmp(self, space, w_obj):
         tp = space.type(w_obj)
@@ -211,9 +202,6 @@ class W_AbstractTupleObject(W_Root):
             if space.eq_w(w_item, w_obj):
                 return space.newint(i)
         raise oefmt(space.w_ValueError, "tuple.index(x): x not in tuple")
-
-    def _unroll_condition(self):
-        raise NotImplementedError("abstract base class")
 
 
 W_AbstractTupleObject.typedef = TypeDef(

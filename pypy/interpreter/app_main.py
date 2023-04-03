@@ -237,7 +237,7 @@ def set_runtime_options(options, Xparam, *args):
         run_faulthandler()
     else:
         print >> sys.stderr, 'usage: %s -X [options]' % (get_sys_executable(),)
-        print >> sys.stderr, '[options] can be: track-resources, faulthandler
+        print >> sys.stderr, '[options] can be: track-resources, faulthandler'
         raise SystemExit
 
 class CommandLineError(Exception):

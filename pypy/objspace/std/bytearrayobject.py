@@ -574,7 +574,6 @@ def _from_byte_sequence(space, w_source):
     return data
 
 def _from_byte_sequence_loop(space, w_iter, data):
-    greenkey = space.iterator_greenkey(w_iter)
     while True:
         try:
             w_item = space.next(w_iter)

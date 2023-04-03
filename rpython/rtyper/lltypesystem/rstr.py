@@ -384,8 +384,15 @@ class LLHelpers(AbstractLLHelpers):
     @staticmethod
     def ll_strhash(s):
         if s:
-            if s.hash:
-                LLHelpers._ll_strhash(s)
+            if isinstance(s.hash, int):
+                if s.hash == 0:
+                    s.hash = LLHelpers._ll_strhash(s)
+                    assert isinstance(s.hash, int)
+            else:
+                if not isinstance(s.hash, list) and not s.hash:
+                    s.hash = LLHelpers._ll_strhash(s)
+                    assert not isinstance(s.hash, int)
+            return s.hash
         else:
             return 0
 

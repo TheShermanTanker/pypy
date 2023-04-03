@@ -455,7 +455,7 @@ FUNCFLAG_USE_ERRNO = 8
 FUNCFLAG_USE_LASTERROR = 16
 
 @specialize.arg(1)     # hack :-/
-def get_call_conv(flags):
+def get_call_conv(flags, fix_index_out_of_range):
     if _WIN32 and not _WIN64 and (flags & FUNCFLAG_CDECL == 0):
         return FFI_STDCALL
     else:
@@ -492,13 +492,13 @@ class AbstractFuncPtr(object):
 
         if variadic_args > 0:
             res = c_ffi_prep_cif_var(self.ll_cif,
-                                     rffi.cast(rffi.USHORT, get_call_conv(flags)),
+                                     rffi.cast(rffi.USHORT, get_call_conv(flags, None)),
                                      rffi.cast(rffi.UINT, argnum - variadic_args),
                                      rffi.cast(rffi.UINT, argnum), restype,
                                      self.ll_argtypes)
         else:
             res = c_ffi_prep_cif(self.ll_cif,
-                                 rffi.cast(rffi.USHORT, get_call_conv(flags)),
+                                 rffi.cast(rffi.USHORT, get_call_conv(flags, None)),
                                  rffi.cast(rffi.UINT, argnum), restype,
                                  self.ll_argtypes)
         if not res == FFI_OK:
