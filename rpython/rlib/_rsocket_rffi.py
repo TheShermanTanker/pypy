@@ -11,7 +11,6 @@ import os,sys
 _POSIX = os.name == "posix"
 _WIN32 = sys.platform == "win32"
 _MSVC  = target_platform.name == "msvc"
-_MINGW = target_platform.name == "mingw32"
 _SOLARIS = sys.platform == "sunos5"
 _MACOSX = sys.platform == "darwin"
 _HAS_AF_PACKET = sys.platform.startswith('linux')   # only Linux for now
@@ -73,28 +72,6 @@ if _WIN32:
             '#endif',
             'typedef unsigned __int16 uint16_t;',
             'typedef unsigned __int32 uint32_t;',
-            ])
-    else: # MINGW
-        includes = ('stdint.h',)
-        header_lines.extend([
-            '''\
-            #ifndef _WIN32_WINNT
-            #define _WIN32_WINNT 0x0501
-            #endif''',
-            '#define SIO_RCVALL             _WSAIOW(IOC_VENDOR,1)',
-            '#define SIO_KEEPALIVE_VALS     _WSAIOW(IOC_VENDOR,4)',
-            '#define RCVALL_OFF             0',
-            '#define RCVALL_ON              1',
-            '#define RCVALL_SOCKETLEVELONLY 2',
-            '''\
-            #ifndef __MINGW32__
-            struct tcp_keepalive {
-                u_long  onoff;
-                u_long  keepalivetime;
-                u_long  keepaliveinterval;
-            };
-            #endif
-            '''
             ])
     HEADER = '\n'.join(header_lines)
     COND_HEADER = ''

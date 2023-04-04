@@ -247,10 +247,6 @@ class Entry(ExtRegistryEntry):
         hop.exception_cannot_occur()
         hop.genop(name, [_unspec_p(hop, v_p), _unspec_ob(hop, v_ob)])
         #
-        if hop.rtyper.annotator.translator.config.translation.gc == "boehm":
-            c_func = hop.inputconst(lltype.typeOf(func_boehm_eci),
-                                    func_boehm_eci)
-            hop.genop('direct_call', [c_func])
 
 
 class Entry(ExtRegistryEntry):
@@ -303,10 +299,3 @@ class Entry(ExtRegistryEntry):
         v_ob = hop.genop('gc_rawrefcount_next_dead', [],
                          resulttype = llmemory.Address)
         return _spec_ob(hop, v_ob)
-
-src_dir = py.path.local(__file__).dirpath() / 'src'
-boehm_eci = ExternalCompilationInfo(
-    post_include_bits     = [(src_dir / 'boehm-rawrefcount.h').read()],
-    separate_module_files = [(src_dir / 'boehm-rawrefcount.c')],
-)
-func_boehm_eci = rffi.llexternal_use_eci(boehm_eci)

@@ -62,7 +62,7 @@ translation_optiondescription = OptionDescription(
 
     # gc
     ChoiceOption("gc", "Garbage Collection Strategy",
-                 ["boehm", "ref", "semispace", "statistics",
+                 ["ref", "semispace", "statistics",
                   "generation", "hybrid", "minimark",'incminimark', "none"],
                   "ref", requires={
                      "ref": [("translation.rweakref", False), # XXX
@@ -73,18 +73,14 @@ translation_optiondescription = OptionDescription(
                      "statistics": [("translation.gctransformer", "framework")],
                      "generation": [("translation.gctransformer", "framework")],
                      "hybrid": [("translation.gctransformer", "framework")],
-                     "boehm": [("translation.continuation", False),  # breaks
-                               ("translation.gctransformer", "boehm")],
                      "minimark": [("translation.gctransformer", "framework")],
                      "incminimark": [("translation.gctransformer", "framework")],
                      },
                   cmdline="--gc"),
     ChoiceOption("gctransformer", "GC transformer that is used - internal",
-                 ["boehm", "ref", "framework", "none"],
+                 ["ref", "framework", "none"],
                  default="ref", cmdline=None,
                  requires={
-                     "boehm": [("translation.gcrootfinder", "n/a"),
-                               ("translation.gcremovetypeptr", False)],
                      "ref": [("translation.gcrootfinder", "n/a"),
                              ("translation.gcremovetypeptr", False)],
                      "none": [("translation.gcrootfinder", "n/a"),
@@ -274,7 +270,6 @@ translation_optiondescription = OptionDescription(
                "Give an executable that writes a log file for reverse debugging",
                default=False, cmdline='--revdb',
                requires=[('translation.split_gc_address_space', True),
-                         ('translation.gc', 'boehm'),
                          ('translation.continuation', False)]),
     BoolOption("rpython_translate",
                "Set to true by rpython/bin/rpython and translate.py",
@@ -319,9 +314,9 @@ OPT_LEVELS = ['0', '1', 'size', 'mem', '2', '3']
 DEFAULT_OPT_LEVEL = '2'
 
 OPT_TABLE_DOC = {
-    '0':    'No optimization.  Uses the Boehm GC.',
-    '1':    'Enable a default set of optimizations.  Uses the Boehm GC.',
-    'size': 'Optimize for the size of the executable.  Uses the Boehm GC.',
+    '0':    'No optimization.',
+    '1':    'Enable a default set of optimizations.',
+    'size': 'Optimize for the size of the executable.',
     'mem':  'Optimize for run-time memory usage and use a memory-saving GC.',
     '2':    'Enable most optimizations and use a high-performance GC.',
     '3':    'Enable all optimizations and use a high-performance GC.',
@@ -329,9 +324,9 @@ OPT_TABLE_DOC = {
 
 OPT_TABLE = {
     #level:  gc          backend optimizations...
-    '0':    'boehm       nobackendopt',
-    '1':    'boehm       lowinline',
-    'size': 'boehm       lowinline     remove_asserts',
+    '0':    DEFL_GC + '  nobackendopt',
+    '1':    DEFL_GC + '  lowinline',
+    'size': DEFL_GC + '  lowinline     remove_asserts',
     'mem':  DEFL_GC + '  lowinline     remove_asserts    removetypeptr',
     '2':    DEFL_GC + '  extraopts',
     '3':    DEFL_GC + '  extraopts     remove_asserts',

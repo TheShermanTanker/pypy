@@ -406,10 +406,6 @@ LL_OPERATIONS = {
 
     # __________ address operations __________
 
-    'boehm_malloc':         LLOp(),
-    'boehm_malloc_atomic':  LLOp(),
-    'boehm_register_finalizer': LLOp(),
-    'boehm_disappearing_link': LLOp(),
     'raw_malloc':           LLOp(revdb_protect=True),
     'raw_malloc_usage':     LLOp(sideeffects=False),
     'raw_free':             LLOp(revdb_protect=True),
@@ -422,7 +418,6 @@ LL_OPERATIONS = {
     'raw_store':            LLOp(revdb_protect=True, canrun=True),
     'bare_raw_store':       LLOp(revdb_protect=True),
     'gc_load_indexed':      LLOp(sideeffects=False, canrun=True),
-    'gc_store':             LLOp(canrun=True),   # only used by the boehm gc
     'gc_store_indexed':     LLOp(canrun=True),
     'track_alloc_start':    LLOp(),
     'track_alloc_stop':     LLOp(),

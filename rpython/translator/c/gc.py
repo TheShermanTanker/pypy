@@ -169,98 +169,8 @@ class RefcountingRuntimeTypeInfo_OpaqueNode(ContainerNode):
 
 
 
-class BoehmInfo:
-    finalizer = None
-
-
-class BoehmGcPolicy(BasicGcPolicy):
-
-    def gettransformer(self, translator, gchooks):
-        from rpython.memory.gctransform import boehm
-        return boehm.BoehmGCTransformer(translator)
-
-    def array_setup(self, arraydefnode):
-        pass
-
-    def struct_setup(self, structdefnode, rtti):
-        pass
-
-    def rtti_type(self):
-        return BoehmGcRuntimeTypeInfo_OpaqueNode.typename
-
-    def rtti_node_factory(self):
-        return BoehmGcRuntimeTypeInfo_OpaqueNode
-
-    def compilation_info(self):
-        eci = BasicGcPolicy.compilation_info(self)
-
-        from rpython.rtyper.tool.rffi_platform import configure_boehm
-        eci = eci.merge(configure_boehm())
-
-        pre_include_bits = []
-        if sys.platform.startswith('linux'):
-            pre_include_bits += ["#define _REENTRANT 1",
-                                 "#define GC_LINUX_THREADS 1"]
-        if sys.platform != "win32" and not sys.platform.startswith("openbsd"):
-            # GC_REDIRECT_TO_LOCAL is not supported on Win32 by gc6.8
-            pre_include_bits += ["#define GC_REDIRECT_TO_LOCAL 1"]
-
-        hdr_flag = ''
-        if not getattr(self.db.gctransformer, 'NO_HEADER', False):
-            hdr_flag = '-DPYPY_BOEHM_WITH_HEADER'
-
-        eci = eci.merge(ExternalCompilationInfo(
-            pre_include_bits=pre_include_bits,
-            # The following define is required by the thread module,
-            # See module/thread/test/test_rthread.py
-            compile_extra=['-DPYPY_USING_BOEHM_GC', hdr_flag],
-            ))
-
-        gct = self.db.gctransformer
-        gct.finalizer_triggers = tuple(gct.finalizer_triggers)  # stop changing
-        sourcelines = ['']
-        for trig in gct.finalizer_triggers:
-            sourcelines.append('RPY_EXTERN void %s(void);' % (
-                self.db.get(trig),))
-        sourcelines.append('')
-        sourcelines.append('void (*boehm_fq_trigger[])(void) = {')
-        for trig in gct.finalizer_triggers:
-            sourcelines.append('\t%s,' % (self.db.get(trig),))
-        sourcelines.append('\tNULL')
-        sourcelines.append('};')
-        sourcelines.append('struct boehm_fq_s *boehm_fq_queues[%d];' % (
-            len(gct.finalizer_triggers) or 1,))
-        sourcelines.append('')
-        eci = eci.merge(ExternalCompilationInfo(
-            separate_module_sources=['\n'.join(sourcelines)]))
-
-        return eci
-
-    def gc_startup_code(self):
-        if sys.platform == 'win32':
-            pass # yield 'assert(GC_all_interior_pointers == 0);'
-        else:
-            yield 'GC_all_interior_pointers = 0;'
-        yield 'boehm_gc_startup_code();'
-
-    def get_real_weakref_type(self):
-        return self.db.gctransformer.WEAKLINK
-
-    def convert_weakref_to(self, ptarget):
-        return self.db.gctransformer.convert_weakref_to(ptarget)
-
-    def OP_GC__COLLECT(self, funcgen, op):
-        return 'GC_gcollect();'
-
-    def OP_GC_SET_MAX_HEAP_SIZE(self, funcgen, op):
-        nbytes = funcgen.expr(op.args[0])
-        return 'GC_set_max_heap_size(%s);' % (nbytes,)
-
-    def GC_KEEPALIVE(self, funcgen, v):
-        return 'pypy_asm_keepalive(%s);' % funcgen.expr(v)
-
-class BoehmGcRuntimeTypeInfo_OpaqueNode(ContainerNode):
-    nodekind = 'boehm rtti'
+class FrameworkGcRuntimeTypeInfo_OpaqueNode(ContainerNode):
+    nodekind = 'framework rtti'
     globalcontainer = True
     typename = 'char @'
     _funccodegen_owner = None
@@ -284,13 +194,10 @@ class BoehmGcRuntimeTypeInfo_OpaqueNode(ContainerNode):
     def implementation(self):
         yield 'char %s  /* uninitialized */;' % self.name
 
-class FrameworkGcRuntimeTypeInfo_OpaqueNode(BoehmGcRuntimeTypeInfo_OpaqueNode):
-    nodekind = 'framework rtti'
-
 
 # to get an idea how it looks like with no refcount/gc at all
 
-class NoneGcPolicy(BoehmGcPolicy):
+class NoneGcPolicy(BasicGcPolicy):
 
     gc_startup_code = RefcountingGcPolicy.gc_startup_code.im_func
 
@@ -493,7 +400,6 @@ class ShadowStackFrameworkGcPolicy(BasicFrameworkGcPolicy):
 
 
 name_to_gcpolicy = {
-    'boehm': BoehmGcPolicy,
     'ref': RefcountingGcPolicy,
     'none': NoneGcPolicy,
     'framework+shadowstack': ShadowStackFrameworkGcPolicy,

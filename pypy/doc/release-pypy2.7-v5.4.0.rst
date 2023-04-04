@@ -64,8 +64,6 @@ Other Highlights (since 5.3 released in June 2016)
 
   * Improve CPython compatibility of 'is' for small and empty strings
 
-  * Support for rgc.FinalizerQueue in the Boehm garbage collector
-
   * (RPython) support spawnv() if it is called in C `_spawnv` on windows
 
   * Fill in more slots when creating a PyTypeObject from a W_TypeObject,

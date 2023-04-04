@@ -14,8 +14,6 @@ from rpython.rlib.rfloat import isfinite
 
 
 def needs_gcheader(gctransformer, T):
-    if getattr(gctransformer, 'NO_HEADER', False):   # for boehm
-        return False
     if not isinstance(T, ContainerType):
         return False
     if T._gckind != 'gc':

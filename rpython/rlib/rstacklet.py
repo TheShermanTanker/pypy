@@ -83,7 +83,7 @@ def _getgcrootfinder(config):
         assert config.translation.continuation, (
             "stacklet: you have to translate with --continuation")
     if (config is None or
-        config.translation.gc in ('ref', 'boehm', 'none')):   # for tests
+        config.translation.gc in ('ref', 'none')):   # for tests
         gcrootfinder = 'n/a'
     else:
         gcrootfinder = config.translation.gcrootfinder

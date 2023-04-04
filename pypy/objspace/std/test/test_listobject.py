@@ -1488,11 +1488,8 @@ class AppTestListObject(object):
         assert not l.__contains__(2)
 
     def test_mutate_while_extend(self):
-        # this used to segfault pypy-c (with py.test -A)
+        # this used to segfault pypy-llvm (with py.test -A)
         import sys
-        if hasattr(sys, 'pypy_translation_info'):
-            if sys.pypy_translation_info['translation.gc'] == 'boehm':
-                skip("not reliable on top of Boehm")
         class A(object):
             def __del__(self):
                 print 'del'

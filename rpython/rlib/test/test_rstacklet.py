@@ -336,14 +336,6 @@ class BaseTestStacklet(StandaloneTests):
                 assert ('----- %s -----\n' % name) in data
 
 
-class DONTTestStackletBoehm(BaseTestStacklet):
-    # Boehm does not work well with stacklets, probably because the
-    # moved-away copies of the stack are parsed using a different
-    # selection logic than the real stack
-    gc = 'boehm'
-    gcrootfinder = None
-
-
 class TestStackletShadowStack(BaseTestStacklet):
     gc = 'minimark'
     gcrootfinder = 'shadowstack'

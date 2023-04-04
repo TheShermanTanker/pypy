@@ -52,7 +52,6 @@ def create_entry_point(space, w_dict):
         if len(argv) > 2 and argv[1] == '--heapsize':
             # Undocumented option, handled at interp-level.
             # It has silently no effect with some GCs.
-            # It works in Boehm and in the semispace or generational GCs
             # (but see comments in semispace.py:set_max_heap_size()).
             # At the moment this option exists mainly to support sandboxing.
             from rpython.rlib import rgc
@@ -310,10 +309,10 @@ class PyPyTarget(object):
             config.objspace.lonepycfiles = False
 
         if config.objspace.usemodules.cpyext:
-            if config.translation.gc not in ('incminimark', 'boehm'):
+            if config.translation.gc not in ('incminimark'):
                 raise Exception("The 'cpyext' module requires the 'incminimark'"
-                    " or 'boehm' GC.  You need either 'targetpypystandalone.py"
-                    " --withoutmod-cpyext', or use one of these two GCs.")
+                    " GC.  You need either 'targetpypystandalone.py"
+                    " --withoutmod-cpyext', or use this GC.")
 
         config.translating = True
 

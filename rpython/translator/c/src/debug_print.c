@@ -193,7 +193,7 @@ static long oneofstartswith(const char *str, const char *substr)
     return 0;
 }
 
-#if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_MSC_VER)
 #define PYPY_LONG_LONG_PRINTF_FORMAT "I64"
 #else
 #define PYPY_LONG_LONG_PRINTF_FORMAT "ll"

@@ -118,9 +118,6 @@ tk
 lzma (PyPy3 only)
     liblzma or libxz, version 5 and up
 
-To run untranslated tests, you need the Boehm garbage collector libgc, version
-7.4 and up
-
 On Debian and Ubuntu (16.04 onwards), this is the command to install
 all build-time dependencies::
 

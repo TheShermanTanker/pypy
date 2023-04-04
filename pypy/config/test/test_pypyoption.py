@@ -12,7 +12,6 @@ def test_required():
 
 def test_conflicting_gcrootfinder():
     conf = get_pypy_config()
-    conf.translation.gc = "boehm"
     with py.test.raises(ConfigError):
         conf.translation.gcrootfinder = 'shadowstack'
 
@@ -26,11 +25,9 @@ def test_frameworkgc():
 def test_set_opt_level():
     conf = get_pypy_config()
     set_opt_level(conf, '0')
-    assert conf.translation.gc == 'boehm'
     assert conf.translation.backendopt.none == True
     conf = get_pypy_config()
     set_opt_level(conf, '2')
-    assert conf.translation.gc != 'boehm'
     assert not conf.translation.backendopt.none
     conf = get_pypy_config()
     set_opt_level(conf, 'mem')

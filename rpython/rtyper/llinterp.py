@@ -1018,18 +1018,6 @@ class LLFrame(object):
         assert lltype.typeOf(size) == lltype.Signed
         return llmemory.raw_malloc(size, zero=zero)
 
-    def op_boehm_malloc(self, size):
-        assert lltype.typeOf(size) == lltype.Signed
-        raw = llmemory.raw_malloc(size)
-        return llmemory.cast_adr_to_ptr(raw, llmemory.GCREF)
-    op_boehm_malloc_atomic = op_boehm_malloc
-
-    def op_boehm_register_finalizer(self, p, finalizer):
-        pass
-
-    def op_boehm_disappearing_link(self, link, obj):
-        pass
-
     def op_raw_malloc_usage(self, size):
         assert lltype.typeOf(size) == lltype.Signed
         return llmemory.raw_malloc_usage(size)

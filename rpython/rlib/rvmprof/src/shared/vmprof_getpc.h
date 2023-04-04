@@ -116,7 +116,7 @@ struct CallUnrollInfo {
 // then, is to do the magic call-unrolling for systems that support it.
 
 // Special case Windows, which has to do something totally different.
-#if defined(_WIN32) || defined(__CYGWIN__) || defined(__CYGWIN32__) || defined(__MINGW32__)
+#if defined(_WIN32)
 // If this is ever implemented, probably the way to do it is to have
 // profiler.cc use a high-precision timer via timeSetEvent:
 //    http://msdn2.microsoft.com/en-us/library/ms712713.aspx

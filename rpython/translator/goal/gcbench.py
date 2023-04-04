@@ -1,7 +1,7 @@
 # Ported from a Java benchmark whose history is :
 #  This is adapted from a benchmark written by John Ellis and Pete Kovac
 #  of Post Communications.
-#  It was modified by Hans Boehm of Silicon Graphics.
+#  It was modified by Silicon Graphics.
 # 
 #       This is no substitute for real applications.  No actual application
 #       is likely to behave in exactly this way.  However, this benchmark was

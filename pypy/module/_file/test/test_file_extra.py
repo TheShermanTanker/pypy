@@ -599,8 +599,6 @@ class AppTestAFewExtra:
 
     def test_weakref_dies_before_file_closes(self):
         # Hard-to-reproduce failure (which should now be fixed).
-        # I think that this is how lib-python/modified-2.5.2/test_file.py
-        # sometimes failed on a Boehm pypy-c.
         import weakref, gc
         fn = self.temptestfile
         f = open(fn, 'wb')

@@ -704,8 +704,7 @@ def move_out_of_nursery(obj):
 
         NOTE: Might fail on some GCs!  You have to check again
         can_move() afterwards.  It should always work with the default
-        GC.  With Boehm, can_move() is always False so
-        move_out_of_nursery() should never be called in the first place.
+        GC.
     """
     return obj
 
@@ -1170,7 +1169,7 @@ def do_get_objects(callback):
     """ Get all the objects that satisfy callback(gcref) -> obj
     """
     roots = get_rpy_roots()
-    if not roots:      # is always None on translations using Boehm or None GCs
+    if not roots:      # is always None on translations using None GCs
         return []
     roots = [gcref for gcref in roots if gcref]
     result_w = []

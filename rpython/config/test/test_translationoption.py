@@ -8,11 +8,6 @@ from rpython.config.config import ConflictConfigError, ConfigError
 from rpython.translator.platform import platform as compiler
 
 
-def test_no_gcrootfinder_with_boehm():
-    config = get_combined_translation_config()
-    config.translation.gcrootfinder = "shadowstack"
-    py.test.raises(ConflictConfigError, set_opt_level, config, '0')
-
 def test_get_translation_config():
     from rpython.translator.interactive import Translation
     from rpython.config import config

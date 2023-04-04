@@ -11,7 +11,6 @@ class DistUtilsTest(object):
     def setup_class(self):
         self.lib_m = "m"
         if sys.platform == 'win32':
-            #there is a small chance this fails on Mingw via environ $CC
             import distutils.ccompiler
             if distutils.ccompiler.get_default_compiler() == 'msvc':
                 self.lib_m = 'msvcrt'

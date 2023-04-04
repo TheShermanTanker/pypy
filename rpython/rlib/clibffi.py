@@ -27,8 +27,7 @@ import ctypes.util
 
 # maaaybe isinstance here would be better. Think
 _MSVC = platform.name == "msvc"
-_MINGW = platform.name == "mingw32"
-_WIN32 = _MSVC or _MINGW
+_WIN32 = _MSVC
 _WIN64 = _WIN32 and is_emulated_long
 _MAC_OS = platform.name.startswith("darwin")
 
@@ -88,23 +87,6 @@ if not _WIN32:
         link_files = link_files,
         testonly_libraries = ['ffi'],
     )
-elif _MINGW:
-    includes = ['ffi.h']
-    libraries = ['libffi-5']
-
-    eci = ExternalCompilationInfo(
-        libraries = libraries,
-        includes = includes,
-        separate_module_sources = separate_module_sources,
-        post_include_bits = post_include_bits,
-        )
-
-    eci = rffi_platform.configure_external_library(
-        'ffi-5', eci,
-        [dict(prefix='libffi-',
-              include_dir='include', library_dir='.libs'),
-         dict(prefix=r'c:\\mingw64', include_dir='include', library_dir='lib'),
-         ])
 else:
     eci = ExternalCompilationInfo(
         includes = ['ffi.h', 'windows.h'],
@@ -307,9 +289,6 @@ elif _MSVC:
     libc_name = get_libc_name().lower()
     assert "msvcr" in libc_name or 'ucrtbase' in libc_name, \
            "Suspect msvcrt library: %s" % (get_libc_name(),)
-elif _MINGW:
-    def get_libc_name():
-        return 'msvcrt.dll'
 
 if _WIN32:
     LoadLibrary = rwin32.LoadLibrary

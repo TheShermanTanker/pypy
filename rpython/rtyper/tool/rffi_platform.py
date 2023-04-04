@@ -845,42 +845,6 @@ def configure_external_library(name, eci, configurations,
         else:
             raise CompilationError("Library %s is not installed" % (name,))
 
-def configure_boehm(platform=None):
-    if platform is None:
-        from rpython.translator.platform import platform
-    if sys.platform == 'win32':
-        import platform as host_platform # just to ask for the arch. Confusion-alert!
-        if host_platform.architecture()[0] == '32bit':
-            library_dir = 'Release'
-            libraries = ['gc']
-            includes=['gc.h']
-        else:
-            library_dir = ''
-            libraries = ['gc64_dll']
-            includes = ['gc.h']
-        # since config_external_library does not use a platform kwarg,
-        # somehow using a platform kw arg make the merge fail in
-        # config_external_library
-        platform = None
-    else:
-        library_dir = ''
-        libraries = ['gc']
-        includes=['gc/gc.h']
-    try:
-        eci = ExternalCompilationInfo.from_pkg_config('bdw-gc')
-        eci.includes += tuple(includes)
-        return eci
-    except ImportError:
-        eci = ExternalCompilationInfo(
-            platform=platform,
-            includes=includes,
-            libraries=libraries,
-        )
-    return configure_external_library(
-        'gc', eci,
-        [dict(prefix='gc-', include_dir='include', library_dir=library_dir)],
-        symbol='GC_init')
-
 if __name__ == '__main__':
     doc = """Example:
 

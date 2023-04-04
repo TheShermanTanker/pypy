@@ -227,7 +227,7 @@ def test_translation_prebuilt_1():
         assert d.get(k1) is x1
         assert d.get(k2) is x2
     f()
-    fc = compile(f, [], gcpolicy="boehm", rweakref=True)
+    fc = compile(f, [], rweakref=True)
     fc()
 
 def test_translation_prebuilt_2():
@@ -242,5 +242,5 @@ def test_translation_prebuilt_2():
         i = nonconst.NonConstant(1)
         assert d.get("key%d" % (i,)) is x1
         assert d.get("key%d" % (i+1,)) is x2
-    fc = compile(f, [], gcpolicy="boehm", rweakref=True)
+    fc = compile(f, [], rweakref=True)
     fc()

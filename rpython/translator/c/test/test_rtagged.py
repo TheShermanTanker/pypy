@@ -61,22 +61,9 @@ def entry_point(argv):
     return 0
 
 # ____________________________________________________________
-# only with Boehm so far
 
 from rpython.translator.interactive import Translation
 from rpython.conftest import option
-
-def test_tagged_boehm():
-    t = Translation(entry_point, gc='boehm', taggedpointers=True)
-    try:
-        exename = str(t.compile_c())
-    finally:
-        if option.view:
-            t.view()
-    g = os.popen(exename, 'r')
-    data = g.read()
-    g.close()
-    assert data.rstrip().endswith('ALL OK')
 
 def test_name_gcref():
     from rpython.rtyper.lltypesystem import lltype, llmemory

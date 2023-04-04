@@ -22,8 +22,7 @@ where ``#`` is the desired optimization level.  The valid choices are:
 
 .. _`(*)`:
 
-`(*)`: The levels `0, 1` and `size` use the `Boehm-Demers-Weiser
-garbage collector`_ (Debian package ``libgc-dev``).  The translation
+`(*)`: The levels `0, 1` and `size` use our custom collectors.  The translation
 itself is faster and consumes less memory; the final executable is
 smaller but slower.  The other levels use one of our built-in `custom
 garbage collectors`_.
@@ -45,5 +44,4 @@ recompilation.
 The default level is `2`.
 
 
-.. _`Boehm-Demers-Weiser garbage collector`: http://hboehm.info/gc/
 .. _`custom garbage collectors`: ../garbage_collection.html

@@ -6,7 +6,6 @@ from rpython.rlib import rutf8
 
 class TestTranslation(test_standalone.StandaloneTests):
     config = get_combined_translation_config(translating=True)
-    config.translation.gc = 'boehm'
 
     def test_translation(self):
         #

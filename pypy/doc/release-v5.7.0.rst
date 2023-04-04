@@ -97,8 +97,6 @@ See also issues that were resolved_
     tp_dealloc
   * refactor and clean up poor handling of unicode exposed in work on py3.5
   * adapt ``weakref`` according to CPython issue 19542_, will be in CPython 2.7.14
-  * support translations with cpyext and the Boehm GC (for special cases like
-    RevDB_
   * implement ``StringBuffer.get_raw_address`` for the buffer protocol, it is
     now possible to obtain the address of any readonly object without pinning it
   * refactor the initialization code in translating cpyext

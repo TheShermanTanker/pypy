@@ -454,7 +454,7 @@ class TestMMap:
             m.close()
             return r
 
-        compile(func, [int], gcpolicy='boehm')
+        compile(func, [int])
 
     @py.test.mark.skipif("not mmap.has_madvise")
     def test_translated_madvise_bug(self):
@@ -465,7 +465,7 @@ class TestMMap:
             m.madvise(mmap.MADV_NORMAL, 0, 8096)
             m.close()
 
-        compile(func, [], gcpolicy='boehm')
+        compile(func, [])
 
     def test_windows_crasher_1(self):
         if sys.platform != "win32":
@@ -517,5 +517,5 @@ def test_alloc_free():
 def test_compile_alloc_free():
     from rpython.translator.c.test.test_genc import compile
 
-    fn = compile(test_alloc_free, [], gcpolicy='boehm')
+    fn = compile(test_alloc_free, [])
     fn()

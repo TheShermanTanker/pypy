@@ -47,9 +47,6 @@ class BasePosix(Platform):
         return Platform._link_args_from_eci(self, eci, standalone)
 
     def _exportsymbols_link_flags(self):
-        if (self.cc == 'mingw32' or (self.cc== 'gcc' and os.name=='nt')
-                or sys.platform == 'cygwin'):
-            return ["-Wl,--export-all-symbols"]
         return ["-Wl,--export-dynamic"]
 
     def _link(self, cc, ofiles, link_args, standalone, exe_name):

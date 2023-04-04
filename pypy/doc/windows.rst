@@ -11,8 +11,7 @@ the preferred way, because it will take a lot longer to run – depending
 on your architecture, between two and three times as long. So head to
 `our downloads`_ and get the latest stable version.
 
-Microsoft Visual Studio is preferred as a compiler, but there are reports
-of success with the mingw32 port of gcc.
+Microsoft Visual Studio is the only supported compiler.
 
 .. _our downloads: https://www.pypy.org/download.html
 
@@ -54,13 +53,6 @@ compiler they can find.  In addition, the target architecture
 (32 bits, 64 bits) is automatically selected.  A 32 bit build can only be built
 using a 32 bit Python and vice versa. By default the interpreter is built using
 the Multi-threaded DLL (/MD) runtime environment.
-
-If you wish to override this detection method to use a different compiler
-(mingw or a different version of MSVC):
-
-* set up the PATH and other environment variables as needed
-* set the `CC` environment variable to compiler exe to be used,
-  for a different version of MSVC `SET CC=cl.exe`.
 
 **Note:** The RPython translator requires a special 64 bit Python, see below
 
@@ -107,65 +99,6 @@ and PyPy version.
 
 .. _subrepository: https://foss.heptapod.net/pypy/externals
 
-Using the mingw compiler
-------------------------
-
-You can compile an RPython program with the mingw compiler, using the
---cc=mingw32 option; gcc.exe must be on the PATH. If the -cc flag does not
-begin with "ming", it should be the name of a valid gcc-derivative compiler,
-i.e. x86_64-w64-mingw32-gcc for the 64 bit compiler creating a 64 bit target.
-
-You probably want to set the CPATH, LIBRARY_PATH, and PATH environment
-variables to the header files, lib or dlls, and dlls respectively of the
-locally installed packages if they are not in the mingw directory heirarchy.
-
-
-libffi for the mingw compiler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To enable the _rawffi (and ctypes) module, you need to compile a mingw
-version of libffi.  Here is one way to do this, wich should allow you to try
-to build for win64 or win32:
-
-#. Download and unzip a `mingw32 build`_ or `mingw64 build`_, say into c:\mingw
-#. If you do not use cygwin, you will need msys to provide make,
-   autoconf tools and other goodies.
-
-    #. Download and unzip a `msys for mingw`_, say into c:\msys
-    #. Edit the c:\msys\etc\fstab file to mount c:\mingw
-
-#. Download and unzip the `libffi source files`_, and extract
-   them in the base directory.
-#. Run c:\msys\msys.bat or a cygwin shell which should make you
-   feel better since it is a shell prompt with shell tools.
-#. From inside the shell, cd to the libffi directory and do::
-
-    sh ./configure
-    make
-    cp .libs/libffi-5.dll <somewhere on the PATH>
-
-If you can't find the dll, and the libtool issued a warning about
-"undefined symbols not allowed", you will need to edit the libffi
-Makefile in the toplevel directory. Add the flag -no-undefined to
-the definition of libffi_la_LDFLAGS
-
-If you wish to experiment with win64, you must run configure with flags::
-
-    sh ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
-
-or such, depending on your mingw64 download.
-
-
-Hacking on PyPy with the mingw compiler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Since hacking on PyPy means running tests, you will need a way to specify
-the mingw compiler when hacking (as opposed to translating). As of
-March 2012, --cc is not a valid option for pytest.py. However if you set an
-environment variable CC to the compiler exe, testing will use it.
-
-.. _mingw32 build: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Automated%20Builds
-.. _mingw64 build: https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/Automated%20Builds
-.. _msys for mingw: https://sourceforge.net/projects/mingw-w64/files/External%20binary%20packages%20(Win64%20hosted)/MSYS%20(32-bit)/
 .. _libffi source files: https://sourceware.org/libffi/
 
 

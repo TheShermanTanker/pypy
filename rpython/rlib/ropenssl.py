@@ -9,7 +9,7 @@ from rpython.rlib.unroll import unrolling_iterable
 from rpython.rlib._rsocket_rffi import SAVE_ERR
 
 
-if sys.platform == 'win32' and platform.name != 'mingw32':
+if sys.platform == 'win32':
     windows_link_legacy_openssl = os.environ.get(
         "CRYPTOGRAPHY_WINDOWS_LINK_LEGACY_OPENSSL", None
     )

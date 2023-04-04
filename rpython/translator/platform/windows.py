@@ -14,8 +14,6 @@ def _get_compiler_type(cc, x64_flag):
         cc = os.environ.get('CC','')
     if not cc:
         return MsvcPlatform(x64=x64_flag)
-    elif cc.startswith('mingw') or cc == 'gcc':
-        return MingwPlatform(cc)
     return MsvcPlatform(cc=cc, x64=x64_flag)
 
 def _get_vcver0():
@@ -625,31 +623,3 @@ class NMakefile(posix.GnuMakefile):
         else:
             defs[name] = len(self.lines)
             self.lines.append(defn)
-
-class MingwPlatform(posix.BasePosix):
-    name = 'mingw32'
-    standalone_only = ()
-    shared_only = ()
-    cflags = ('-O3',)
-    link_flags = ()
-    exe_ext = 'exe'
-    so_ext = 'dll'
-
-    def __init__(self, cc=None):
-        if not cc:
-            cc = 'gcc'
-        Platform.__init__(self, cc)
-
-    def _args_for_shared(self, args, **kwds):
-        return ['-shared'] + args
-
-    def _include_dirs_for_libffi(self):
-        return []
-
-    def _library_dirs_for_libffi(self):
-        return []
-
-    def _handle_error(self, returncode, stdout, stderr, outname):
-        # Mingw tools write compilation errors to stdout
-        super(MingwPlatform, self)._handle_error(
-            returncode, '', stderr + stdout, outname)

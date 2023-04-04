@@ -10,10 +10,10 @@ efforts in the last few months since the 0.6 preview release
 which have been partially funded by the European Union:
 
 - whole program type inference on our Python Interpreter 
-  implementation with full translation to two different 
-  machine-level targets: C and LLVM 
+  implementation with full translation to a commonly used
+  machine-level target: LLVM 
 
-- a translation choice of using a refcounting or Boehm 
+- a translation choice of using a refcounting
   garbage collectors
 
 - the ability to translate with or without thread support 

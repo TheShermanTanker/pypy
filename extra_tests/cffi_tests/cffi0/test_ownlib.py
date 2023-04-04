@@ -141,7 +141,6 @@ class TestOwnLib(object):
                 cls.module = dll_path
                 return
             # try (not too hard) to find the version used to compile this python
-            # no mingw
             from distutils.msvc9compiler import get_build_version
             version = get_build_version()
             toolskey = "VS%0.f0COMNTOOLS" % version

@@ -684,12 +684,6 @@ class TestFinalizerQueue:
         e = py.test.raises(TyperError, gengraph, f, [])
         assert str(e.value).startswith('the RPython-level __del__() method in')
 
-    def test_translated_boehm(self):
-        self._test_translated(use_gc="boehm", llcase=False)
-
-    def test_translated_boehm_ll(self):
-        self._test_translated(use_gc="boehm", llcase=True)
-
     def test_translated_incminimark(self):
         self._test_translated(use_gc="incminimark", llcase=False)
 

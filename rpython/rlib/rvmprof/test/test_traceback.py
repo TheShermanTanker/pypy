@@ -60,7 +60,7 @@ def test_compiled():
         mainloop(code1, 2)
         return 0
 
-    t = Translation(f, None, gc="boehm")
+    t = Translation(f, None)
     t.compile_c()
     stdout = t.driver.cbuilder.cmdexec('')
     r = re.compile("[<]MyCode object at 0x([0-9a-f]+)[>] 0 42\n")

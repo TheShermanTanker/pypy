@@ -10,7 +10,6 @@ import _cffi_backend
 
 lib_m = ['m']
 if sys.platform == 'win32':
-    #there is a small chance this fails on Mingw via environ $CC
     import distutils.ccompiler
     if distutils.ccompiler.get_default_compiler() == 'msvc':
         lib_m = ['msvcrt']

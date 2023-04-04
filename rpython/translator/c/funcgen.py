@@ -322,8 +322,7 @@ class FunctionCodeGenerator(object):
         macro = 'OP_%s' % op.opname.upper()
         line = None
         if (op.opname.startswith('gc_') and
-            op.opname not in ('gc_load_indexed', 'gc_store',
-                              'gc_store_indexed')):
+            op.opname not in ('gc_load_indexed', 'gc_store_indexed')):
             meth = getattr(self.gcpolicy, macro, None)
             if meth:
                 line = meth(self, op)
@@ -651,30 +650,6 @@ class FunctionCodeGenerator(object):
                                      self.expr(op.args[0]),
                                      self.expr(op.args[1]))
 
-    def _op_boehm_malloc(self, op, is_atomic):
-        expr_result = self.expr(op.result)
-        res = 'OP_BOEHM_ZERO_MALLOC(%s, %s, void*, %d, 0);' % (
-            self.expr(op.args[0]),
-            expr_result,
-            is_atomic)
-        if self.db.reverse_debugger:
-            from rpython.translator.revdb import gencsupp
-            res += gencsupp.record_malloc_uid(expr_result)
-        return res
-
-    def OP_BOEHM_MALLOC(self, op):
-        return self._op_boehm_malloc(op, 0)
-
-    def OP_BOEHM_MALLOC_ATOMIC(self, op):
-        return self._op_boehm_malloc(op, 1)
-
-    def OP_BOEHM_REGISTER_FINALIZER(self, op):
-        if self.db.reverse_debugger:
-            from rpython.translator.revdb import gencsupp
-            return gencsupp.boehm_register_finalizer(self, op)
-        return 'GC_REGISTER_FINALIZER(%s, (GC_finalization_proc)%s, NULL, NULL, NULL);' \
-               % (self.expr(op.args[0]), self.expr(op.args[1]))
-
     def OP_DIRECT_FIELDPTR(self, op):
         return self.OP_GETFIELD(op, ampersand='&', accessing_mem=False)
 
@@ -786,7 +761,6 @@ class FunctionCodeGenerator(object):
            '((%(typename)s) (((char *)%(addr)s) + %(offset)s))[0] = %(value)s;'
            % locals())
     OP_BARE_RAW_STORE = OP_RAW_STORE
-    OP_GC_STORE = OP_RAW_STORE     # the difference is only in 'revdb_protect'
 
     def OP_RAW_LOAD(self, op):
         addr = self.expr(op.args[0])

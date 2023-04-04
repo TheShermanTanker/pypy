@@ -15,8 +15,6 @@ The recommended default is "incminimark".
   - "hybrid": a hybrid collector of "generation" together with a
     mark-n-sweep old space
 
-  - "boehm": use the Boehm conservative GC.
-
   - "minimark": a generational mark-n-sweep collector with good
     performance.  Includes page marking for large arrays.
 

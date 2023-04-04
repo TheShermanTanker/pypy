@@ -25,7 +25,7 @@
 
 #define OP_RAW_MALLOC_USAGE(size, r) r = size
 
-#if defined(MS_WINDOWS) && !defined(__MINGW32__)
+#if defined(MS_WINDOWS)
 #define alloca  _alloca
 #endif
 
@@ -85,58 +85,8 @@ RPY_EXTERN void pypy_debug_alloc_results(void);
 
 #endif /* RPY_ASSERT */
 
-/* for Boehm GC */
-
-#ifdef PYPY_USING_BOEHM_GC
-
-#define BOEHM_MALLOC_0_0   GC_MALLOC
-#define BOEHM_MALLOC_1_0   GC_MALLOC_ATOMIC
-#define BOEHM_MALLOC_0_1   GC_MALLOC
-#define BOEHM_MALLOC_1_1   GC_MALLOC_ATOMIC
-/* #define BOEHM_MALLOC_0_1   GC_MALLOC_IGNORE_OFF_PAGE */
-/* #define BOEHM_MALLOC_1_1   GC_MALLOC_ATOMIC_IGNORE_OFF_PAGE */
-
-#define OP_BOEHM_ZERO_MALLOC(size, r, restype, is_atomic, is_varsize) { \
-	r = (restype) BOEHM_MALLOC_ ## is_atomic ## _ ## is_varsize (size); \
-	if (r && is_atomic)  /* the non-atomic versions return cleared memory */ \
-	    memset((void*) r, 0, size);					\
-    }
-
-#define OP_BOEHM_DISAPPEARING_LINK(link, obj, r)			\
-    if (GC_base(obj) == NULL)						\
-	; /* 'obj' is probably a prebuilt object - it makes no */	\
-    /* sense to register it then, and it crashes Boehm in */		\
-    /* quite obscure ways */						\
-    else								\
-	GC_GENERAL_REGISTER_DISAPPEARING_LINK(link, obj)
-
-RPY_EXTERN int boehm_gc_finalizer_lock;
-RPY_EXTERN void boehm_gc_startup_code(void);
-RPY_EXTERN void boehm_gc_finalizer_notifier(void);
-struct boehm_fq_s;
-RPY_EXTERN struct boehm_fq_s *boehm_fq_queues[];
-RPY_EXTERN void (*boehm_fq_trigger[])(void);
-RPY_EXTERN void boehm_fq_register(struct boehm_fq_s **, void *);
-RPY_EXTERN void *boehm_fq_next_dead(struct boehm_fq_s **);
-
-#define OP_GC__DISABLE_FINALIZERS(r)  boehm_gc_finalizer_lock++
-#define OP_GC__ENABLE_FINALIZERS(r)  (boehm_gc_finalizer_lock--,	\
-				      boehm_gc_finalizer_notifier())
-#define OP_GC__DISABLE(r)             /* nothing */
-#define OP_GC__ENABLE(r)              /* nothing */
-
-#define OP_BOEHM_FQ_REGISTER(tagindex, obj, r)                          \
-    boehm_fq_register(boehm_fq_queues + tagindex, obj)
-#define OP_BOEHM_FQ_NEXT_DEAD(tagindex, r)                              \
-    r = boehm_fq_next_dead(boehm_fq_queues + tagindex)
-
-#endif /* PYPY_USING_BOEHM_GC */
-
 
 #ifdef PYPY_USING_NO_GC_AT_ALL
-#define OP_BOEHM_ZERO_MALLOC(size, r, restype, is_atomic, is_varsize)	\
-    r = (restype) calloc(1, size);
-#define OP_BOEHM_DISAPPEARING_LINK(link, obj, r)  /* nothing */
 #define OP_GC__DISABLE_FINALIZERS(r)  /* nothing */
 #define OP_GC__ENABLE_FINALIZERS(r)  /* nothing */
 #define OP_GC__DISABLE(r)             /* nothing */
@@ -148,7 +98,7 @@ RPY_EXTERN void *boehm_fq_next_dead(struct boehm_fq_s **);
 #define OP_GC_FQ_NEXT_DEAD(tag, r)       (r = NULL)
 #endif
 
-#if (defined(PYPY_USING_BOEHM_GC) || defined(PYPY_USING_NO_GC_AT_ALL)) && !defined(PYPY_BOEHM_WITH_HEADER)
+#if defined(PYPY_USING_NO_GC_AT_ALL)
 #  define RPY_SIZE_OF_GCHEADER  0
 #else
 #  define RPY_SIZE_OF_GCHEADER  sizeof(struct pypy_header0)
@@ -161,7 +111,7 @@ RPY_EXTERN void *boehm_fq_next_dead(struct boehm_fq_s **);
 #define OP_CAST_WEAKREFPTR_TO_PTR(x, r)  r = x
 
 /************************************************************/
-/* dummy version of these operations, e.g. with Boehm */
+/* dummy version of these operations */
 
 #define OP_GC_GET_RPY_ROOTS(r)           r = 0
 #define OP_GC_GET_RPY_REFERENTS(x, r)    r = 0

@@ -481,57 +481,6 @@ class TestGcLoadStoreIndexed(BaseTest):
         ])
         assert expected.issubset(typed_effects)
 
-    def test_gc_store_indexed_str(self):
-        from rpython.rlib.mutbuffer import MutableStringBuffer
-
-        def typed_write(buf):
-            return buf.typed_write(lltype.Signed, 0, 42)
-
-        def direct_write(buf):
-            return buf.setitem(0, 'A')
-
-        def f(x):
-            buf = MutableStringBuffer(8)
-            return direct_write(buf), typed_write(buf)
-
-        t, wa = self.translate(f, [str])
-        # check that the effect of direct_write
-        direct_effects = self._analyze_graph(t, wa, direct_write)
-        direct_effects = self._filter_reads(direct_effects)
-        assert direct_effects == frozenset([
-            ('interiorfield', lltype.Ptr(STR), 'chars')
-        ])
-        #
-        typed_effects = self._analyze_graph(t, wa, typed_write)
-        typed_effects = self._filter_reads(typed_effects)
-        assert typed_effects == direct_effects
-
-    def test_gc_store_indexed_list_of_chars(self):
-        from rpython.rlib.buffer import ByteBuffer
-
-        def typed_write(buf):
-            return buf.typed_write(lltype.Signed, 0, 42)
-
-        def direct_write(buf):
-            return buf.setitem(0, 'A')
-
-        def f(x):
-            buf = ByteBuffer(8)
-            return direct_write(buf), typed_write(buf)
-
-        t, wa = self.translate(f, [str])
-        # check that the effect of direct_write
-        LIST = LIST_OF(lltype.Char)
-        direct_effects = self._analyze_graph(t, wa, direct_write)
-        direct_effects = self._filter_reads(direct_effects)
-        assert direct_effects == frozenset([
-            ('array', LIST.items),
-        ])
-        #
-        typed_effects = self._analyze_graph(t, wa, typed_write)
-        typed_effects = self._filter_reads(typed_effects)
-        assert typed_effects == direct_effects
-
     def test_explanation(self):
         class A(object):
             def methodname(self):

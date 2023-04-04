@@ -476,8 +476,6 @@ def mallocHelpers(gckind):
 
     if gckind == 'raw':
         llopstore = llop.raw_store
-    elif gckind == 'gc':
-        llopstore = llop.gc_store
     else:
         raise AssertionError(gckind)
 

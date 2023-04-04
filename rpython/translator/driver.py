@@ -359,19 +359,9 @@ class TranslationDriver(SimpleTaskEngine):
         self.log.info("inserted %d stack checks." % (count,))
 
 
-    def possibly_check_for_boehm(self):
-        if self.config.translation.gc == "boehm":
-            from rpython.rtyper.tool.rffi_platform import configure_boehm
-            from rpython.translator.platform import CompilationError
-            try:
-                configure_boehm(self.translator.platform)
-            except CompilationError as e:
-                i = 'Boehm GC not installed.  Try e.g. "translate.py --gc=minimark"'
-                raise Exception(str(e) + '\n' + i)
 
     @taskdef([STACKCHECKINSERTION, '?'+BACKENDOPT, RTYPE, '?annotate'],
-        "Creating database for generating c source",
-        earlycheck = possibly_check_for_boehm)
+        "Creating database for generating c source")
     def task_database_c(self):
         """ Create a database for further backend generation
         """

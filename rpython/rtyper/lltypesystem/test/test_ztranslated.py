@@ -67,8 +67,3 @@ def test_compiled_semispace():
     res = fn()
     # get_raw_address_of_string() never raise ValueError any more
     assert res == 0
-
-def test_compiled_boehm():
-    fn = compile(main, [], gcpolicy="boehm")
-    res = fn()
-    assert res == 0

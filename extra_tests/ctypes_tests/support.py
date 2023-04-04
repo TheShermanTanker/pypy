@@ -37,9 +37,6 @@ class BaseCTypesTestChecker:
     def teardown_class(cls):
         if not hasattr(sys, 'pypy_translation_info'):
             return
-        if sys.pypy_translation_info['translation.gc'] == 'boehm':
-            return # it seems that boehm has problems with __del__, so not
-                   # everything is freed
         #
         mod = sys.modules[cls.__module__]
         del_funcptr_refs_maybe(mod, 'dll')

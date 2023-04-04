@@ -350,7 +350,7 @@ class bdist_wininst (Command):
         # wininst-x.y.exe is in the same directory as this file
         directory = os.path.dirname(__file__)
         # we must use a wininst-x.y.exe built with the same C compiler
-        # used for python.  XXX What about mingw, borland, and so on?
+        # used for python.
 
         # if plat_name starts with "win" but is not "win32"
         # we want to strip "win" and leave the rest (e.g. -amd64)

@@ -28,7 +28,7 @@ def _get_openssl_libraries(platform):
             libs = ["libeay32", "ssleay32"]
         return libs + ["advapi32", "crypt32", "gdi32", "user32", "ws2_32"]
     else:
-        # darwin, linux, mingw all use this path
+        # darwin, linux all use this path
         # In some circumstances, the order in which these libs are
         # specified on the linker command-line is significant;
         # libssl must come before libcrypto

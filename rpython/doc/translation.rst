@@ -571,13 +571,10 @@ Memory Management Details
 As well as featuring exceptions, RPython is a garbage collected language;
 again, C is not.  To square this circle, decisions about memory management
 must be made.  In keeping with PyPy's approach to flexibility, there is
-freedom to change how to do it.  There are three approaches implemented today:
+freedom to change how to do it.  There are two approaches implemented today:
 
  - reference counting (deprecated, too slow)
- - using the `Boehm-Demers-Weiser conservative garbage collector`_
  - using one of our custom :doc:`exact GCs implemented in RPython <garbage_collection>`
-
-.. _Boehm-Demers-Weiser conservative garbage collector: http://hboehm.info/gc/
 
 Almost all application-level Python code allocates objects at a very fast
 rate; this means that the memory management implementation is critical to the
