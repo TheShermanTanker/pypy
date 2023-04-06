@@ -176,15 +176,6 @@ Changes shared across versions
 - Build fixes for latest XCode on MacOS
 
 
-C-API (cpyext) and c-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Add ``PyCFunction_Call``, ``PyNumber_ToBase``, contiguous part of
-  ``PyMemoryView_GetContiguous``
-- use ``space.getitem`` in ``PySequence_ITEM``, fixes `pybind11 2146`_
-- give preference to ``as_sequence.sq_item`` in ``PySequence_ITEM``
-- In Py_EnterRecursiveCall, ``char*`` -> ``const char *``, `issue 3232`_
-- Fix ``PySet_Add`` for ``frozenset`` (`issue 3251`_)
-- Support using ``sq_repeat`` and ``sq_inplace_repeat``, `issue 3281`_
 
 Python 3.6 only
 ---------------

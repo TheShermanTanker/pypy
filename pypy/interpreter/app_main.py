@@ -338,8 +338,7 @@ def set_io_encoding(io_encoding, io_encoding_output, errors, overridden):
             set_file_encoding(f, encoding, errors)
 
 # Order is significant!
-# Keep synchronized with pypy.module.sys.app.sysflags and
-# pypy.module.cpyext._flags
+# Keep synchronized with pypy.module.sys.app.sysflags
 sys_flags = (
     "debug",
     "py3k_warning",

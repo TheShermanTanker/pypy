@@ -109,7 +109,6 @@ Bugfixes
 - Package tkinter for macOS. Previously the portable builds did not include it
   (issues 3760_, 3868_).
 - Fix memory leak in certificate validation in ``_ssl`` (issue 3871_)
-- Add ``__qualname__`` to some cpyext types (issue 3878_)
 - Clean up some deprecated functions in OpenSSL wrapper ``_ssl``
 
 

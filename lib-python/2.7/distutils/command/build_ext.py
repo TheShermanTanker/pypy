@@ -686,11 +686,10 @@ class build_ext (Command):
         # PyPy tweak: first try to get the C extension suffix from
         # 'imp'.  If it fails we fall back to the 'SO' config var, like
         # the previous version of this code did.  This should work for
-        # CPython too.  The point is that on PyPy with cpyext, the
-        # config var 'SO' is just ".so" but we want to return
-        # ".pypy-VERSION.so" instead.  Note a further tweak for cffi's
-        # embedding mode: if EXT_SUFFIX is also defined, use that
-        # directly.
+        # CPython too.  The point is that on PyPy, the config var 'SO'
+        # is just ".so" but we want to return ".pypy-VERSION.so" instead.
+        # Note a further tweak for cffi's embedding mode: if EXT_SUFFIX
+        # is also defined, use that directly.
         so_ext = get_config_var('EXT_SUFFIX')
         if so_ext is None:
             so_ext = _get_c_extension_suffix()

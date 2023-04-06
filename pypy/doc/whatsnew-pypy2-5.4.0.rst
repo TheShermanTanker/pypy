@@ -10,10 +10,6 @@ What's new in PyPy2.7 5.4
 Improve CPython compatibility for ``is``. Now code like ``if x is ():``
 works the same way as it does on CPython.  See https://pypy.readthedocs.io/en/latest/cpython_differences.html#object-identity-of-primitive-values-is-and-id .
 
-.. pull request #455
-
-Add sys.{get,set}dlopenflags, for cpyext extensions.
-
 .. branch: fix-gen-dfa
 
 Resolves an issue with the generator script to build the dfa for Python syntax.
@@ -71,11 +67,6 @@ column might also not show the reduction, particularly on Linux >= 4.5 or
 on OS/X: it uses MADV_FREE, which only marks the pages as returnable to
 the OS if the memory is low.
 
-.. branch: cpyext-slotdefs2
-
-Fill in more slots when creating a PyTypeObject from a W_TypeObject
-More slots are still TBD, like tp_print and richcmp
-
 .. branch: json-surrogates
 
 Align json module decode with the cpython's impl, fixes issue 2345
@@ -111,10 +102,6 @@ copy the string any more---this is like CFFI on CPython.
 Add a new command line option -X track-resources which will produce
 ResourceWarnings when the GC closes unclosed files and sockets.
 
-.. branch: cpyext-realloc
-
-Implement PyObject_Realloc
-
 .. branch: inline-blocks
 
 Improve a little bit the readability of the generated C code
@@ -134,7 +121,3 @@ was already read-only).
 .. branch: memoryview-attributes
 
 Support for memoryview attributes (format, itemsize, ...).
-
-.. branch: cpyext-subclass
-
-Copy Py_TPFLAGS_CHECKTYPES, Py_TPFLAGS_HAVE_INPLACEOPS when inheriting

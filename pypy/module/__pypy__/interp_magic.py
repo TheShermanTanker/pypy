@@ -225,14 +225,7 @@ def revdb_stop(space):
     stop_point()
 
 def pyos_inputhook(space):
-    """Call PyOS_InputHook() from the CPython C API."""
-    if not space.config.objspace.usemodules.cpyext:
-        return
-    w_modules = space.sys.get('modules')
-    if space.finditem_str(w_modules, 'cpyext') is None:
-        return      # cpyext not imported yet, ignore
-    from pypy.module.cpyext.api import invoke_pyos_inputhook
-    invoke_pyos_inputhook(space)
+    return
 
 def utf8content(space, w_u):
     """ Given a unicode string u, return it's internal byte representation.

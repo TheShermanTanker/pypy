@@ -70,8 +70,6 @@ Other Highlights (since 4.0.0 released three weeks ago)
 
   * Improve debug logging in subprocesses
 
-  * Support PyOS_double_to_string in our cpyext capi compatibility layer
-
 * Numpy:
 
   * Improve support for __array_interface__

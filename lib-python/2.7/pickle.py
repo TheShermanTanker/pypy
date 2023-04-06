@@ -1444,14 +1444,5 @@ def _test():
     import doctest
     return doctest.testmod()
 
-# ===== PyPy modification to support pickling cpyext methods =====
-try:
-    import cpyext
-except ImportError:
-    pass
-else:
-    Pickler.dispatch[cpyext.FunctionType] = Pickler.save_global
-# ================= end of PyPy modification ====================
-
 if __name__ == "__main__":
     _test()

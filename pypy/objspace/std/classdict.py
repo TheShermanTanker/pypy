@@ -49,16 +49,7 @@ class ClassDictStrategy(DictStrategy):
         try:
             w_type.setdictvalue(self.space, key, w_value)
         except OperationError as e:
-            if not e.match(self.space, self.space.w_TypeError):
-                raise
-            if not w_type.is_cpytype():
-                raise
-            # Allow cpyext to write to type->tp_dict even in the case
-            # of a builtin type.
-            # Like CPython, we assume that this is only done early
-            # after the type is created, and we don't invalidate any
-            # cache.  User code shoud call PyType_Modified().
-            w_type.dict_w[key] = w_value
+            raise
 
     def setdefault(self, w_dict, w_key, w_default):
         w_result = self.getitem(w_dict, w_key)

@@ -116,10 +116,6 @@ Changes shared across versions
 - Refactor argument parsing to avoid unwrapping (unboxing) and rewrapping
   kwargs (Python 3.8+)
 
-C-API (cpyext) and C-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Fix to raise an exception when calling ``PySequence_GetItem('a', -2)``
-
 Python 3.7+ bugfixes
 --------------------
 - Fix a slight incompatibility when initializing ``os.statvfs_result`` from
@@ -128,14 +124,6 @@ Python 3.7+ bugfixes
   3323_)
 - Use ``shutil.which`` instead of ``distutils.spawn.find_executable`` in
   ``sysconfig`` (issue 3703_)
-
-Python 3.8+ C-API (cpyext) fixes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Fix overflow return value in ``PyNumber_AsSsize_t`` on windows
-- Adopted `PEP 3123`_ declarations to avoid `-Wstrict-aliasing` compiler
-  warnings (issue 3706_)
-- Allocate a ``wrapperbase`` struct and assign it to ``d_base`` of
-  ``PyWrapperDescrObject``
 
 Python 3.9+ fixes
 ~~~~~~~~~~~~~~~~~~

@@ -209,21 +209,6 @@ Speedups and enhancements shared across versions
 - Update packaged OpenSSL to 1.1.1k
 - Make ARM builds portable
 
-C-API (cpyext) and C-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- make order of arguments of ``PyDescr_NewGetSet`` consistent with CPython,
-  related to issue 2267_
-- Fix parsing ``inf`` and friends in ``PyOS_string_to_double`` (issue 3375_)
-- Fix signature of ``PyEval_EvalCode``
-- Change parameter type of ``PyModule_New`` to ``const char*``, add
-  ``PyModule_Check`` and ``PyModule_CheckExact``
-- Add ``PyUnicode_Contains`` (issue 3400_)
-- Fix ``PyObject_Format`` for type objects (issue 3404_)
-- Move ``inttypes.h`` into ``pyport.h`` (issue 3407_)
-- Sync ``Py_.*Flags`` values with ``sys.flags`` (issue 3409_)
-- Make ``PyUnicode_Check`` a macro, but still export the function from
-  the shared library for backwards compatibility
-
 
 Python 3.7+
 -----------

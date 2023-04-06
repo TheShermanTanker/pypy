@@ -5,10 +5,6 @@ PyPy2.7 v5.6
 We have released PyPy2.7 v5.6, about two months after PyPy2.7 v5.4.
 This new PyPy2.7 release includes the upstream stdlib version 2.7.12.
 
-We continue to make incremental improvements to our C-API
-compatibility layer (cpyext). We pass all but a few of the tests in the
-upstream numpy test suite. 
-
 Work proceeds at a good pace on the PyPy3.5
 version due to a grant_ from the Mozilla Foundation, and some of those
 changes have been backported to PyPy2.7 where relevant.
@@ -85,7 +81,6 @@ Other Highlights (since 5.4 released Aug 31, 2016)
   * Issue #2386: non-latin1 unicode keys were ignored in ``unicode.format(**d)``
   * Restore the ability to translate with CPython
   * Update to CFFI 1.9.0
-  * Support the new buffer protocol in cpyext and numpypy
   * Add ``rposix.sync()``
   * Support full-precision nanosecond times in os.stat()
   * Add documentation about the assembler backends to RPYthon
@@ -131,7 +126,6 @@ Other Highlights (since 5.4 released Aug 31, 2016)
 * Performance improvements:
 
   * Improve method calls on oldstyle classes
-  * Clean and refactor code for testing cpyext to allow sharing with py3.5
   * Refactor a building the map of reflected ops in ``_numpypy``
   * Ensure ``make_inputargs`` fails properly when given arguments with type 
     information

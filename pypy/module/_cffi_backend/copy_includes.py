@@ -5,7 +5,6 @@ from os.path import dirname, join, exists
 
 include = join(dirname(__file__), '..', '..', '..', 'include')
 assert exists(include)
-cpyext_include = join(dirname(__file__), '..', 'cpyext', 'include')
 
 def main():
     """Copy/create just enough header information to allow cffi to compile c-extension modules
@@ -31,15 +30,11 @@ def main():
         #endif
 
         typedef void PyObject;
-        /* CPython sets Py_ssize_t in pyport.h, PyPy in cpyext_object.h */
         #ifdef _WIN64
-        typedef long long Py_ssize_t;
+        typedef __int64 Py_ssize_t;
         #else
-        typedef long Py_ssize_t;
+        typedef __int32 Py_ssize_t;
         #endif
-
-        #include <patchlevel.h>
-        #include <modsupport.h>
         
         #include <stdarg.h>
         #include <stdio.h>
@@ -55,8 +50,6 @@ def main():
         return
     with open(join(include, 'Python.h'), 'wt') as fid:
         fid.write(python_h)
-    for header in ('patchlevel.h', 'modsupport.h', 'pyconfig.h'):
-        shutil.copy(join(cpyext_include, header), join(include, header))
 
 
 if __name__ == '__main__':

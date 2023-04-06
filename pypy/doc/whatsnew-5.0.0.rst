@@ -15,10 +15,6 @@ which showed up if you forget stacklets without resuming them.
 Fix tests to run cleanly with -A and start to fix micronumpy for upstream numpy
 which is now 1.10.2
 
-.. branch: osx-flat-namespace
-
-Fix the cpyext tests on OSX by linking with -flat_namespace
-
 .. branch: anntype
 
 Refactor and improve exception analysis in the annotator.
@@ -94,7 +90,6 @@ Add a test for pre-existing AF_NETLINK support. Was part of issue #1942.
 
 Trivial misc cleanups: typo, whitespace, obsolete comments
 
-.. branch: cpyext-slotdefs
 .. branch: fix-missing-canraise
 .. branch: whatsnew
 
@@ -129,8 +124,6 @@ Fix SSL tests by importing cpython's patch
 Try to ensure that no new functions get annotated during the 'source_c' phase.
 Refactor sandboxing to operate at a higher level.
 
-.. branch: cpyext-bootstrap
-
 .. branch: vmprof-newstack
 
 Refactor vmprof to work cross-operating-system.
@@ -151,11 +144,6 @@ apply sandbox transform on externals at the end of annotation.
 
 vmprof should work on Windows.
 
-
-.. branch: cpyext-gc-support-2
-
-Improve CPython C API support, which means lxml now runs unmodified
-(after removing pypy hacks, pending pull request)
 
 .. branch: look-inside-tuple-hash
 

@@ -3,7 +3,6 @@ import pytest
 import sys
 import os
 
-# XXX: copied from pypy/tool/cpyext/extbuild.py
 if os.name != 'nt':
     so_ext = 'so'
 else:

@@ -45,7 +45,7 @@ class PyPyAnnotatorPolicy(AnnotatorPolicy):
         classdesc.classdict[cached] = Constant((None, None))
         clsdef.add_source_for_attribute(cached, classdesc)
         for w_t in self.types_w:
-            if not (w_t.is_heaptype() or w_t.is_cpytype()):
+            if not (w_t.is_heaptype()):
                 setattr(w_t, cached, w_t._lookup_where(attr))
                 source = InstanceSource(bookkeeper, w_t)
                 clsdef.add_source_for_attribute(cached, source)
@@ -99,7 +99,7 @@ class PyPyAnnotatorPolicy(AnnotatorPolicy):
                 set_attribute(classdesc, None)
                 return
             w_type = self.space.gettypeobject(cls.typedef)
-            if w_type.is_heaptype() or w_type.is_cpytype():
+            if w_type.is_heaptype():
                 set_attribute(classdesc, None)
                 return
             if '_static_lookup_cache' not in cls.__dict__:
@@ -120,7 +120,7 @@ class PyPyAnnotatorPolicy(AnnotatorPolicy):
             self.types_w.add(x)
             #print "TYPE", x
             for attr in self.lookups_where:
-                if not (x.is_heaptype() or x.is_cpytype()):
+                if not (x.is_heaptype()):
                     cached = "cached_where_%s" % attr
                     setattr(x, cached, x._lookup_where(attr))
                     source = InstanceSource(bookkeeper, x)
@@ -141,7 +141,7 @@ def lookup_%(attr)s(space, w_obj, name):
 
 CACHED_LOOKUP_IN_TYPE_WHERE = """
 def lookup_in_type_where_%(attr)s(space, w_type, name):
-    if not w_type.is_heaptype() and not w_type.is_cpytype():
+    if not w_type.is_heaptype():
         return w_type.cached_where_%(attr)s
     return w_type.lookup_where("%(attr)s")
 """

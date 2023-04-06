@@ -58,8 +58,7 @@ Implement most of the GenericUfunc api to support numpy linalg. The strategy is
 to encourage use of pure python or cffi ufuncs by extending frompyfunc().
 See the docstring of frompyfunc for more details. This dovetails with a branch
 of pypy/numpy - cffi-linalg which is a rewrite of the _umath_linalg module in
-python, calling lapack from cffi. The branch also support traditional use of
-cpyext GenericUfunc definitions in c.
+python, calling lapack from cffi.
 
 .. branch: all_ordered_dicts
 

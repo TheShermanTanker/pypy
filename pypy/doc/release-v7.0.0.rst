@@ -131,7 +131,6 @@ If not specified, the changes are shared across versions
 * Use ``subprocess`` to avoid shell injection in ``shutil`` module - backport
   of https://bugs.python.org/issue34540
 * Rename ``_Py_ZeroStruct`` to ``_Py_FalseStruct`` (Py3.5, Py3.6)
-* Remove some cpyext names for Py3.5, Py3.6
 * Enable use of unicode file names in ``dlopen``
 * Backport CPython fix for ``thread.RLock``
 * Make GC hooks measure time in seconds (as opposed to an opaque unit)

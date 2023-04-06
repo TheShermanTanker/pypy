@@ -64,20 +64,6 @@ Implement StringBuffer.get_raw_address (missing feature for the buffer protocol)
 More generally it is now possible to obtain the address of any object (if it
 is readonly) without pinning it.
 
-.. branch: cpyext-cleanup
-.. branch: api_func-refactor
-
-Refactor cpyext initialisation.
-
-.. branch: cpyext-from2
-
-Fix a test failure introduced by strbuf-as-buffer
-
-.. branch: cpyext-FromBuffer
-
-Do not recreate the object in PyMemoryView_FromBuffer, rather pass it to
-the returned PyMemoryViewObject, to take ownership of it. Fixes a ref leak.
-
 .. branch: issue2464
 
 Give (almost?) all GetSetProperties a valid __objclass__.
@@ -95,12 +81,6 @@ now fill many more slots in the c-extenion type objects.
 Also fix for c-extension type that calls ``tp_hash`` during initialization
 (str, unicode types), and fix instantiating c-extension types from built-in
 classes by enforcing an order of instaniation.
-
-.. branch: rffi-parser-2
-
-rffi structures in cpyext can now be created by parsing simple C headers.
-Additionally, the cts object that holds the parsed information can act like
-cffi's ffi objects, with the methods cts.cast() and cts.gettype().
 
 .. branch: rpython-hash
 
@@ -139,12 +119,6 @@ by decoding the RPython string, assumed to be utf-8.
 .. branch: fix_bool_restype
 
 Fix for ``ctypes.c_bool``-returning ctypes functions
-
-.. branch: fix-cpyext-releasebuffer
-
-Improve handling of the Py3-style buffer slots in cpyext: fix memoryviews
-keeping objects alive forever (missing decref), and make sure that
-bf_releasebuffer is called when it should, e.g. from PyBuffer_Release.
 
 .. branch: fix-global
 

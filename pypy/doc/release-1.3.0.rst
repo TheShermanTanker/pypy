@@ -14,19 +14,6 @@ production environments.
 Highlights of this release
 ==========================
 
-* We introduced support for CPython extension modules written in C. As of now,
-  this support is in alpha, and it's very unlikely unaltered C extensions will
-  work out of the box, due to missing functions or refcounting details. The
-  support is disable by default, so you have to do::
-
-   import cpyext
-
-  before trying to import any .so file. Also, libraries are source-compatible
-  and not binary-compatible. That means you need to recompile binaries, using
-  for example::
-
-   python setup.py build
-
   Details may vary, depending on your build system. Make sure you include
   the above line at the beginning of setup.py or put it in your PYTHONSTARTUP.
 

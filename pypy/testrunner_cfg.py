@@ -3,7 +3,7 @@ import os
 
 DIRS_SPLIT = [
     'translator/c', 'rlib',
-    'memory/test', 'module/cpyext/test',
+    'memory/test',
 ]
 
 def collect_one_testdir(testdirs, reldir, tests):

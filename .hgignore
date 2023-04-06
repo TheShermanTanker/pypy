@@ -19,12 +19,6 @@ syntax: regexp
 ^bin/
 ^pypy/bin/pypy-c
 ^pypy/lib/
-^pypy/module/cpyext/src/.+\.o$
-^pypy/module/cpyext/src/.+\.obj$
-^pypy/module/cpyext/test/.+\.errors$
-^pypy/module/cpyext/test/.+\.o$
-^pypy/module/cpyext/test/.+\.obj$
-^pypy/module/cpyext/test/.+\.manifest$
 ^pypy/module/test_lib_pypy/ctypes_tests/.+\.o$
 ^pypy/module/test_lib_pypy/ctypes_tests/_ctypes_test\.o$
 ^pypy/module/test_lib_pypy/cffi_tests/__pycache__.+$

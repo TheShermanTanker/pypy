@@ -220,7 +220,7 @@ class W_TypeObject(W_Root):
         generic mutation.
         """
         space = self.space
-        assert self.is_heaptype() or self.is_cpytype()
+        assert self.is_heaptype()
 
         self.uses_object_getattribute = False
         # ^^^ conservative default, fixed during real usage
@@ -349,7 +349,7 @@ class W_TypeObject(W_Root):
     def deldictvalue(self, space, key):
         if self.lazyloaders:
             self._cleanup_()    # force un-lazification
-        if not (self.is_heaptype() or self.is_cpytype()):
+        if not (self.is_heaptype()):
             raise oefmt(space.w_TypeError,
                         "can't delete attributes on type object '%N'", self)
         try:
@@ -496,9 +496,6 @@ class W_TypeObject(W_Root):
     def is_heaptype(self):
         return self.flag_heaptype
 
-    def is_cpytype(self):
-        return self.flag_cpytype
-
     def is_abstract(self):
         return self.flag_abstract
 
@@ -512,8 +509,6 @@ class W_TypeObject(W_Root):
         space = self.space
         if self.is_heaptype():
             return self.getdictvalue(space, '__module__')
-        elif self.is_cpytype():
-            dot = self.name.rfind('.')
         else:
             dot = self.name.find('.')
         if dot >= 0:
@@ -525,8 +520,6 @@ class W_TypeObject(W_Root):
     def getname(self, space):
         if self.is_heaptype():
             return self.name
-        elif self.is_cpytype():
-            dot = self.name.rfind('.')
         else:
             dot = self.name.find('.')
         if dot >= 0:
@@ -596,11 +589,6 @@ class W_TypeObject(W_Root):
                 raise oefmt(space.w_TypeError, "cannot create '%N' instances",
                             self)
             #
-            # issue #2666
-            if space.config.objspace.usemodules.cpyext:
-                w_newtype, w_newdescr = self.hack_which_new_to_call(
-                    w_newtype, w_newdescr)
-            #
             w_newfunc = space.get(w_newdescr, space.w_None, w_type=self)
             if (space.config.objspace.std.newshortcut and
                 space._side_effects_ok() and
@@ -622,43 +610,9 @@ class W_TypeObject(W_Root):
         return w_newobject
 
     def hack_which_new_to_call(self, w_newtype, w_newdescr):
-        # issue #2666: for cpyext, we need to hack in order to reproduce
-        # an "optimization" of CPython that actually changes behaviour
-        # in corner cases.
-        #
-        # * Normally, we use the __new__ found in the MRO in the normal way.
-        #
-        # * If by chance this __new__ happens to be implemented as a C
-        #   function, then instead, we discard it and use directly
-        #   self.__base__.tp_new.
-        #
-        # * Most of the time this is the same (and faster for CPython), but
-        #   it can fail if self.__base__ happens not to be the first base.
-        #
-        from pypy.module.cpyext.methodobject import W_PyCFunctionObject
-
-        if isinstance(w_newdescr, W_PyCFunctionObject):
-            return self._really_hack_which_new_to_call(w_newtype, w_newdescr)
-        else:
-            return w_newtype, w_newdescr
+        return w_newtype, w_newdescr
 
     def _really_hack_which_new_to_call(self, w_newtype, w_newdescr):
-        # This logic is moved in yet another helper function that
-        # is recursive.  We call this only if we see a
-        # W_PyCFunctionObject.  That's a performance optimization
-        # because in the common case, we won't call any function that
-        # contains the stack checks.
-        from pypy.module.cpyext.methodobject import W_PyCFunctionObject
-        from pypy.module.cpyext.typeobject import is_tp_new_wrapper
-
-        if (isinstance(w_newdescr, W_PyCFunctionObject) and
-                w_newtype is not self and
-                is_tp_new_wrapper(self.space, w_newdescr.ml)):
-            w_bestbase = find_best_base(self.bases_w)
-            if w_bestbase is not None:
-                w_newtype, w_newdescr = w_bestbase.lookup_where('__new__')
-                return w_bestbase._really_hack_which_new_to_call(w_newtype,
-                                                                 w_newdescr)
         return w_newtype, w_newdescr
 
     def descr_repr(self, space):

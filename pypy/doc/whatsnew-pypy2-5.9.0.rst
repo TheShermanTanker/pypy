@@ -26,14 +26,6 @@ Indexing into char* behaves differently than CPython
 
 Improve and fix issues with vmprof
 
-.. branch: issue-2592
-
-CPyext PyListObject.pop must return the value
-
-.. branch: cpyext-hash_notimpl
-
-If ``tp_hash`` is ``PyObject_HashNotImplemented``, set ``obj.__dict__['__hash__']`` to None
-
 .. branch: Enable_PGO_for_clang
 
 .. branch: nopax
@@ -63,18 +55,9 @@ arrays (at fixed indices) is stored in guards (and thus available at the
 beginning of bridges). Also, some better feeding of information about known
 fields of constant objects into bridges.
 
-.. branch: cpyext-leakchecking
-
-Add support for leakfinder in cpyext tests (disabled for now, due to too many
-failures).
-
 .. branch: pypy_swappedbytes
 
 Added ``_swappedbytes_`` support for ``ctypes.Structure``
-
-.. branch: pycheck-macros
-
-Convert many Py*_Check cpyext functions into macros, like CPython.
 
 .. branch: py_ssize_t
 

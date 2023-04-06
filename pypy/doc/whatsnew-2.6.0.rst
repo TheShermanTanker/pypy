@@ -11,9 +11,6 @@ ignore errors on closing random file handles while importing a module (cpython c
 issue2013:
 added constants to _ssl for TLS 1.1 and 1.2
 
-issue2014:
-Add PyLong_FromUnicode to cpyext.
-
 issue2017: 
 On non-Linux-x86 platforms, reduced the memory impact of
 creating a lot of greenlets/tasklets.  Particularly useful on Win32 and
@@ -30,11 +27,6 @@ Various rpython cleanups for vmprof support
 
 issue2019:
 Fix isspace as called by rpython unicode.strip()
-
-issue2023:
-In the cpyext 'Concrete Object Layer' API,
-don't call methods on the object (which can be overriden),
-but directly on the concrete base type.
 
 issue2029:
 Hide the default_factory attribute in a dict

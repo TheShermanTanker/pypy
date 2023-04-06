@@ -136,19 +136,6 @@ Changes shared across versions
 * Copy lib/* shared objects in portable builds when creating virtual
   environments with virtualenv and venv
 
-C-API (cpyext) and c-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Add ``_PySet_Next``, ``_PySet_NextEntry``
-* Correctly swallow exceptions happening inside ``PyDict_GetItem()`` (`issue
-  3098`_)
-* Respect tp_dict on PyType_Ready
-* Allow calling ``PyType_Ready`` on a subclass with a partially built
-  ``tp_base`` (issue 3117`_)
-* Rename ``tuple_new`` to ``_PyPy_tuple_new`` to follow the naming convention of
-  exported symbols in ``libpypy-c.so``
-* Actually restore the traceback in ``PyErr_Restore`` (`issue 3120`_)
-
 Python 3.6 only
 ---------------
 

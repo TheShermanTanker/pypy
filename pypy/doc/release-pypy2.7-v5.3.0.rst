@@ -4,10 +4,8 @@ PyPy2.7 v5.3
 
 We have released PyPy2.7 v5.3, about six weeks after PyPy 5.1 and a week after
 `PyPy3.3 v5.2 alpha 1`_, the first PyPy release targetting 3.3
-compatibility. This new PyPy2.7 release includes further improvements for the
-CAPI compatibility layer which we call cpyext. In addtion to complete support
-for lxml, we now pass most (more than 90%) of the upstream numpy test suite,
-and much of SciPy is supported as well.
+compatibility. In addtion to complete support for lxml, we now pass most (more
+than 90%) of the upstream numpy test suite, and much of SciPy is supported as well.
 
 We updated cffi_ to version 1.7 (small changes, documented here_).
 
@@ -60,40 +58,9 @@ Other Highlights (since 5.1 released in April 2016)
 
 * New features:
 
-  * Merge a major expansion of the C-API support in cpyext, here are some of
-    the highlights:
-
-      - allow c-snippet tests to be run with -A so we can verify we are compatible
-      - fix many edge cases exposed by fixing tests to run with -A
-      - issequence() logic matches cpython
-      - make PyStringObject and PyUnicodeObject field names compatible with cpython
-      - add prelminary support for PyDateTime_*
-      - support PyComplexObject, PyFloatObject, PyDict_Merge, PyDictProxy,
-        PyMemoryView_*, _Py_HashDouble, PyFile_AsFile, PyFile_FromFile,
-        PyAnySet_CheckExact, PyUnicode_Concat, PyDateTime_TZInfo
-      - improve support for PyGILState_Ensure, PyGILState_Release, and thread
-        primitives, also find a case where CPython will allow thread creation
-        before PyEval_InitThreads is run, dissallow on PyPy 
-      - create a PyObject-specific list strategy
-      - rewrite slot assignment for typeobjects
-      - improve tracking of PyObject to rpython object mapping
-      - support tp_as_{number, sequence, mapping, buffer} slots
-      - support ByteArrayObject via the new resizable_list_supporting_raw_ptr
-      - implement PyList_SET_ITEM with CPython's behavior, instead of SetItem's
-      - fix the signature of PyUFunc_FromFuncAndDataAndSignature
-      - implement many PyWhatever_FOO() as a macro taking a `void *`
-
-  * CPyExt tweak: instead of "GIL not held when a CPython C extension module
-    calls PyXxx", we now silently acquire/release the GIL.  Helps with
-    CPython C extension modules that call some PyXxx() functions without
-    holding the GIL (arguably, they are theorically buggy).
-
   * Add rgc.FinalizerQueue, documented in pypy/doc/discussion/finalizer-order.rst.
     It is a more flexible way to make RPython finalizers. Use this mechanism to
     clean up handling of ``__del__`` methods, fixing issue #2287
-
-  * Generalize cpyext old-style buffers to more than just str/buffer, add
-    support for mmap
 
   * Support command line -v to trace import statements
 
@@ -170,9 +137,6 @@ Other Highlights (since 5.1 released in April 2016)
 
   * Reduce the size of generated code by using the same function objects in
     all generated subclasses
-
-  * Share cpyext Py* function wrappers according to the signature, shrinking the
-    translated libpypy.so by about 10%
 
   * Compile c snippets with -Werror, and fix warnings it exposed
 

@@ -21,4 +21,4 @@ The recommended default is "incminimark".
   - "incminimark": like minimark, but adds incremental major
     collections.  Seems to come with no performance drawback over
     "minimark", so it is the default.  A few recent features of PyPy
-    (like cpyext) are only working with this GC.
+    are only working with this GC.

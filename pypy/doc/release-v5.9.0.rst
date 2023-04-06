@@ -85,7 +85,7 @@ The PyPy 2.7 release supports:
 .. _`PyPy and CPython 2.7.x`: https://speed.pypy.org
 .. _`dynamic languages`: https://rpython.readthedocs.io/en/latest/examples.html
 
-Highlights of the PyPy2.7, cpyext, and RPython changes (since 5.8 released June, 2017)
+Highlights of the PyPy2.7, and RPython changes (since 5.8 released June, 2017)
 ======================================================================================
 
 See also issues that were resolved_
@@ -111,15 +111,12 @@ Note that these are also merged into PyPy 3.5
     returns always the same *unbound* method object; CPython does it for built-in
     types but not for user-defined types
   * Update build instructions and an rarely used Makefile
-  * Recreate support for using leakfinder in cpyext tests which had suffered
-    bit-rot, disable due to many false positives
   * Add more functionality to ``sysconfig``
   * Added ``_swappedbytes_`` support for ``ctypes.Structure``
   * Better support the ``inspect`` module on ``frames``
 
 * Bug Fixes 
 
-  * Fix issue 2592_ - cpyext ``PyListObject.pop``, ``pop_end`` must return a value
   * Implement ``PyListOjbect.getstorage_copy``
   * Fix for ``reversed(dictproxy)`` issue 2601_
   * Fix for duplicate names in ctypes' ``_fields__``, issue 2621_
@@ -181,7 +178,6 @@ Highlights of the PyPy3.5 release (since 5.8 beta released June 2017)
   * Mirror CPython ``classmethod __reduce__`` which fixes pickling test
   * Use utf-8 for ``readline`` history file
   * Allow assigning ``'__class__'`` between ``ModuleType`` and its subclasses
-  * Add async slot functions in cpyext
 
 * Bug Fixes
 

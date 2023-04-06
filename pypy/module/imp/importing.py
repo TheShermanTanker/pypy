@@ -32,9 +32,9 @@ IMP_HOOK = 9
 
 SO = '.pyd' if _WIN32 else '.so'
 
-# Be careful update when changing this: it is now used for both cpyext
-# and cffi so's. If we do have to update it, we'd likely need a way to
-# split the two usages again.
+# Be careful update when changing this: it is now used for cffi so's.
+# If we do have to update it, we'd likely need a way to split the
+# usage again.
 DEFAULT_SOABI = 'pypy-%d%d' % PYPY_VERSION[:2]
 
 @specialize.memo()
@@ -69,8 +69,7 @@ def path_exists(path):
     return os.path.exists(path) and case_ok(path)
 
 def has_so_extension(space):
-    return (space.config.objspace.usemodules.cpyext or
-            space.config.objspace.usemodules._cffi_backend)
+    return space.config.objspace.usemodules._cffi_backend
 
 def has_init_module(space, filepart):
     "Return True if the directory filepart qualifies as a package."
@@ -611,11 +610,47 @@ def add_module(space, w_name):
     return w_mod
 
 def load_c_extension(space, filename, modulename):
-    from pypy.module.cpyext.api import load_extension_module
     log_pyverbose(space, 1, "import %s # from %s\n" %
                   (modulename, filename))
-    return load_extension_module(space, filename, modulename)
-    # NB. cpyext.api.load_extension_module() can also delegate to _cffi_backend
+
+    from rpython.rlib import rdynload
+    from rpython.rtyper.lltypesystem import rffi, lltype
+
+    if os.sep not in filename:
+        filename = os.curdir + os.sep + filename      # force a '/' in the path
+    basename = modulename.split('.')[-1]
+    try:
+        ll_libname = rffi.str2charp(filename)
+        try:
+            if _WIN32:
+                # Allow other DLLs in the same directory with "path"
+                dll = rdynload.dlopenex(ll_libname)
+            else:
+                dll = rdynload.dlopen(ll_libname, space.sys.dlopenflags)
+        finally:
+            lltype.free(ll_libname, flavor='raw')
+    except rdynload.DLOpenError as e:
+        raise oefmt(space.w_ImportError,
+                    "unable to load extension module '%s': %s",
+                    filename, e.msg)
+    look_for = None
+    #
+    if space.config.objspace.usemodules._cffi_backend:
+        look_for = '_cffi_pypyinit_%s' % (basename,)
+        try:
+            initptr = rdynload.dlsym(dll, look_for)
+        except KeyError:
+            pass
+        else:
+            try:
+                from pypy.module._cffi_backend import cffi1_module
+                return cffi1_module.load_cffi1_module(space, modulename, filename, initptr)
+            except:
+                rdynload.dlclose(dll)
+                raise
+    #
+    raise oefmt(space.w_ImportError,
+                "function %s not found in library %s", look_for, filename)
 
 def load_module(space, w_modulename, find_info, reuse=False):
     """Like load_module() in CPython's import.c, this will normally

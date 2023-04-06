@@ -9,8 +9,7 @@ regressions documented below that don't allow us to label is as 2.0 final.
 (It also contains many performance improvements.)
 
 The main features of this release are support for ARM processor and
-compatibility with CFFI. It also includes
-numerous improvements to the numpy in pypy effort, cpyext and performance.
+compatibility with CFFI.
 
 You can download the PyPy 2.0 beta 1 release here:
 

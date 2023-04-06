@@ -84,7 +84,7 @@ The PyPy 2.7 release supports:
 .. _`PyPy and CPython 2.7.x`: https://speed.pypy.org
 .. _`dynamic languages`: https://rpython.readthedocs.io/en/latest/examples.html
 
-Highlights of the PyPy2.7, cpyext, and RPython changes (since 5.7 released March, 2017)
+Highlights of the PyPy2.7, and RPython changes (since 5.7 released March, 2017)
 =======================================================================================
 
 See also issues that were resolved_
@@ -125,7 +125,6 @@ Note that these are also merged into PyPy 3.5
     very rarely showed up even in single threaded programs
   * Remove flaky fastpath function call from ctypes
   * Support passing a buffersize of 0 to socket.getsockopt
-  * Avoid hash() returning -1 in cpyext
 
 * Performance improvements:
 

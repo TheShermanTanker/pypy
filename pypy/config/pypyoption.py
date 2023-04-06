@@ -33,7 +33,7 @@ working_modules.update([
     "_socket", "unicodedata", "mmap", "fcntl", "_locale", "pwd",
     "select", "zipimport", "_lsprof", "signal", "_rawffi", "termios",
     "zlib", "bz2", "struct", "_md5", "_sha", "_minimal_curses",
-    "cStringIO", "thread", "itertools", "pyexpat", "cpyext", "array",
+    "cStringIO", "thread", "itertools", "pyexpat", "array",
     "binascii", "_multiprocessing", '_warnings', "_collections",
     "_multibytecodec", "micronumpy", "_continuation", "_cffi_backend",
     "_csv", "_pypyjson",
@@ -83,7 +83,7 @@ if sys.platform == "win32":
 
     # not ported yet
     if IS_64_BITS:
-        for name in ["cpyext", "micronumpy"]:
+        for name in ["micronumpy"]:
             if name in working_modules:
                 working_modules.remove(name)
 
@@ -101,7 +101,6 @@ if sys.platform == "sunos5":
 module_dependencies = {
     '_multiprocessing': [('objspace.usemodules.time', True),
                          ('objspace.usemodules.thread', True)],
-    'cpyext': [('objspace.usemodules.array', True)],
     'faulthandler': [('objspace.usemodules._vmprof', True)],
     }
 module_suggests = {
@@ -109,10 +108,7 @@ module_suggests = {
     # itself needs the interp-level struct module
     # because 'P' is missing from the app-level one
     "_rawffi": [("objspace.usemodules.struct", True)],
-    "cpyext": [("translation.secondaryentrypoints", "cpyext,main")],
 }
-if sys.platform == "win32":
-    module_suggests["cpyext"].append(("translation.shared", True))
 
 
 pypy_optiondescription = OptionDescription("objspace", "Object Space Options", [
@@ -165,9 +161,8 @@ pypy_optiondescription = OptionDescription("objspace", "Object Space Options", [
 
     BoolOption("disable_entrypoints",
                "Disable external entry points, notably the"
-               " cpyext module and cffi's embedding mode.",
-               default=False,
-               requires=[("objspace.usemodules.cpyext", False)]),
+               " cffi embedding mode.",
+               default=False),
 
     ChoiceOption("hash",
                  "The hash function to use for strings: fnv from CPython 2.7"

@@ -8,11 +8,7 @@ Python 2.7 syntax), and a PyPy3.5 v6.0 (an interpreter supporting Python
 the dual release.
 
 This release is a feature release following our previous 5.10 incremental
-release in late December 2017. Our C-API compatibility layer ``cpyext`` is
-now much faster (see the `blog post`_) as well as more complete. We have made
-many other improvements in speed and CPython compatibility. Since the changes
-affect the included python development header files, all c-extension modules must
-be recompiled for this version.
+release in late December 2017.
 
 Until we can work with downstream providers to distribute builds with PyPy, we
 have made packages for some common packages `available as wheels`_. You may
@@ -111,4 +107,3 @@ Changelog
 * Added missing attributes to C-API ``instancemethod`` on pypy3
 * Store error state in thread-local storage for C-API.
 * Improve speed of Python parser, improve ParseError messages and SyntaxError
-* Fix a rare GC bug exposed by intensive use of cpyext ``Buffer`` s

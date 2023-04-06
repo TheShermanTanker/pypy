@@ -208,23 +208,6 @@ class W_Root(object):
     def _set_mapdict_storage_and_map(self, storage, map):
         raise NotImplementedError
 
-
-    # -------------------------------------------------------------------
-    # cpyext support
-    # these functions will only be seen by the annotator if we translate
-    # with the cpyext module
-
-    def _cpyext_as_pyobj(self, space):
-        from pypy.module.cpyext.pyobject import w_root_as_pyobj
-        return w_root_as_pyobj(self, space)
-
-    def _cpyext_attach_pyobj(self, space, py_obj):
-        from pypy.module.cpyext.pyobject import w_root_attach_pyobj
-        return w_root_attach_pyobj(self, space, py_obj)
-
-
-    # -------------------------------------------------------------------
-
     def is_w(self, space, w_other):
         return self is w_other
 
@@ -233,9 +216,6 @@ class W_Root(object):
 
     def buffer_w(self, space, flags):
         w_impl = space.lookup(self, '__buffer__')
-        if w_impl is None:
-            # cpyext types that may have only old buffer interface
-            w_impl = space.lookup(self, '__wbuffer__')
         if w_impl is not None:
             w_result = space.get_and_call_function(w_impl, self,
                                         space.newint(flags))
@@ -245,10 +225,7 @@ class W_Root(object):
         raise BufferInterfaceNotFound
 
     def readbuf_w(self, space):
-        # cpyext types that may have old buffer protocol
-        w_impl = space.lookup(self, '__rbuffer__')
-        if w_impl is None:
-            w_impl = space.lookup(self, '__buffer__')
+        w_impl = space.lookup(self, '__buffer__')
         if w_impl is not None:
             w_result = space.get_and_call_function(w_impl, self,
                                         space.newint(space.BUF_FULL_RO))
@@ -258,10 +235,7 @@ class W_Root(object):
         raise BufferInterfaceNotFound
 
     def writebuf_w(self, space):
-        # cpyext types that may have old buffer protocol
-        w_impl = space.lookup(self, '__wbuffer__')
-        if w_impl is None:
-            w_impl = space.lookup(self, '__buffer__')
+        w_impl = space.lookup(self, '__buffer__')
         if w_impl is not None:
             w_result = space.get_and_call_function(w_impl, self,
                                         space.newint(space.BUF_FULL))
@@ -678,12 +652,7 @@ class ObjSpace(object):
     @not_rpython
     def setup_builtin_modules(self):
         "only for initializing the space."
-        if self.config.objspace.usemodules.cpyext:
-            # Special-case this to have state.install_dll() called early, which
-            # is required to initialise sys on Windows.
-            from pypy.module.cpyext.state import State
-            self.fromcache(State).build_api()
-        elif self.config.objspace.usemodules._cffi_backend:
+        if self.config.objspace.usemodules._cffi_backend:
             from pypy.module._cffi_backend import copy_includes
             copy_includes.main()
         

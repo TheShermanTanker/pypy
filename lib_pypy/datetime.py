@@ -21,7 +21,7 @@ import time as _timemodule
 import math as _math
 import struct as _struct
 
-# for cpyext, use these as base classes
+# use these as base classes
 from __pypy__._pypydatetime import dateinterop, deltainterop, timeinterop
 
 _SENTINEL = object()

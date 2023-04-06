@@ -429,7 +429,7 @@ class AbstractActionFlag(object):
     def _fired_actions_reset(self):
         # linked list of actions. We cannot use a normal RPython list because
         # we want AsyncAction.fire() to be marked as @rgc.collect: this way,
-        # we can call it from e.g. GcHooks or cpyext's dealloc_trigger.
+        # we can call it from e.g. GcHooks.
         self._fired_actions_first = None
         self._fired_actions_last = None
 

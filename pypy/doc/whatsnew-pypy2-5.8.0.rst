@@ -3,9 +3,6 @@ What's new in PyPy2.7 5.8+
 ==========================
 
 .. this is a revision shortly after release-pypy2.7-v5.7.0
-.. startrev: 44f31f6dd39f
-
-Add cpyext interfaces for ``PyModule_New``
 
 Correctly handle `dict.pop`` where the ``pop``
 key is not the same type as the ``dict``'s and ``pop``
@@ -34,16 +31,6 @@ Internal refactoring of buffers and memoryviews. Memoryviews will now be
 accepted in a few more places, e.g. in compile().
 
 .. branch: sthalik/fix-signed-integer-sizes-1494493539409
-
-.. branch: cpyext-obj-stealing
-
-Redo much of the refcount semantics in PyList_{SG}etItem to closer match
-CPython and ensure the same PyObject stored in the list can be later
-retrieved
-
-.. branch: cpyext-recursionlimit
-
-Implement Py_EnterRecursiveCall and associated functions
 
 .. branch: pypy_ctypes_nosegfault_nofastpath
 

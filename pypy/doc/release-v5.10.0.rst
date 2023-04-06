@@ -20,8 +20,7 @@ several issues and bugs raised by the growing community of PyPy users.
 As always, we strongly recommend updating.
 
 There are quite a few important changes that are in the pipeline that did not
-make it into the 5.10 release. Most important are speed improvements to cpyext
-(which will make numpy and pandas a bit faster) and utf8 branch that changes
+make it into the 5.10 release. Most important are a utf8 branch that changes
 internal representation of unicode to utf8, which should help especially the
 Python 3.5 version of PyPy.
 
@@ -77,7 +76,6 @@ Changelog
 * improve ssl handling on windows for pypy3 (makes pip work)
 * improve unicode handling in various error reporters
 * fix vmprof cooperation with greenlets
-* fix some things in cpyext
 * test and document the cmp(nan, nan) == 0 behaviour
 * don't crash when calling sleep with inf or nan
 * fix bugs in _io module

@@ -203,7 +203,6 @@ def _preprocess(csource, macros):
         macros[macroname] = macrovalue
     csource = _r_define.sub('', csource)
     # Process "#ifdef _WIN64 ... #else ... #endif" blocks.
-    # This is used in cpyext_object.h to define Py_ssize_t
     if sys.platform == "win32" and sys.maxint > 2**32:
         csource = _r_ifdef_win64.sub(r"\1", csource)
     else:

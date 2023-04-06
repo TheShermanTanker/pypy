@@ -166,13 +166,6 @@ Changes shared across versions
 - Update the statically-linked openssl to 1.1.1f on macOS.
 - Fix `re` grouprefs which were broken for unicode
 
-C-API (cpyext) and c-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Fix more of `issue 3141`_ : use ``Py_TYPE(op)`` instead of ``(ob)->ob_type``
-  in our header files
-- Partially resync ``pyport.h`` with CPython and add many missing constants
-- Check for ``ferror`` when reading from a file in ``PyRun_File``
-
 Python 3.6 only
 ---------------
 - Fix for CPython 30891_: deadlock import detection causes deadlocks

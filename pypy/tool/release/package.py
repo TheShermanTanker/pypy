@@ -199,9 +199,7 @@ def create_package(basedir, options, _fake=False):
         else:
             if not _fake:
                 raise RuntimeError('"libs" dir with import library not found.')
-            # XXX users will complain that they cannot compile capi (cpyext)
-            # modules for windows, also embedding pypy (i.e. in cffi)
-            # will fail.
+            # XXX embedding pypy (i.e. in cffi) will fail.
             # Has the lib moved, was translation not 'shared', or are
             # there no exported functions in the dll so no import
             # library was created?

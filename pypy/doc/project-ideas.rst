@@ -106,9 +106,6 @@ immediately, but only when (and if) ``myslice`` or ``mylist`` are mutated.
 NumPy rebooted
 --------------
 
-Our cpyext C-API compatiblity layer can now run upstream NumPy unmodified.
-We need to refactor the way `NumPy adds docstrings`_.
-
 .. _`NumPy adds docstrings`: https://github.com/numpy/numpy/issues/10167
 
 We also are looking for help in how to hijack NumPy dtype conversion and
@@ -212,24 +209,17 @@ to be got from them!):
 Interfacing with C
 ------------------
 
-While we could make ``cpyext`` faster_, we would also like to explore other
-ideas. While cffi is appropriate for small to medium-sized extensions, HPy
+While cffi is appropriate for small to medium-sized extensions, HPy
 seems to be the way forward for Python C-extensions. Here are a few ideas:
 * Help `HPy` and port projects to it
 * Collaborate with C-extension authors to ensure full PyPy support (see below)
 * Put PyPy compatible packages on PyPI and in conda
 
-.. _faster: https://www.pypy.org/posts/2018/09/inside-cpyext-why-emulating-cpython-c-8083064623681286567.html
 .. _HPy: https://hpyproject/hpy/
 
 ======================================
 Make more python modules pypy-friendly
 ======================================
-
-A lot of work has gone into PyPy's implementation of CPython's C-API, cpyext,
-over the last years to let it reach a practical level of compatibility, so that
-C extensions for CPython work on PyPy without major rewrites. However, there
-are still many edges and corner cases where it misbehaves.
 
 For any popular extension that does not already advertise full PyPy
 compatibility, it would thus be useful to take a close look at it in order to
@@ -240,8 +230,6 @@ make it fully compatible with PyPy. The general process is something like:
   relies on undocumented or internal details of CPython, and rewriting the
   relevant code to follow documented best practices. Open issues and send pull
   requests as appropriate given the extension's development process.
-* Other failures may highlight incompatibilities between cpyext and CPython.
-  Please report them to us and try to fix them.
 * Run benchmarks, either provided by the extension developers or created by
   you. Any case where PyPy is significantly slower than CPython is to be
   considered a bug and solved as above.

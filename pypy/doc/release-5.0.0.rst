@@ -5,11 +5,6 @@ PyPy 5.0
 We have released PyPy 5.0, about three months after PyPy 4.0.1.
 We encourage all users of PyPy to update to this version.
 
-We also merged a major upgrade to our C-API layer (cpyext), simplifying the
-interaction between c-level objects and PyPy interpreter level objects. As a
-result, lxml  (prerelease) with its cython compiled component
-passes all tests on PyPy. The new cpyext is also much faster.
-
 vmprof_ has been a go-to profiler for PyPy on linux for a few releases
 and we're happy to announce that thanks to the cooperation with jetbrains,
 vmprof now works on Linux, OS X and Windows on both PyPy and CPython.
@@ -75,16 +70,6 @@ Other Highlights (since 4.0.1 released in November 2015)
     PyString_GET_SIZE, f_locals in PyFrameObject, Py_NAN, co_filename in
     PyCodeObject
 
-  * Use a more stable approach for allocating PyObjects in cpyext. (see
-    `blog post`_). Once the PyObject corresponding to a PyPy object is created,
-    it stays around at the same location until the death of the PyPy object.
-    Done with a little bit of custom GC support.  It allows us to kill the
-    notion of "borrowing" inside cpyext, reduces 4 dictionaries down to 1, and
-    significantly simplifies the whole approach (which is why it is a new
-    feature while technically a refactoring) and allows PyPy to support the
-    populart lxml module (as of the *next* release) with no PyPy specific
-    patches needed
-
   * Make the default filesystem encoding ASCII, like CPython
 
   * Use `hypothesis`_ in test creation, which is great for randomizing tests
@@ -134,8 +119,6 @@ Other Highlights (since 4.0.1 released in November 2015)
 
   * Support dtype=(('O', spec)) union while disallowing record arrays with
     mixed object, non-object values
-
-  * Remove all traces of micronumpy from cpyext if --withoutmod-micronumpy option used
 
   * Support indexing filtering with a boolean ndarray
 
@@ -190,8 +173,6 @@ Other Highlights (since 4.0.1 released in November 2015)
     function handling
 
   * Refactor databasing
-
-  * Simplify bootstrapping in cpyext
 
   * Refactor rtyper debug code into python.rtyper.debug
 

@@ -92,8 +92,7 @@ Portions Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.
 All Rights Reserved.
 """
 
-# Keep synchronized with pypy.interpreter.app_main.sys_flags and
-# pypy.module.cpyext._flags
+# Keep synchronized with pypy.interpreter.app_main.sys_flags
 
 # This is tested in test_app_main.py
 class sysflags:

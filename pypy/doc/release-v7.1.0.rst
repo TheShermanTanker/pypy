@@ -101,12 +101,6 @@ Changes shared across versions
   descriptors to fix a segfault related to classmethods in Cython
 * Expand documentation of ``__pypy_`` module
 
-C-API (cpyext) improvements shared across versions
-
-* Move PyTuple_Type.tp_new to C
-* Call internal methods from ``PyDict_XXXItem()`` instead of going through
-  dunder methods (CPython cpyext compatibility)
-
 Python 3.6 only
 
 * Support for os.PathLike in the posix module

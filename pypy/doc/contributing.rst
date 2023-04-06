@@ -289,8 +289,7 @@ which you can invoke by typing::
 
 You will need the `build requirements`_ to run tests successfully, since many of
 them compile little pieces of PyPy and then run the tests inside that minimal
-interpreter. The `cpyext` tests also require `pycparser`, and many tests build
-cases with `hypothesis`.
+interpreter.
 
 Now on to running some tests.  PyPy has many different test directories
 and you can use shell completion to point at directories or files::
@@ -319,25 +318,13 @@ App level testing
 
 While the usual invocation of `python2 pytest.py` runs app-level tests on an
 untranslated PyPy that runs on top of CPython, we have a test extension to run tests
-directly on the host python. This is very convenient for modules such as
-`cpyext`, to compare and contrast test results between CPython and PyPy.
+directly on the host python.
 
 App-level tests (ones whose file name start with ``apptest_`` not ``test_``)
 run directly on the host interpreter when passing `-D` or
 `--direct-apptest` to `pytest`::
 
     pypy3 -m pytest -D pypy/interpreter/test/apptest_pyframe.py
-
-Mixed-level tests (the usual ones that start with ``test_``) are invoked by using the `-A` or `--runappdirect` option to
-`pytest`::
-
-    python2 pytest.py -A pypy/module/cpyext/test
-
-where `python2` can be either `python2` or `pypy2`. On the `py3` branch, the
-collection phase must be run with `python2` so untranslated tests are run
-with::
-
-    python2 pytest.py -A pypy/module/cpyext/test --python=path/to/pypy3
 
 
 Testing After Translation

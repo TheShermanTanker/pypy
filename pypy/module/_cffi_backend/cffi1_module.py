@@ -16,7 +16,6 @@ VERSION_EXPORT = 0x0A03
 INITFUNCPTR = lltype.Ptr(lltype.FuncType([rffi.VOIDPP], lltype.Void))
 
 def load_cffi1_module(space, name, path, initptr):
-    # This is called from pypy.module.cpyext.api.load_extension_module()
     from pypy.module._cffi_backend.call_python import get_ll_cffi_call_python
 
     initfunc = rffi.cast(INITFUNCPTR, initptr)

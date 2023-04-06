@@ -222,10 +222,6 @@ Speedups and enhancements shared across versions
 - Consider equal lltype ptrs to be equal constants in rpython constant-folding
 
 
-C-API (cpyext) and C-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Make sure ``decref`` is being called even if a C-level call raises an
-  exception (issue 3854_)
 
 Python 3.8+
 -----------

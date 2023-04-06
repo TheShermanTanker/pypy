@@ -148,11 +148,6 @@ Speedups and enhancements shared across versions
 - Speed up ``str`` -> ``float`` conversion for the fast path (ascii, no ``'_'``, no
   ``INF``, no leading or trailing whitespace).
 
-C-API (cpyext) and C-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We are no longer backporting changes to the ``cpyext`` compatibility layer to
-PyPy2.7.
-
 
 Python 3.7+ bugfixes
 --------------------
@@ -220,7 +215,6 @@ Python 3.7 C-API
 - Fix segfault when using format strings in ``PyUnicode_FromFormat`` and
   ``PyErr_Format`` (issue 3593_)
 - ``_PyObject_LookupAttrId`` does not raise ``AttributeError``
-- Fix cpyext implementation of ``contextvars.get``
 - Deprecate ``PyPy.h``, mention the contents in the embedding docs (issue 3608_)
 - Remove duplicate definition of ``Py_hash_t``, document diff to CPython (issue 3612_)
 - Fix overflow error message when converting Python ``int`` to C ``int``

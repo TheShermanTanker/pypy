@@ -67,11 +67,6 @@ Allow subclassing ndarray, i.e. matrix
 
 Implement ndarray in-place sorting (for numeric types, no non-native byte order)
 
-.. branch: pypy-pyarray
-
-Implement much of numpy's c api in cpyext, allows (slow) access to ndarray
-from c
-
 .. branch: kill-ootype
 
 .. branch: curses_fixes
@@ -103,8 +98,6 @@ a bit
 .. branch: no-release-gil
 .. branch: safe-win-mmap
 .. branch: boolean-indexing-cleanup
-.. branch: cpyext-best_base
-.. branch: cpyext-int
 .. branch: fileops2
 
 .. branch: nobold-backtrace

@@ -149,11 +149,6 @@ Speedups and enhancements shared across versions
 - Provide a PyPy-only scoped way to malloc buffers in cffi and use it in
   ``ssl.read``
 
-C-API (cpyext) and C-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We are no longer backporting changes to the ``cpyext`` compatiblity layer to
-PyPy2.7.
-
 
 Python 3.7+ bugfixes
 --------------------

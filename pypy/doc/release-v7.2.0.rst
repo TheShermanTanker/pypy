@@ -196,18 +196,6 @@ Changes shared across versions
 * Update vendored version of ``pycparser`` to version 2.19
 * Implement a much faster JSON decoder (3x speedup for large json files, 2x less memory)
 
-C-API (cpyext) and c-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* Add ``DateTime_FromTimestamp`` and ``Date_FromTimestamp`` to the 
-  ``PyDateTime_CAPI`` struct
-
-* Add constants and macros needed to build opencv2_ with PyPy2.7
-* Add more constants to `sysconfig``. Set ``MACOSX_DEPLOYMENT_TARGET`` for
-  darwin (`issue 2994`_)
-* fix ``CBuffer.buffer_attach``
-* Add ``_PyDict_GetItemWithError`` (``PyDict_GetItemWithError`` on Python3)
-
 Python 3.6 only
 ---------------
 

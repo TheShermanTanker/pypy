@@ -68,10 +68,9 @@ Highlights
 
 * Our integrated numpy support gained much of the GenericUfunc api in order to
   support the lapack/blas linalg module of numpy. This dovetails with work in the
-  pypy/numpy repository to support linalg both through the (slower) cpyext capi
-  interface and also via (the faster) pure python cffi interface, using an
-  extended frompyfunc() api. We will soon post a seperate blog post specifically
-  about linalg and PyPy.
+  pypy/numpy repository to support linalg both through the  pure python cffi interface,
+  using an extended frompyfunc() api. We will soon post a seperate blog post
+  specifically about linalg and PyPy.
 
 * Dictionaries are now ordered by default, see the `blog post`_
 

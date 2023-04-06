@@ -57,9 +57,6 @@ More highlights
   it does on CPython --- if you have a clue what it does there
   ``:-)`` )
 
-* cpyext on Mac OS X: it still does not seem to work.  I get
-  systematically a segfault in dlopen().  Contributions welcome.
-
 * Fix two corner cases in the GC (one in minimark).
 
 * Added some missing built-in functions into the 'os' module.

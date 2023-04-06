@@ -84,7 +84,6 @@ copyright = u'2023, The PyPy Project'
 
 # Make sure to keep this in sync with:
 #    module/sys/version.py
-#    module/cpyext/include/patchlevel.h
 #
 # The short X.Y version.
 version = '7.3'

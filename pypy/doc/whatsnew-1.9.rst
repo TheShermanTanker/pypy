@@ -50,11 +50,6 @@ The stdlib was updated to version 2.7.2
 
 .. branch: newindex
 
-.. branch: non-null-threadstate
-
-cpyext: Better support for PyEval_SaveThread and other PyTreadState_*
-functions.
-
 .. branch: numppy-flatitter
 
 flatitier for numpy
@@ -92,10 +87,6 @@ The "out" argument was added to most of the numypypy functions.
 .. branch: numpypy-ufuncs
 
 .. branch: pytest
-
-.. branch: safe-getargs-freelist
-
-CPyext improvements. For example PyOpenSSL should now work
 
 .. branch: set-strategies
 

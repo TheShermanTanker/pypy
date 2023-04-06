@@ -314,34 +314,6 @@ CMake will `support the correct suffix`_ for PyPy3.9 in release 3.26, scheduled 
 
 .. _support the correct suffix: https://gitlab.kitware.com/cmake/cmake/-/merge_requests/7917
 
-.. _cpyext:
-
-C-API Differences
------------------
-
-The external C-API has been reimplemented in PyPy as an internal cpyext module.
-We support most of the documented C-API, but sometimes internal C-abstractions
-leak out on CPython and are abused, perhaps even unknowingly. For instance,
-assignment to a ``PyTupleObject`` is not supported after the tuple is
-used internally, even by another C-API function call. On CPython this will
-succeed as long as the refcount is 1.  On PyPy this will always raise a
-``SystemError('PyTuple_SetItem called on tuple after  use of tuple")``
-exception (explicitly listed here for search engines).
-
-Another similar problem is assignment of a new function pointer to any of the
-``tp_as_*`` structures after calling ``PyType_Ready``. For instance, overriding
-``tp_as_number.nb_int`` with a different function after calling ``PyType_Ready``
-on CPython will result in the old function being called for ``x.__int__()``
-(via class ``__dict__`` lookup) and the new function being called for ``int(x)``
-(via slot lookup). On PyPy we will always call the __new__ function, not the
-old, this quirky behaviour is unfortunately necessary to fully support NumPy.
-
-The cpyext layer `adds complexity`_ and is slow. If possible, use cffi_ or HPy_.
-
-.. _adds complexity: https://www.pypy.org/posts/2018/09/inside-cpyext-why-emulating-cpython-c-8083064623681286567.html
-.. _cffi: https://cffi.readthedocs.io/en/latest/
-.. _HPy: https://hpyproject.org/
-
 Performance Differences
 -------------------------
 
@@ -578,7 +550,6 @@ List of extension modules that we support:
     bz2
     cStringIO
     cmath
-    `cpyext`_
     crypt
     errno
     exceptions

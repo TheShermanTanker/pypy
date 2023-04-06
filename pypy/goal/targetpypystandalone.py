@@ -308,12 +308,6 @@ class PyPyTarget(object):
                        "pypy/goal/targetpypystandalone.py.")
             config.objspace.lonepycfiles = False
 
-        if config.objspace.usemodules.cpyext:
-            if config.translation.gc not in ('incminimark'):
-                raise Exception("The 'cpyext' module requires the 'incminimark'"
-                    " GC.  You need either 'targetpypystandalone.py"
-                    " --withoutmod-cpyext', or use this GC.")
-
         config.translating = True
 
         import translate

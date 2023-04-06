@@ -65,9 +65,6 @@ Highlights
   much progress on Win64.) A lot of work on this has been done by Matti Picus
   and Amaury Forgeot d'Arc.
 
-* Improvements in ``cpyext``, our emulator for CPython C extension modules.
-  For example PyOpenSSL should now work.  We thank various people for help.
-
 * Sets now have strategies just like dictionaries. This means for example
   that a set containing only ints will be more compact (and faster).
 

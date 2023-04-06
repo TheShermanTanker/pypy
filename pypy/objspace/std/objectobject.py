@@ -196,7 +196,6 @@ def descr__reduce_ex__(space, w_obj, proto=0):
         try:
             w_cls_reduce = space.getattr(w_cls_reduce_meth, space.newtext('im_func'))
         except OperationError as e:
-            # i.e. PyCFunction from cpyext
             if not e.match(space, space.w_AttributeError):
                 raise
             w_cls_reduce = space.w_None

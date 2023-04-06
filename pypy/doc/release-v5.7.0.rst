@@ -11,13 +11,6 @@ This new PyPy2.7 release includes the upstream stdlib version 2.7.13, and
 PyPy3.5 (our first in the 3.5 series) includes the upstream stdlib version
 3.5.3.
 
-We continue to make incremental improvements to our C-API
-compatibility layer (cpyext). PyPy2 can now import and run many C-extension
-packages, among the most notable are Numpy, Cython, and Pandas. Performance may
-be slower than CPython, especially for frequently-called short C functions.
-Please let us know if your use case is slow, we have ideas how to make things
-faster but need real-world examples (not micro-benchmarks) of problematic code.
-
 Work proceeds at a good pace on the PyPy3.5
 version due to a grant_ from the Mozilla Foundation, hence our first 3.5.3 beta
 release. Thanks Mozilla !!! While we do not pass all tests yet, asyncio works and
@@ -81,7 +74,7 @@ The PyPy 2.7 release supports:
 .. _`PyPy and CPython 2.7.x`: https://speed.pypy.org
 .. _`dynamic languages`: https://rpython.readthedocs.io/en/latest/examples.html
 
-Highlights of the PyPy2.7, cpyext, and RPython changes (since 5.6 released Nov, 2016)
+Highlights of the PyPy2.7, and RPython changes (since 5.6 released Nov, 2016)
 =====================================================================================
 
 See also issues that were resolved_
@@ -99,9 +92,6 @@ See also issues that were resolved_
   * adapt ``weakref`` according to CPython issue 19542_, will be in CPython 2.7.14
   * implement ``StringBuffer.get_raw_address`` for the buffer protocol, it is
     now possible to obtain the address of any readonly object without pinning it
-  * refactor the initialization code in translating cpyext
-  * use a cffi-style C parser to create rffi objects in cpyext, now the
-    translating Python must have either ``cffi`` or ``pycparser`` available
   * implement ``move_to_end(last=True/False)`` on RPython ordered dicts, make
     available as ``__pypy__.move_to_end`` and, on py3.5,
     ``OrderedDict.move_to_end()``
@@ -186,7 +176,6 @@ Development moved from the py3k branch to the py3.5 branch in the PyPy bitbucket
 .. _resolved: whatsnew-pypy2-5.7.0.html
 .. _19542: https://bugs.python.org/issue19542
 .. _2434: https://bitbucket.org/pypy/pypy/issues/2434/support-pybind11-in-conjunction-with-pypys
-.. _2446: https://bitbucket.org/pypy/pypy/issues/2446/cpyext-tp_doc-field-not-reflected-on
 .. _2475: https://bitbucket.org/pypy/pypy/issues/2475
 .. _2501: https://bitbucket.org/pypy/pypy/issues/2501
 .. _2504: https://bitbucket.org/pypy/pypy/issues/2504

@@ -57,8 +57,6 @@ Highlights
   improved. This should impact any applications using for example cryptography,
   like tornado.
 
-* There was some progress in exposing even more CPython C API via cpyext.
-
 Things that didn't make it, expect in 1.8 soon
 ==============================================
 

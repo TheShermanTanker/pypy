@@ -108,10 +108,6 @@ Other Highlights (since 2.6.1 release two months ago)
 
   * Fix a subtle bug with stacklets on shadowstack
 
-  * Improve support for the cpython capi in cpyext (our capi compatibility
-    layer). Fixing these issues inspired some thought about cpyext in general,
-    stay tuned for more improvements
-
   * When loading dynamic libraries, in case of a certain loading error, retry
     loading the library assuming it is actually a linker script, like on Arch
     and Gentoo

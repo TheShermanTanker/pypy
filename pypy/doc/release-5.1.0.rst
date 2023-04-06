@@ -76,10 +76,6 @@ Other Highlights (since 5.0 released in March 2015)
 
   * Catch exceptions raised in an exit function
 
-  * Fix edge cases in the cpyext refcounting-compatible semantics
-    (more work on cpyext compatibility is coming in the ``cpyext-ext``
-    branch, but isn't ready yet)
-
   * Try harder to not emit NEON instructions on ARM processors without NEON
     support
 

@@ -40,10 +40,6 @@ Change `char *`` to ``const char *`` in ``PyStructSequence_Field``,
 
 Merge win64 into this branch
 
-.. branch: win64-cpyext
-
-Fix the cpyext module for win64
-
 .. branch: py3.7-winreg
 
 Fix various problems with ``winreg``: add ``REG_QWORD``, implement reflection
@@ -68,10 +64,6 @@ Re-enable ``_io.win32console`` on windows
 .. branch: meth-fastcall
 
 Implement METH_FASTCALL
-
-.. branch: py3.7-win64-cpyext-longobject 
-
-Fix ``cpyext.longobject`` for win64
 
 .. branch: py3.7-big-sur-dyld-cache
 

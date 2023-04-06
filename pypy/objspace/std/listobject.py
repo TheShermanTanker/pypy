@@ -251,16 +251,6 @@ class W_ListObject(W_Root):
                 self.space, storage, strategy)
         return w_objectlist
 
-    def convert_to_cpy_strategy(self, space):
-        from pypy.module.cpyext.sequence import CPyListStorage, CPyListStrategy
-
-        cpy_strategy = self.space.fromcache(CPyListStrategy)
-        if self.strategy is cpy_strategy:
-            return
-        lst = self.getitems()
-        self.strategy = cpy_strategy
-        self.lstorage = cpy_strategy.erase(CPyListStorage(space, lst))
-
     # ___________________________________________________
 
     def init_from_list_w(self, list_w):

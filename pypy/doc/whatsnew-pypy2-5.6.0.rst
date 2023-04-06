@@ -35,10 +35,6 @@ allowed as arguments. Test and fix for str and unicode
 Port the 'faulthandler' module to PyPy default.  This module is standard
 in Python 3.3 but can also be installed from CPython >= 2.6 from PyPI.
 
-.. branch: test-cpyext
-
-Refactor cpyext testing to be more pypy3-friendly.
-
 .. branch: better-error-missing-self
 
 Improve the error message when the user forgot the "self" argument of a method.
@@ -59,11 +55,6 @@ more easily and debugging is faster.
 .. branch: stdlib-2.7.12
 
 Update stdlib to version 2.7.12
-
-.. branch: buffer-interface2
-
-Improve support for new buffer interface in cpyext, bf_getbuffer on built-in
-types still missing
 
 
 .. branch: fix-struct-unpack-Q

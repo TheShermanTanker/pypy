@@ -1533,9 +1533,8 @@ def frompyfunc(space, w_func, nin, nout, w_dtypes=None, signature='',
         w_ret.set_doc(space, space.newtext(doc))
     return w_ret
 
-# Instantiated in cpyext/ndarrayobject. It is here since ufunc calls
-# set_dims_and_steps, otherwise ufunc, ndarrayobject would have circular
-# imports
+# It is here since ufunc calls set_dims_and_steps, otherwise ufunc,
+# ndarrayobject would have circular imports
 Py_ssize_t = lltype.Typedef(rffi.SSIZE_T, 'Py_ssize_t')
 npy_intpp = rffi.CArrayPtr(Py_ssize_t)
 LONG_SIZE = LONG_BIT / 8

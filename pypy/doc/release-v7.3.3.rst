@@ -136,12 +136,6 @@ Changes shared across versions
 - `bpo-33781`_: ``audioop``: enhance rounding double as int
 - `bpo-31893`_: Simplify ``select.kqueue`` object comparison
 
-C-API (cpyext) and c-extensions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Check for ``None`` in ``PyLong_AsUnsignedLongLong``
-- Dynamically allocate ``Py_buffer.format`` if needed (issue 3336_)
-- Fix for readonly flag on PyObject_GetBuffer(<bytes>, view) (issue 3307_)
-
 Python 3.6+
 -----------
 - Fix windows support for using ``venv`` inside a ``venv``

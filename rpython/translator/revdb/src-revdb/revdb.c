@@ -1055,8 +1055,7 @@ static void setup_replay_mode(int *argc_p, char **argv_p[])
                 "It has been reported that on Linux kernel 4.12.4-1-ARCH,\n"
                 "ASLR cannot be disabled at all for libpypy-c.so.  It works\n"
                 "again in kernel 4.19 (and maybe sooner).  Either change\n"
-                "kernels, or translate with --no-shared (but then you loose\n"
-                "PyPy's cpyext ability).\n"
+                "kernels, or translate with --no-shared.\n"
                 "\n", argv[0]);
         exit(1);
     }

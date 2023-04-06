@@ -4,7 +4,6 @@ import sys
 from rpython.tool.udir import udir
 from pypy.interpreter.gateway import unwrap_spec, interp2app
 from pypy.module._cffi_backend.newtype import _clean_cache
-import pypy.module.cpyext.api     # side-effect of pre-importing it
 from sysconfig import get_config_var
 
 

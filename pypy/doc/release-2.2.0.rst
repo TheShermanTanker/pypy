@@ -72,7 +72,5 @@ Highlights
   including ``os.startfile()`` on Windows and a handful of rare ones
   on Posix.
 
-* numpy has a rudimentary C API that cooperates with ``cpyext``
-
 Cheers,
 Armin Rigo and Maciej Fijalkowski
