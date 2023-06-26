@@ -324,9 +324,9 @@ OPT_TABLE_DOC = {
 
 OPT_TABLE = {
     #level:  gc          backend optimizations...
-    '0':    DEFL_GC + '  nobackendopt',
-    '1':    DEFL_GC + '  lowinline',
-    'size': DEFL_GC + '  lowinline     remove_asserts',
+    '0':    'minimark    nobackendopt',
+    '1':    'minimark    lowinline',
+    'size': 'minimark    lowinline     remove_asserts',
     'mem':  DEFL_GC + '  lowinline     remove_asserts    removetypeptr',
     '2':    DEFL_GC + '  extraopts',
     '3':    DEFL_GC + '  extraopts     remove_asserts',
